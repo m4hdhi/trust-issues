@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import io
 import json
+import re
 import logging
 import time
 from contextlib import asynccontextmanager
@@ -400,6 +401,17 @@ async def family_remove(member_id: str, body: DeviceOnlyIn) -> dict[str, Any]:
 async def family_sos(body: DeviceOnlyIn) -> dict[str, Any]:
     out = await _family(family.sos, body.device_id)
     return {**out, "helplines": family.helplines()}
+
+
+@app.get("/api/manifest")
+async def device_manifest(d: str = "") -> JSONResponse:
+    """The PWA manifest with this phone's device ID in start_url, so the Home Screen app and Safari share one identity."""
+    path = settings.web_dist / "manifest.webmanifest"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"name": "Trust Issues", "display": "standalone"}
+    if re.fullmatch(r"dev_[A-Za-z0-9]{6,20}", d):
+        in_family = await asyncio.to_thread(family.member, d) is not None
+        data["start_url"] = f"/{'family' if in_family else ''}?d={d}"
+    return JSONResponse(data, media_type="application/manifest+json", headers={"Cache-Control": "no-store"})
 
 
 @app.get("/api/helplines")

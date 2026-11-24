@@ -49,6 +49,34 @@ export function getDevice(): DeviceRegistration | null {
   return readJson<DeviceRegistration>(DEVICE_KEY)
 }
 
+const DEVICE_RE = /^dev_[A-Za-z0-9]{6,20}$/
+
+/** Points the PWA manifest at this phone's device, so "Add to Home Screen" opens the app as the same phone. */
+export function linkManifest(): void {
+  const dev = getDevice()
+  const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
+  if (dev && link) link.href = `/api/manifest?d=${encodeURIComponent(dev.device_id)}`
+}
+
+/** The Home Screen app starts at ?d=<device>: adopt it, since iOS gives the installed app its own storage. */
+export function adoptDeviceFromUrl(): void {
+  try {
+    const url = new URL(window.location.href)
+    const d = url.searchParams.get('d')
+    if (d && DEVICE_RE.test(d)) {
+      if (getDevice()?.device_id !== d) {
+        const doh = `${window.location.origin}/dns-query/${d}`
+        writeJson(DEVICE_KEY, { device_id: d, doh_url: doh, ios_profile_url: `/api/protect/${d}/ios.mobileconfig`, android_hostname_hint: doh })
+      }
+      url.searchParams.delete('d')
+      window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
+    }
+  } catch {
+    /* storage can be unavailable; the app then registers a new device */
+  }
+  linkManifest()
+}
+
 export function scanUrls(id: string) {
   const base = `/api/scans/${encodeURIComponent(id)}`
   return {
@@ -158,6 +186,7 @@ export const api = {
     if (existing) return existing
     const reg = await post<DeviceRegistration>('/api/devices', { platform, lang })
     writeJson(DEVICE_KEY, reg)
+    linkManifest()
     return reg
   },
 
