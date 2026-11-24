@@ -21,7 +21,7 @@ from pydantic import BaseModel
 from sqlmodel import func, select
 from sse_starlette.sse import EventSourceResponse
 
-from . import batch, bot, bus, db, family, scans
+from . import accounts, batch, bot, bus, db, family, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
 from .detectors import ai_anthropic, anchors, feeds, message_rules
@@ -133,8 +133,12 @@ async def health() -> dict[str, Any]:
 _hits: dict[str, list[float]] = {}
 
 
+def client_ip(request: Request) -> str:
+    return (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+
+
 def rate_limit(request: Request, per_minute: int = 30) -> None:
-    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+    ip = client_ip(request)
     now = time.time()
     window = [t for t in _hits.get(ip, []) if now - t < 60]
     if len(window) >= per_minute:
@@ -430,12 +434,51 @@ async def register_device(body: DeviceIn) -> dict[str, Any]:
     with db.session() as s:
         s.add(device)
         s.commit()
+    return _registration(device.id)
+
+
+def _registration(device_id: str) -> dict[str, Any]:
     return {
-        "device_id": device.id,
-        "doh_url": profile.doh_url(device.id),
-        "ios_profile_url": f"/api/protect/{device.id}/ios.mobileconfig",
-        "android_hostname_hint": profile.doh_url(device.id),
+        "device_id": device_id,
+        "doh_url": profile.doh_url(device_id),
+        "ios_profile_url": f"/api/protect/{device_id}/ios.mobileconfig",
+        "android_hostname_hint": profile.doh_url(device_id),
     }
+
+
+class AccountIn(BaseModel):
+    device_id: str
+    login: str
+    password: str
+
+
+class SignInIn(BaseModel):
+    login: str
+    password: str
+
+
+async def _account(fn, *args: Any) -> Any:
+    try:
+        return await asyncio.to_thread(fn, *args)
+    except accounts.AccountError as exc:
+        raise HTTPException(exc.status, str(exc)) from exc
+
+
+@app.get("/api/account/{device_id}")
+async def account_status(device_id: str) -> dict[str, Any]:
+    return await _account(accounts.status, device_id)
+
+
+@app.post("/api/account", dependencies=[Depends(rate_limit)])
+async def account_save(body: AccountIn) -> dict[str, Any]:
+    """Save a sign-in for this phone, so the Home Screen app or a new phone can open the same family."""
+    return await _account(accounts.save, body.device_id, body.login, body.password)
+
+
+@app.post("/api/account/sign-in")
+async def account_sign_in(body: SignInIn, request: Request) -> dict[str, Any]:
+    device_id = await _account(accounts.sign_in, body.login, body.password, client_ip(request))
+    return _registration(device_id)
 
 
 @app.get("/api/devices/{device_id}/blocks")

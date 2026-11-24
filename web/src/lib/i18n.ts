@@ -629,6 +629,27 @@ export const S = {
   m_scams: { en: 'Scams', ar: 'الاحتيالات' },
   m_reports: { en: 'Reports', ar: 'البلاغات' },
   m_blocks: { en: 'Blocks', ar: 'الحظر' },
+  accSaveTitle: { en: 'Save a sign-in for your family', ar: 'احفظ بيانات الدخول لعائلتك' },
+  accSaveBody: {
+    en: 'Then the Home Screen app, another browser or a new phone opens your family straight away. Your phone can remember the password for you.',
+    ar: 'بعدها يفتح تطبيق الشاشة الرئيسية أو متصفح آخر أو هاتف جديد عائلتك مباشرة. ويمكن لهاتفك أن يتذكّر كلمة المرور عنك.',
+  },
+  accSave: { en: 'Save sign-in', ar: 'احفظ بيانات الدخول' },
+  accLogin: { en: 'Phone number or email', ar: 'رقم الهاتف أو البريد الإلكتروني' },
+  accPassword: { en: 'Password', ar: 'كلمة المرور' },
+  accPasswordHint: { en: 'At least 8 characters. Your phone can suggest one and remember it.', ar: '8 أحرف على الأقل. يمكن لهاتفك أن يقترحها ويتذكّرها.' },
+  accSavedAs: { en: 'Sign-in saved', ar: 'بيانات الدخول محفوظة' },
+  accChange: { en: 'Change', ar: 'تغيير' },
+  accHaveTitle: { en: 'Already use Family Shield?', ar: 'تستخدم درع العائلة من قبل؟' },
+  accHaveBody: {
+    en: 'Sign in to open your family here, for example in the Home Screen app or on a new phone.',
+    ar: 'سجّل الدخول لفتح عائلتك هنا، مثلًا في تطبيق الشاشة الرئيسية أو على هاتف جديد.',
+  },
+  accSignIn: { en: 'Sign in', ar: 'تسجيل الدخول' },
+  accWrong: { en: 'Wrong phone number, email or password.', ar: 'رقم الهاتف أو البريد أو كلمة المرور غير صحيحة.' },
+  accTaken: { en: 'This phone number or email already has a sign-in. Use another one, or sign in with it.', ar: 'رقم الهاتف أو البريد مستخدم في حساب آخر. استخدم غيره أو سجّل الدخول به.' },
+  accInvalid: { en: 'Enter a valid phone number or email and a password of at least 8 characters.', ar: 'أدخل رقم هاتف أو بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.' },
+  accLocked: { en: 'Too many tries. Please wait 15 minutes and try again.', ar: 'محاولات كثيرة. انتظر 15 دقيقة ثم حاول مرة أخرى.' },
 } satisfies Record<string, Bilingual>
 
 export type StringKey = keyof typeof S

@@ -30,10 +30,11 @@ import { T, Tx, useLang } from '../lib/lang'
 import { api } from '../lib/api'
 import { defang, timeAgo } from '../lib/format'
 import { EASE_OUT } from '../lib/motion'
-import { isAndroid, isIOS } from '../lib/push'
+import { isAndroid, isIOS, isStandalone } from '../lib/push'
 import { S, type StringKey } from '../lib/i18n'
 import type { Bilingual, DeviceRegistration, FamilyEventItem, FamilyInviteResult, FamilyMember, FamilyRequest, FamilyRole, FamilyState, Helpline } from '../lib/types'
 import { Alerts, AndroidSetup, IphoneSetup, TestProtection } from './Protect'
+import { SaveSignIn, SignInCard } from './Account'
 
 export const ROLE: Record<FamilyRole, { k: StringKey; icon: LucideIcon }> = {
   guardian: { k: 'roleGuardian', icon: Crown },
@@ -447,6 +448,9 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
             <Stat value={stats.protected} label="famProtected" />
             <Stat value={pending.length} label="famWaiting" tone={pending.length ? 'text-warn' : 'text-paper'} />
           </div>
+          <div className="mt-8 max-w-3xl">
+            <SaveSignIn deviceId={deviceId} />
+          </div>
         </Reveal>
       </section>
 
@@ -663,6 +667,7 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
               {isAndroid() ? <AndroidSetup reg={reg} /> : <IphoneSetup reg={reg} />}
             </section>
           )}
+          <SaveSignIn deviceId={reg.device_id} />
           <TestProtection />
           <Alerts deviceId={reg.device_id} />
           {mine.length > 0 && <Timeline events={mine} />}
@@ -682,6 +687,8 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
 
 function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s: FamilyState) => void }) {
   const { t } = useLang()
+  // The Home Screen app starts with empty storage, so whoever opens it there most likely set up a family in Safari.
+  const installed = isStandalone()
   const [familyName, setFamilyName] = useState('')
   const [myName, setMyName] = useState('')
   const [phone, setPhone] = useState('')
@@ -702,6 +709,11 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
   return (
     <section className="shell grid-12 items-start gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
+        {installed && (
+          <div className="mb-12">
+            <SignInCard startOpen />
+          </div>
+        )}
         <p className="evidence text-sm text-gold">
           <T k="famKicker" />
         </p>
@@ -717,7 +729,8 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
         </Stagger>
       </Reveal>
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-5 lg:col-start-8" delay={0.1}>
-        <form onSubmit={(e) => void submit(e)} className="space-y-5 rounded-2xl bg-ink-850 p-6">
+        {!installed && <SignInCard />}
+        <form onSubmit={(e) => void submit(e)} className={`${installed ? '' : 'mt-6 '}space-y-5 rounded-2xl bg-ink-850 p-6`}>
           <Tx k="famCreateTitle" as="h2" className="display text-2xl text-paper" split="stack" />
           <label className="block">
             <Tx k="famNameLabel" className="mb-2 text-sm text-paper-2" split="stack" />

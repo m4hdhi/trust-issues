@@ -1,7 +1,5 @@
-import { api } from './api'
+import { ALERTS_KEY, api } from './api'
 import { readItem, writeItem } from './storage'
-
-const ALERTS_KEY = 'ti.alerts'
 
 export type AlertsState = 'unsupported' | 'needs-install' | 'denied' | 'off' | 'on'
 
@@ -14,7 +12,7 @@ export function isAndroid(): boolean {
   return /Android/i.test(navigator.userAgent)
 }
 
-function isStandalone(): boolean {
+export function isStandalone(): boolean {
   const nav = navigator as Navigator & { standalone?: boolean }
   return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true
 }
@@ -52,4 +50,18 @@ export async function enableAlerts(deviceId: string): Promise<AlertsState> {
   await api.savePush(deviceId, sub.toJSON())
   writeItem(ALERTS_KEY, 'on')
   return 'on'
+}
+
+/** After signing in, the same browser keeps its push subscription: register it for the signed-in phone. */
+export async function carryAlerts(deviceId: string): Promise<void> {
+  try {
+    if (alertsState() === 'needs-install' || !('Notification' in window) || Notification.permission !== 'granted') return
+    const registration = await withTimeout(navigator.serviceWorker.ready, 4000)
+    const sub = await registration.pushManager.getSubscription()
+    if (!sub) return
+    await api.savePush(deviceId, sub.toJSON())
+    writeItem(ALERTS_KEY, 'on')
+  } catch {
+    /* alerts can be turned on again from the Alerts card */
+  }
 }

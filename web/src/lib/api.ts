@@ -11,6 +11,7 @@ export class ApiError extends Error {
 
 const TOKEN_KEY = 'ti.console.token'
 const DEVICE_KEY = 'ti.device'
+export const ALERTS_KEY = 'ti.alerts'
 export const UNAUTHORIZED_EVENT = 'ti:unauthorized'
 
 async function request<T>(path: string, init: RequestInit = {}, token?: string | null): Promise<T> {
@@ -186,6 +187,23 @@ export const api = {
     if (existing) return existing
     const reg = await post<DeviceRegistration>('/api/devices', { platform, lang })
     writeJson(DEVICE_KEY, reg)
+    linkManifest()
+    return reg
+  },
+
+  accountStatus(deviceId: string): Promise<{ login: string | null }> {
+    return request<{ login: string | null }>(`/api/account/${encodeURIComponent(deviceId)}`)
+  },
+
+  saveAccount(deviceId: string, login: string, password: string): Promise<{ login: string }> {
+    return post<{ login: string }>('/api/account', { device_id: deviceId, login, password })
+  },
+
+  /** Signs in and makes this screen the saved phone: same family, requests and blocks. */
+  async signIn(login: string, password: string): Promise<DeviceRegistration> {
+    const reg = await post<DeviceRegistration>('/api/account/sign-in', { login, password })
+    writeJson(DEVICE_KEY, reg)
+    removeItem(ALERTS_KEY)
     linkManifest()
     return reg
   },
