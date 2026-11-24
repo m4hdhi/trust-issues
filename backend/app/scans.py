@@ -11,6 +11,8 @@ from sqlmodel import select
 from . import bus, db, pipeline
 from .graph.campaigns import campaign_for
 from .schemas import ScanResult
+from .detectors import anchors
+from .registry import get_registry
 from .urlutil import parse
 
 log = logging.getLogger(__name__)
@@ -25,6 +27,20 @@ def _spawn(coro) -> asyncio.Task:
     _tasks.add(t)
     t.add_done_callback(_tasks.discard)
     return t
+
+
+def _block_keys(result: ScanResult, final_site: str) -> list[str]:
+    """Block the landing site and the link people actually received, unless that link is a shortener or shared platform."""
+    keys = [final_site]
+    try:
+        first = parse(result.url)
+    except ValueError:
+        return keys
+    entry_site = pipeline.site_key_for(result.url)
+    if entry_site not in keys and not anchors.check(first, None).shortener and not anchors.is_user_content(first):
+        if not get_registry().is_official(first.registrable, first.hostname):
+            keys.append(entry_site)
+    return keys
 
 
 def persist(result: ScanResult, source: str) -> None:
@@ -46,15 +62,16 @@ def persist(result: ScanResult, source: str) -> None:
         )
         anchored = any(sig.id in ("official_brand_domain", "official_uae_domain", "verified_org_cert") for sig in result.signals)
         if result.verdict == "scam" and not anchored:
-            existing = s.get(db.BlockEntry, site)
-            if existing is None:
-                s.add(db.BlockEntry(domain=site, source="engine", reason=result.headline.en, brand_id=result.brand.id if result.brand else None,
-                                    score=result.score, scan_id=result.id))
-            elif existing.source == "engine":
-                existing.score = result.score
-                existing.scan_id = result.id
-                existing.active = True
-                s.add(existing)
+            for key in _block_keys(result, site):
+                existing = s.get(db.BlockEntry, key)
+                if existing is None:
+                    s.add(db.BlockEntry(domain=key, source="engine", reason=result.headline.en, brand_id=result.brand.id if result.brand else None,
+                                        score=result.score, scan_id=result.id))
+                elif existing.source == "engine":
+                    existing.score = result.score
+                    existing.scan_id = result.id
+                    existing.active = True
+                    s.add(existing)
         if result.verdict in ("scam", "suspicious") and source != "batch":
             case = s.exec(select(db.Case).where(db.Case.domain == site)).first()
             if case is None:

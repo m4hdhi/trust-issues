@@ -34,7 +34,7 @@ class Signals:
                 id=id,
                 category=category,
                 weight=round(weight, 2),
-                severity=_severity(weight),
+                severity=severity_for(weight),
                 title=Bilingual(en=en, ar=ar),
                 detail=Bilingual(en=detail_en, ar=detail_ar or detail_en) if detail_en else None,
                 evidence=evidence,
@@ -48,7 +48,7 @@ class Signals:
         return sum(s.weight for s in self.items)
 
 
-def _severity(w: float) -> Severity:
+def severity_for(w: float) -> Severity:
     if w <= 0:
         return "info"
     if w < 1:

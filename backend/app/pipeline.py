@@ -52,6 +52,7 @@ STAGES: dict[str, tuple[str, str]] = {
 }
 
 Emit = Callable[[str, str, str | None], None]
+SENSITIVE_FIELDS = {"card", "cvv", "otp", "emirates_id", "password", "iban"}
 
 
 _model_failed_at = 0.0
@@ -193,7 +194,7 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
         sig.add("verified_org_cert", "trust", -7, f"HTTPS certificate verified to {dom.tls_org}",
                 f"شهادة HTTPS موثّقة باسم {dom.tls_org}", org=dom.tls_org)
     elif dom.tls_org and not anchored and not trust.user_content:
-        sig.add("ov_cert", "trust", -1.5, f"Organisation-validated certificate ({dom.tls_org})",
+        sig.add("ov_cert", "trust", -2.5, f"Organisation-validated certificate ({dom.tls_org})",
                 f"شهادة موثّقة لمؤسسة ({dom.tls_org})", org=dom.tls_org)
     if anchored and not org_brand:
         if official_brand:
@@ -261,7 +262,7 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
     blocklist = db.cached_blocklist(2.0)
     for key in {_site_key(p0), _site_key(p)}:
         b = blocklist.get(key)
-        if b and b.scan_id != scan_id:
+        if b and b.scan_id != scan_id and b.source in ("police", "community"):
             w = {"police": 8.0, "community": 6.0}.get(b.source, 4.0)
             if b.source == "police":
                 hard_intel = True
@@ -305,6 +306,9 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
         impersonated = brand
         if method in ("keyword", "prefix"):
             base_w = 2.2 if method == "keyword" else 1.2
+            in_subdomain_only = token not in p.registrable.replace("-", "")
+            if in_subdomain_only and dom.age_days is not None and dom.age_days > 3 * 365:
+                base_w = 0.8
             sig.add("brand_in_domain", "url", base_w / 2 if p.suffix == "ae" else base_w, f"Uses the name '{token}' ({brand.name_en}) in a domain {brand.name_en} does not own",
                     f"يستخدم اسم '{token}' ({brand.name_ar}) في نطاق لا تملكه {brand.name_ar}", brand=brand.id, token=token)
         else:
@@ -348,7 +352,7 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
                 sig.add("redirect_chain", "render", 0.6, f"Bounces through {len(prim.hops)} redirects",
                         f"يمر عبر {len(prim.hops)} عمليات إعادة توجيه", hops=len(prim.hops))
             mentions = reg.mentioned_brands(prim.text[:4000], prim.title)
-            sensitive = [a for a in asks if a in {"card", "cvv", "otp", "emirates_id", "password", "iban"}]
+            sensitive = [a for a in asks if a in SENSITIVE_FIELDS]
             if mentions:
                 page_brand = mentions[0][0]
                 if not reg.is_official(p.registrable, p.hostname) and sensitive:
@@ -376,6 +380,14 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
             sig.add("favicon_clone", "visual", 3.5, f"Uses the official {fav.brand.name_en} icon",
                     f"يستخدم الأيقونة الرسمية لـ{fav.brand.name_ar}", brand=fav.brand.id, distance=fav.distance)
         emit("visual", "done", page_brand.id if page_brand else None)
+        if prim.ok and not rr.cloaking and page_brand is None and not set(asks) & SENSITIVE_FIELDS:
+            for item in sig.items:
+                if item.id in ("lookalike_domain", "brand_in_domain") and item.weight > 1.2:
+                    item.weight = round(item.weight * 0.4, 2)
+                    item.severity = fusion.severity_for(item.weight)
+            if impersonated:
+                sig.add("no_brand_on_page", "visual", 0, f"The page itself does not imitate {impersonated.name_en} right now",
+                        f"الصفحة نفسها لا تنتحل صفة {impersonated.name_ar} حاليًا")
         page_capture = _page_capture(prim, asks)
 
     opinions: list[AIOpinion] = []
