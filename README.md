@@ -6,6 +6,8 @@ Early detection of fraudulent links and websites targeting the UAE: on the open 
 
 **Team Trust Issues | أزمة ثقة:** Faisal Baras · Saifudin Mamaev · Martin Mustonen · Mahdhi Muzammil
 
+**Try it live:** https://trust-issues-xlzv.onrender.com · police console: [`/console`](https://trust-issues-xlzv.onrender.com/console) (passcode on request) · phone protection: open the site on your phone and tap **Protect**.
+
 ---
 
 ## 1. The problem

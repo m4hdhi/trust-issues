@@ -391,7 +391,9 @@ def require_console(authorization: str = Header(default="")) -> None:
 
 @app.post("/api/console/login")
 async def console_login(body: LoginIn) -> dict[str, str]:
-    if not hmac.compare_digest(body.password, settings.console_password):
+    if settings.console_password in ("", "change-me") and not settings.public_base_url.startswith("http://localhost"):
+        raise HTTPException(503, "console disabled: set CONSOLE_PASSWORD on the server")
+    if not hmac.compare_digest(body.password.strip(), settings.console_password):
         raise HTTPException(401, "wrong password")
     return {"token": _console_token()}
 

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
         env_file=(ROOT_DIR / ".env", BACKEND_DIR / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
+        str_strip_whitespace=True,
     )
 
     anthropic_api_key: str = ""
