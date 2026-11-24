@@ -19,7 +19,7 @@ from pydantic import BaseModel
 from sqlmodel import func, select
 from sse_starlette.sse import EventSourceResponse
 
-from . import batch, bus, db, scans
+from . import batch, bot, bus, db, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
 from .detectors import ai_anthropic, anchors, feeds, message_rules
@@ -61,7 +61,7 @@ async def _every(seconds: float, fn, initial_delay: float = 0) -> None:
 async def lifespan(_: FastAPI):
     db.init_db()
     webpush.keys()
-    jobs = [asyncio.create_task(_every(3600, lambda: feeds.refresh(_protected)))]
+    jobs = [asyncio.create_task(_every(3600, lambda: feeds.refresh(_protected))), asyncio.create_task(bot.run())]
     if settings.enable_hunters:
         jobs += [
             asyncio.create_task(ct.run()),
