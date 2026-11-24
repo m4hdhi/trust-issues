@@ -152,7 +152,7 @@ class Registry:
             off_label = dom.split(".")[0]
             if len(off_label) >= 5 and reg_label != off_label:
                 dist = Levenshtein.distance(reg_label, off_label)
-                if dist <= (1 if len(off_label) <= 8 else 2) and reg_label[0] == off_label[0]:
+                if len(reg_label) >= 5 and dist <= (1 if len(off_label) <= 8 else 2) and reg_label[0] == off_label[0]:
                     return self.brands[bid], "typosquat", dom
         if host_u != host_sk:
             raw_labels = re.split(r"[.\-_]", host_u.lower())
@@ -180,6 +180,22 @@ class Registry:
             if n >= 2:
                 scores[b.id] = n
         return sorted(((self.brands[k], v) for k, v in scores.items()), key=lambda kv: -kv[1])
+
+    def brand_for_org(self, org: str | None) -> Brand | None:
+        """Brand whose name appears in a certificate's validated organisation (OV/EV), e.g. 'Emirates NBD Bank PJSC'."""
+        if not org:
+            return None
+        low = re.sub(r"[^a-z0-9 ]", " ", org.lower())
+        padded = f" {re.sub(r'\s+', ' ', low)} "
+        best: tuple[int, Brand] | None = None
+        for b in self.brands.values():
+            outside = re.sub(r"\s*\(.*\)", "", b.name_en)
+            inside = re.findall(r"\((.*?)\)", b.name_en)
+            for name in [outside, *inside]:
+                name = re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", " ", name.lower())).strip()
+                if len(name) >= 4 and name not in GENERIC_MENTIONS and f" {name} " in padded and (best is None or len(name) > best[0]):
+                    best = (len(name), b)
+        return best[1] if best else None
 
     def brand_for_phone(self, number: str) -> Brand | None:
         d = _digits(number)

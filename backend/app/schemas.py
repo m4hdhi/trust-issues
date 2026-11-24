@@ -91,6 +91,7 @@ class DomainIntel(BaseModel):
     tls_issuer: str | None = None
     tls_not_before: datetime | None = None
     tls_age_days: int | None = None
+    tls_org: str | None = None
     ct_cert_count: int | None = None
 
 

@@ -150,9 +150,11 @@ async def tls_info(hostname: str) -> dict[str, Any]:
         cert = x509.load_der_x509_certificate(der)
         issuer = cert.issuer.get_attributes_for_oid(x509.NameOID.ORGANIZATION_NAME)
         cn = cert.issuer.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+        subject_org = cert.subject.get_attributes_for_oid(x509.NameOID.ORGANIZATION_NAME)
         return {
             "tls_issuer": (issuer[0].value if issuer else cn[0].value if cn else None),
             "tls_not_before": cert.not_valid_before_utc,
+            "tls_org": subject_org[0].value if subject_org else None,
         }
     finally:
         writer.close()
@@ -201,6 +203,7 @@ async def gather(hostname: str, registrable: str, deep: bool) -> DomainIntel:
         tls_issuer=tls.get("tls_issuer"),
         tls_not_before=nb,
         tls_age_days=(now - nb).days if nb else None,
+        tls_org=tls.get("tls_org"),
         ct_cert_count=ct,
     )
     _cache[key] = intel

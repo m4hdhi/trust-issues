@@ -44,7 +44,7 @@ def persist(result: ScanResult, source: str) -> None:
                 result_json=result.model_dump_json(),
             )
         )
-        anchored = any(sig.id in ("official_brand_domain", "official_uae_domain") for sig in result.signals)
+        anchored = any(sig.id in ("official_brand_domain", "official_uae_domain", "verified_org_cert") for sig in result.signals)
         if result.verdict == "scam" and not anchored:
             existing = s.get(db.BlockEntry, site)
             if existing is None:

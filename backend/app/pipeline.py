@@ -186,7 +186,16 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
 
     anchored = trust.anchored
     official_brand: Brand | None = trust.brand
-    if anchored:
+    org_brand = reg.brand_for_org(dom.tls_org) if not anchored and not trust.user_content else None
+    if org_brand:
+        anchored = True
+        official_brand = org_brand
+        sig.add("verified_org_cert", "trust", -7, f"HTTPS certificate verified to {dom.tls_org}",
+                f"شهادة HTTPS موثّقة باسم {dom.tls_org}", org=dom.tls_org)
+    elif dom.tls_org and not anchored and not trust.user_content:
+        sig.add("ov_cert", "trust", -1.5, f"Organisation-validated certificate ({dom.tls_org})",
+                f"شهادة موثّقة لمؤسسة ({dom.tls_org})", org=dom.tls_org)
+    if anchored and not org_brand:
         if official_brand:
             sig.add("official_brand_domain", "trust", -9, f"Official domain of {official_brand.name_en}",
                     f"نطاق رسمي تابع لـ{official_brand.name_ar}", domain=p.registrable)
