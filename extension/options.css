@@ -1,19 +1,19 @@
 :root {
-  --ink-950: #070c17;
-  --ink-900: #0b1220;
-  --ink-850: #0e1627;
-  --ink-800: #111a2e;
-  --ink-700: #1a2742;
-  --ink-600: #22304d;
-  --ink-500: #33456b;
-  --mist-500: #7d8ba6;
-  --mist-400: #95a3bd;
-  --mist-300: #b4bfd3;
-  --paper: #edf2f9;
-  --brand: #14b8a6;
-  --brand-bright: #2dd4bf;
-  --safe: #10b981;
-  --scam: #ef4444;
+  --ink-950: #0b0d0f;
+  --ink-900: #101215;
+  --ink-850: #14171b;
+  --ink-800: #191c21;
+  --ink-700: #22262c;
+  --ink-600: #2a2e35;
+  --ink-500: #3a3f47;
+  --mist-500: #8c867c;
+  --mist-400: #bdb6aa;
+  --mist-300: #bdb6aa;
+  --paper: #eee9e0;
+  --brand: #c9a35b;
+  --brand-bright: #d9b672;
+  --safe: #4bb37f;
+  --scam: #e5534b;
   --font: 'Inter', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-ar: 'IBM Plex Sans Arabic', 'Geeza Pro', 'Noto Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
   --mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
@@ -174,7 +174,7 @@ input[type='url'][aria-invalid='true'] {
 .btn.primary {
   border: 0;
   background: var(--brand);
-  color: #042f2b;
+  color: #1f1a12;
 }
 
 .btn.primary:hover:not(:disabled) {
@@ -231,7 +231,7 @@ input[type='url'][aria-invalid='true'] {
 }
 
 .status[data-tone='error'] {
-  color: #fca5a5;
+  color: #f1a19b;
 }
 
 .segmented {
@@ -272,7 +272,7 @@ input[type='url'][aria-invalid='true'] {
 
 .segmented input:checked + span {
   background: var(--brand);
-  color: #042f2b;
+  color: #1f1a12;
 }
 
 .segmented input:checked + span .sep {
