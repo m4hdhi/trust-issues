@@ -296,31 +296,31 @@ mark.red{background:linear-gradient(transparent 58%,rgba(239,68,68,.40) 58%,rgba
   <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">07</span></div>
 </section>
 
-<section class="slide s8" data-notes="Honest numbers. Phishing first seen after the training cutoff, no domain overlap between train and test. Full metrics are in ml/metrics.json.">
+<section class="slide s8" data-notes="Honest numbers. Phishing first seen after the training cutoff, no domain overlap between train and test. Live feeds and threat-intel APIs were switched off, so these numbers show what the engine catches on its own. Full metrics are in ml/metrics.json and the README.">
   <div class="grain"></div>
   <div class="pad">
     <div class="kicker" data-a><span class="mono"><b>07</b> · Results</span><span class="ar">النتائج</span></div>
     <h1 data-a style="--i:1">Measured on real, unseen URLs.<span class="ar-d">على روابط حقيقية جديدة.</span></h1>
     <div class="stats">
       <div data-a style="--i:2"><b class="s1b num">0<span style="display:inline;font-size:80px;color:var(--mist);margin:0 0 0 10px">/ 411</span></b><span>false positives on official <em>UAE bank and government</em> sites</span></div>
-      <div data-a style="--i:3"><b class="num">96.7<span style="display:inline;font-size:70px;margin:0">%</span></b><span>recall on live phishing, <em>100% precision</em></span></div>
+      <div data-a style="--i:3"><b class="num">99.3<span style="display:inline;font-size:70px;margin:0">%</span></b><span>recall on live phishing, <em>100% precision</em></span></div>
       <div data-a style="--i:4"><b class="num">0.99</b><span>AUC of the URL model on a <em>time-split</em> test</span></div>
     </div>
     <div class="bars">
       <div data-a style="--i:5"><h4>Live phishing vs official UAE sites</h4>
         <div class="row">Precision<div class="track2"><div class="fill" style="--v:1"></div></div><b>100%</b></div>
-        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.967"></div></div><b>96.7%</b></div>
-        <div class="row">F1<div class="track2"><div class="fill" style="--v:.983"></div></div><b>98.3%</b></div></div>
-      <div data-a style="--i:6"><h4>1,200 held-out real URLs</h4>
-        <div class="row">Precision<div class="track2"><div class="fill" style="--v:.974"></div></div><b>97.4%</b></div>
-        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.935"></div></div><b>93.5%</b></div>
-        <div class="row">F1<div class="track2"><div class="fill" style="--v:.954"></div></div><b>95.4%</b></div></div>
+        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.993"></div></div><b>99.3%</b></div>
+        <div class="row">F1<div class="track2"><div class="fill" style="--v:.997"></div></div><b>99.7%</b></div></div>
+      <div data-a style="--i:6"><h4>500 held-out real URLs</h4>
+        <div class="row">Precision<div class="track2"><div class="fill" style="--v:.992"></div></div><b>99.2%</b></div>
+        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.944"></div></div><b>94.4%</b></div>
+        <div class="row">F1<div class="track2"><div class="fill" style="--v:.967"></div></div><b>96.7%</b></div></div>
       <div data-a style="--i:7"><h4>Speed</h4>
         <div class="row">Instant check<div class="track2"><div class="fill" style="--v:.04"></div></div><b>0.2 ms</b></div>
         <div class="row">Fast scan<div class="track2"><div class="fill" style="--v:.25"></div></div><b>~2 s</b></div>
-        <div class="row">Deep scan<div class="track2"><div class="fill" style="--v:.8"></div></div><b>~15 s</b></div></div>
+        <div class="row">Deep scan + AI<div class="track2"><div class="fill" style="--v:.8"></div></div><b>~25 s</b></div></div>
     </div>
-    <div class="note" data-a style="--i:8">Measured with live feeds, sandbox and AI judges switched off. The full system adds all three on top.</div>
+    <div class="note" data-a style="--i:8">Sandbox and both AI judges on, live feeds and threat-intel APIs off. With feeds on, known phishing is matched instantly.</div>
   </div>
   <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">08</span></div>
 </section>

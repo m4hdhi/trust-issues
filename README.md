@@ -84,7 +84,14 @@ The full system was also run in fast mode (no sandbox, no AI, **live feeds switc
 | 150 live phishing URLs + 411 official UAE bank and government sites | **1.000** | 0.967 | 0.983 | **0 / 411** |
 | 1,200 held-out real URLs (600 phishing first seen after the training cutoff + 600 legitimate, unseen domains) | 0.974 | 0.935 | 0.954 | 15 / 600 |
 
-With live feeds, the sandbox and the AI judges switched on (the default for single scans), recall rises further: known phishing is matched instantly, and unknown pages are judged visually.
+The same sets were then run in deep mode (sandbox + both AI judges on uncertain URLs), still with **live feeds and threat-intel APIs switched off**, using `app.cli scan --deep --no-feeds`:
+
+| Test set (deep mode, AI judges on) | Precision | Recall | F1 | False positives |
+|---|---|---|---|---|
+| 150 live phishing URLs + 411 official UAE bank and government sites | **1.000** | **0.993** | **0.997** | **0 / 411** |
+| 500 held-out real URLs (250 phishing first seen after the training cutoff + 250 legitimate, unseen domains) | 0.992 | 0.944 | 0.967 | 2 / 250 |
+
+One of the two remaining "false positives" (`dapurmiemicin.com`) is a hijacked domain now serving an illegal online-gambling site. With live feeds and threat-intel APIs switched on (the default), known phishing is matched instantly as well.
 
 ## 5. Technical choices, tools, APIs and data
 
