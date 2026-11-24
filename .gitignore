@@ -14,3 +14,4 @@ backend/cache/
 *.db
 *.sqlite
 .DS_Store
+~$*

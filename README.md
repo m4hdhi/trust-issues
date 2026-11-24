@@ -26,6 +26,16 @@ UAE residents receive links through WhatsApp, SMS and social media every day. Fa
 ### Why it catches scams *before* the first victim
 Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes out. Our **CT-log monitor** reads every new certificate from public CT logs as it is issued. It flags look-alikes of 49 UAE brands (TAMM, UAE PASS, Abu Dhabi Police, Salik, Emirates NBD, ADCB…), sandbox-scans them and pushes them into the DNS blocklist. When the link reaches a protected phone, it is already blocked.
 
+### Screenshots
+
+| Verdict (English + Arabic) | Spot the difference and real vs fake |
+|---|---|
+| ![Verdict](docs/screens/verdict.png) | ![Spot the difference](docs/screens/verdict2.png) |
+| **Police console: live radar** | **Police console: cases** |
+| ![Radar](docs/screens/radar.png) | ![Cases](docs/screens/cases.png) |
+
+<p align="center"><img src="docs/screens/mobile_verdict.png" width="230" alt="Mobile verdict"> <img src="docs/screens/mobile_protect.png" width="230" alt="Protect my phone"> <img src="docs/screens/mobile_trending.png" width="230" alt="Trending scams"></p>
+
 ## 3. How detection works
 
 ```mermaid
@@ -66,7 +76,7 @@ The full system was also run in fast mode (no sandbox, no AI, **live feeds switc
 | Test set | Precision | Recall | F1 | False positives |
 |---|---|---|---|---|
 | 150 live phishing URLs + 411 official UAE bank and government sites | **1.000** | 0.933 | 0.966 | **0 / 411** |
-| 250 held-out phishing + 250 held-out legitimate URLs | 0.991 | 0.912 | 0.950 | 2 / 250 |
+| 1,200 held-out real URLs (600 phishing first seen after the training cutoff + 600 legitimate, unseen domains) | 0.974 | 0.935 | 0.954 | 15 / 600 |
 
 With live feeds, the sandbox and the AI judges switched on (the default for single scans), recall rises further: known phishing is matched instantly, and unknown pages are judged visually.
 

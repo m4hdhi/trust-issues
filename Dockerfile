@@ -7,7 +7,7 @@ RUN npm run build
 
 FROM python:3.12-slim-bookworm
 ENV PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 libatomic1 && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir uv==0.10.6
 WORKDIR /app/backend
 COPY backend/pyproject.toml backend/uv.lock ./
