@@ -22,7 +22,7 @@ _LOW = get_settings().low_resource
 _deep_sem = asyncio.Semaphore(2 if _LOW else 6)
 _hunt_sem = asyncio.Semaphore(1 if _LOW else 3)
 _tasks: set[asyncio.Task] = set()
-HUNTER_SOURCES = {"ct", "search", "maps", "typosquat", "nrd", "report", "feedwatch"}
+HUNTER_SOURCES = {"ct", "search", "maps", "typosquat", "nrd", "report", "feed"}
 
 
 def _spawn(coro) -> asyncio.Task:

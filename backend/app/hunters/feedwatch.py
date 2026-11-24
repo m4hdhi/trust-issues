@@ -12,11 +12,10 @@ from . import radar
 log = logging.getLogger(__name__)
 
 
-async def sweep(limit: int = 40) -> int:
+def _uae_targeted(entries: list[str], limit: int) -> list[tuple[str, str]]:
     reg = get_registry()
-    idx = feeds.index()
     found: list[tuple[str, str]] = []
-    for host in list(idx.hosts) + [u for u in idx.urls]:
+    for host in entries:
         try:
             p = parse(host)
         except ValueError:
@@ -26,6 +25,12 @@ async def sweep(limit: int = 40) -> int:
             found.append((p.url if host.startswith("http") else f"http://{p.hostname}/", imp[0].id))
         if len(found) >= limit:
             break
+    return found
+
+
+async def sweep(limit: int = 40) -> int:
+    idx = feeds.index()
+    found = await asyncio.to_thread(_uae_targeted, list(idx.hosts) + list(idx.urls), limit)
     for url, brand_id in found:
         asyncio.create_task(radar.investigate("feed", url, brand_id, {"origin": "global phishing feeds"}))
     log.info("feedwatch: %s UAE-targeted feed entries queued", len(found))
