@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trust Issues · Settings</title>
+    <link rel="stylesheet" href="options.css" />
+    <script type="module" src="options.js"></script>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="hero">
+        <img src="icons/icon-128.png" alt="" width="56" height="56" />
+        <div>
+          <h1>Trust Issues <span class="bar">|</span> <span lang="ar" dir="rtl">أزمة ثقة</span></h1>
+          <p>Extension settings <span class="sep">·</span> <span lang="ar" dir="rtl">إعدادات الإضافة</span></p>
+        </div>
+      </header>
+
+      <form id="server-form" class="card" novalidate>
+        <div class="card-head">
+          <h2>Backend server</h2>
+          <h2 lang="ar" dir="rtl">خادم الفحص</h2>
+        </div>
+        <p class="help">
+          Links are checked against this Trust Issues server. Use <code>http://localhost:8000</code> while developing,
+          or your Railway URL (for example <code>https://trust-issues.up.railway.app</code>) in production.
+        </p>
+        <label for="api-base">Backend URL <span class="sep">·</span> <span lang="ar" dir="rtl">رابط الخادم</span></label>
+        <div class="field-row">
+          <input
+            id="api-base"
+            name="apiBase"
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="http://localhost:8000"
+            dir="ltr"
+            required
+          />
+          <button id="test" class="btn ghost" type="button">
+            Test connection <span class="sep">·</span> <span lang="ar" dir="rtl">اختبار الاتصال</span>
+          </button>
+        </div>
+        <p id="server-status" class="status" role="status" aria-live="polite"></p>
+        <div class="form-actions">
+          <button id="reset" class="btn link" type="button">Reset to default</button>
+          <button class="btn primary" type="submit">Save <span class="sep">·</span> <span lang="ar" dir="rtl">حفظ</span></button>
+        </div>
+      </form>
+
+      <section class="card" aria-labelledby="lang-title">
+        <div class="card-head">
+          <h2 id="lang-title">Language display</h2>
+          <h2 lang="ar" dir="rtl">لغة العرض</h2>
+        </div>
+        <p class="help">Used for link badges, warnings and the toolbar popup.</p>
+        <div class="segmented" role="radiogroup" aria-labelledby="lang-title">
+          <label>
+            <input type="radio" name="lang" value="both" />
+            <span>Both <span class="sep">·</span> <span lang="ar" dir="rtl">كلاهما</span></span>
+          </label>
+          <label>
+            <input type="radio" name="lang" value="en" />
+            <span>English</span>
+          </label>
+          <label>
+            <input type="radio" name="lang" value="ar" />
+            <span lang="ar" dir="rtl">العربية</span>
+          </label>
+        </div>
+        <p id="lang-status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card about">
+        <div class="card-head">
+          <h2>Where it protects you</h2>
+          <h2 lang="ar" dir="rtl">أين تحميك الإضافة</h2>
+        </div>
+        <ul>
+          <li><strong>Google Search</strong> marks official, suspicious and scam results, including sponsored ones.</li>
+          <li><strong>Google Maps</strong> checks the website on business listings and flags the phone number of fake ones.</li>
+          <li><strong>WhatsApp Web</strong> checks links inside your chats.</li>
+          <li>Clicking a scam link opens a full-screen warning before anything loads.</li>
+          <li>Right-click any link and choose <em>Check link with Trust Issues</em> for a deep scan.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

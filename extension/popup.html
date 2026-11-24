@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trust Issues</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script type="module" src="popup.js"></script>
+  </head>
+  <body data-lang="both" data-tone="loading">
+    <header class="top">
+      <div class="brand">
+        <img src="icons/icon-48.png" alt="" width="26" height="26" />
+        <div class="brand-name">
+          <strong>Trust Issues</strong>
+          <span lang="ar" dir="rtl">أزمة ثقة</span>
+        </div>
+      </div>
+      <button id="open-settings" class="icon-btn" type="button" title="Settings · الإعدادات" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm7.4-3.2c0-.5 0-.9-.1-1.3l2-1.6-2-3.4-2.4 1a7.6 7.6 0 0 0-2.2-1.3L14.3 3h-4l-.4 2.4c-.8.3-1.5.8-2.2 1.3l-2.4-1-2 3.4 2 1.6a7.7 7.7 0 0 0 0 2.6l-2 1.6 2 3.4 2.4-1c.7.5 1.4 1 2.2 1.3l.4 2.4h4l.4-2.4c.8-.3 1.5-.8 2.2-1.3l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.3z"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main>
+      <p id="host" class="host" dir="ltr"></p>
+
+      <section id="loading" class="card skeleton" aria-busy="true" aria-label="Checking this page">
+        <div class="sk sk-gauge"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk sk-line short"></div>
+      </section>
+
+      <section id="result" class="card" hidden>
+        <div class="gauge">
+          <svg viewBox="0 0 200 112" aria-hidden="true">
+            <path class="track" d="M20 100 A80 80 0 0 1 180 100" pathLength="100" />
+            <path id="arc" class="arc" d="M20 100 A80 80 0 0 1 180 100" pathLength="100" />
+          </svg>
+          <div class="gauge-value">
+            <span id="score">0</span><small>/100</small>
+          </div>
+          <div class="gauge-caption">
+            <span class="en">Risk score</span>
+            <span class="ar" lang="ar" dir="rtl">مؤشر الخطورة</span>
+          </div>
+        </div>
+
+        <div id="verdict" class="verdict"></div>
+
+        <div id="brand" class="brand-row" hidden>
+          <img id="brand-logo" alt="" width="36" height="36" />
+          <div>
+            <strong id="brand-en"></strong>
+            <span id="brand-ar" lang="ar" dir="rtl"></span>
+          </div>
+        </div>
+
+        <div class="headline">
+          <p id="headline-en" class="en"></p>
+          <p id="headline-ar" class="ar" lang="ar" dir="rtl"></p>
+        </div>
+
+        <ul id="reasons" class="reasons" hidden></ul>
+      </section>
+
+      <section id="message" class="card message" hidden>
+        <p id="message-en" class="en"></p>
+        <p id="message-ar" class="ar" lang="ar" dir="rtl"></p>
+        <p id="message-detail" class="detail" dir="ltr"></p>
+      </section>
+
+      <div id="actions" class="actions" hidden>
+        <button id="deep-scan" class="btn primary" type="button">
+          <span class="en">Deep scan this page</span>
+          <span class="ar" lang="ar" dir="rtl">فحص معمّق للصفحة</span>
+        </button>
+        <button id="report" class="btn danger" type="button">
+          <span class="en">Report as scam</span>
+          <span class="ar" lang="ar" dir="rtl">إبلاغ عن احتيال</span>
+        </button>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </main>
+
+    <footer class="foot">
+      <span class="caption">
+        <span class="en">Instant check · offline signals</span>
+        <span class="ar" lang="ar" dir="rtl">فحص فوري بإشارات محلية</span>
+      </span>
+      <a id="settings-link" href="options.html">
+        <span class="en">Settings</span>
+        <span class="ar" lang="ar" dir="rtl">الإعدادات</span>
+      </a>
+    </footer>
+  </body>
+</html>
