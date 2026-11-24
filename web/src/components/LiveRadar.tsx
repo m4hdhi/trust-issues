@@ -34,7 +34,6 @@ const VISIBLE = 4
 export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
   const reduce = useReducedMotion()
   const recent = feed?.recent ?? []
-  const blips = recent.slice(0, 12)
   // The list walks through the real detections, newest first, so there is always something arriving.
   const [turn, setTurn] = useState(0)
   useEffect(() => {
@@ -45,6 +44,8 @@ export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
   const start = recent.length > VISIBLE ? turn % recent.length : 0
   const shown = recent.length > VISIBLE ? Array.from({ length: VISIBLE }, (_, i) => recent[(start + VISIBLE - 1 - i) % recent.length]) : recent
   const focus = shown[0]
+  // The scope shows only the sites in the list below it, so a dot appears as each one arrives.
+  const blips = shown
 
   return (
     <section aria-labelledby="radar-title" className="rounded-2xl bg-ink-850">
