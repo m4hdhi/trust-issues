@@ -11,7 +11,7 @@ import { useStartScan } from '../lib/useStartScan'
 const QrScanner = lazy(() => import('./QrScanner').then((m) => ({ default: m.QrScanner })))
 
 export function Composer({ initial = '', openQr = false }: { initial?: string; openQr?: boolean }) {
-  const { mode, t, pick } = useLang()
+  const { t, pick } = useLang()
   const [value, setValue] = useState(initial)
   const [hint, setHint] = useState<'clipboardDenied' | 'emptyInput' | null>(null)
   const [qrOpen, setQrOpen] = useState(openQr)
@@ -57,7 +57,7 @@ export function Composer({ initial = '', openQr = false }: { initial?: string; o
     }
   }
 
-  const placeholder = mode === 'both' ? `${S.inputPlaceholder.en}\n${S.inputPlaceholder.ar}` : t('inputPlaceholder')
+  const placeholder = t('inputPlaceholder')
   const message = hint ?? failed
 
   return (

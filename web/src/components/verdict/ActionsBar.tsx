@@ -22,7 +22,7 @@ function downloadBlob(blob: Blob, name: string) {
 }
 
 export function ActionsBar({ result, onReported }: { result: ScanResult; onReported?: () => void }) {
-  const { mode, pick } = useLang()
+  const { pick } = useLang()
   const toast = useToast()
   const [reportOpen, setReportOpen] = useState(false)
   const card = useRef<Blob | null>(null)
@@ -44,7 +44,7 @@ export function ActionsBar({ result, onReported }: { result: ScanResult; onRepor
 
   const share = async () => {
     const msg = fill(risky ? S.shareTextScam : S.shareTextSafe, { domain: result.domain })
-    const text = mode === 'both' ? `${msg.en}\n${msg.ar}` : pick(msg)
+    const text = pick(msg)
     const link = `${window.location.origin}/scan/${encodeURIComponent(result.id)}`
     const blob = card.current
     const file = blob ? new File([blob], `warning-${result.domain}.png`, { type: 'image/png' }) : null

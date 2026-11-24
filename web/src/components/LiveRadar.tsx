@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { BrandMark, brandName } from './BrandMark'
@@ -27,18 +28,31 @@ function itemHref(item: LiveItem) {
   return item.scan_id ? `/scan/${encodeURIComponent(item.scan_id)}` : '/trending'
 }
 
+const TICKS = Array.from({ length: 72 }, (_, i) => i * 5)
+const VISIBLE = 4
+
 export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
   const reduce = useReducedMotion()
   const recent = feed?.recent ?? []
-  const blips = recent.slice(0, 10)
+  const blips = recent.slice(0, 12)
+  // The list walks through the real detections, newest first, so there is always something arriving.
+  const [turn, setTurn] = useState(0)
+  useEffect(() => {
+    if (reduce || recent.length <= VISIBLE) return
+    const timer = window.setInterval(() => setTurn((n) => n + 1), 2600)
+    return () => window.clearInterval(timer)
+  }, [reduce, recent.length])
+  const start = recent.length > VISIBLE ? turn % recent.length : 0
+  const shown = recent.length > VISIBLE ? Array.from({ length: VISIBLE }, (_, i) => recent[(start + VISIBLE - 1 - i) % recent.length]) : recent
+  const focus = shown[0]
 
   return (
-    <section aria-labelledby="radar-title" className="rounded-xl bg-ink-850">
+    <section aria-labelledby="radar-title" className="rounded-2xl bg-ink-850">
       <header className="flex items-center justify-between gap-4 px-6 pt-6">
         <h2 id="radar-title" className="display text-lg text-paper">
-          <T k="liveRadarTitle" arClassName="text-paper-2" />
+          <T k="liveRadarTitle" />
         </h2>
-        <span className="inline-flex items-center gap-2 text-xs font-medium text-safe">
+        <span className="inline-flex items-center gap-2 rounded-full bg-safe/12 px-3 py-1 text-xs font-bold text-safe">
           <span className="relative flex size-2">
             <span className="absolute inset-0 animate-ping-soft rounded-full bg-safe" />
             <span className="relative size-2 rounded-full bg-safe" />
@@ -46,43 +60,56 @@ export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
           <T k="liveLabel" />
         </span>
       </header>
-      <Tx k="liveRadarSub" className="px-6 pt-2 text-sm text-paper-3" split="stack" />
+      <Tx k="liveRadarSub" className="px-6 pt-2 text-sm text-paper-3" />
 
-      <div className="relative mx-auto mt-4 aspect-square w-full max-w-[280px] px-6">
-        <svg viewBox="0 0 200 200" className="h-full w-full" role="img" aria-label="Radar of recently caught scam sites">
+      <div className="zone-dark relative mx-auto mt-5 aspect-square w-full max-w-[300px] px-6">
+        <svg viewBox="0 0 200 200" className="h-full w-full drop-shadow-[0_18px_30px_rgb(54_40_160/0.45)]" role="img" aria-label="Radar of recently caught scam sites">
           <defs>
-            <linearGradient id="sweep-fade" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stopColor="var(--color-gold)" stopOpacity="0" />
-              <stop offset="1" stopColor="var(--color-gold)" stopOpacity="0.28" />
-            </linearGradient>
+            <radialGradient id="scope" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stopColor="#2a2470" />
+              <stop offset="0.7" stopColor="#15113f" />
+              <stop offset="1" stopColor="#0b0a26" />
+            </radialGradient>
+            <clipPath id="scope-clip">
+              <circle cx="100" cy="100" r="92" />
+            </clipPath>
           </defs>
-          {[30, 55, 80, 96].map((r) => (
-            <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="var(--color-line-strong)" strokeWidth="1" />
+          <circle cx="100" cy="100" r="99" fill="#0b0a26" />
+          <circle cx="100" cy="100" r="92" fill="url(#scope)" />
+          {TICKS.map((d) => (
+            <line key={d} x1="100" y1="3" x2="100" y2={d % 30 === 0 ? 8 : 5.5} stroke="#b3a6ff" strokeOpacity={d % 30 === 0 ? 0.9 : 0.4} strokeWidth="0.8" transform={`rotate(${d} 100 100)`} />
           ))}
-          <line x1="4" y1="100" x2="196" y2="100" stroke="var(--color-line-strong)" strokeWidth="1" />
-          <line x1="100" y1="4" x2="100" y2="196" stroke="var(--color-line-strong)" strokeWidth="1" />
+          {[23, 46, 69, 92].map((r) => (
+            <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#b3a6ff" strokeOpacity="0.22" strokeWidth="0.7" />
+          ))}
+          <line x1="8" y1="100" x2="192" y2="100" stroke="#b3a6ff" strokeOpacity="0.18" strokeWidth="0.7" />
+          <line x1="100" y1="8" x2="100" y2="192" stroke="#b3a6ff" strokeOpacity="0.18" strokeWidth="0.7" />
           {!reduce && (
-            <g className="origin-center animate-sweep" style={{ transformBox: 'view-box', transformOrigin: '100px 100px' }}>
-              <path d="M100 100 L196 100 A96 96 0 0 0 167.9 32.1 Z" fill="url(#sweep-fade)" />
-              <line x1="100" y1="100" x2="196" y2="100" stroke="var(--color-gold)" strokeOpacity="0.7" strokeWidth="1" />
+            <g clipPath="url(#scope-clip)">
+              <foreignObject x="8" y="8" width="184" height="184">
+                <div className="radar-sweep size-full rounded-full" />
+              </foreignObject>
             </g>
           )}
-          <circle cx="100" cy="100" r="2.5" fill="var(--color-gold)" />
+          <circle cx="100" cy="100" r="3" fill="#b3a6ff" />
           <AnimatePresence>
-            {blips.map((b) => {
+            {blips.map((b, i) => {
               const p = blipPosition(b)
               const color = VERDICT_COLOR[verdictFromScore(b.score)]
+              const hot = focus && b.domain === focus.domain
               return (
                 <motion.g
                   key={`${b.domain}-${b.ts}`}
-                  initial={{ opacity: 0, scale: 0.6 }}
+                  initial={{ opacity: 0, scale: 0.4 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.35, ease: EASE_OUT }}
                   style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
                 >
-                  <circle cx={p.x} cy={p.y} r="7" fill={color} opacity="0.18" />
-                  <circle cx={p.x} cy={p.y} r="3" fill={color} />
+                  {!reduce && <circle className="radar-ring" cx={p.x} cy={p.y} r="3" fill="none" stroke={color} strokeWidth="1.2" style={{ animationDelay: `${(i * 0.37) % 2.4}s` }} />}
+                  <circle cx={p.x} cy={p.y} r={hot ? 9 : 6} fill={color} opacity={hot ? 0.38 : 0.22} style={{ transition: 'r 300ms, opacity 300ms' }} />
+                  <circle cx={p.x} cy={p.y} r={hot ? 3.6 : 2.6} fill={color} style={{ transition: 'r 300ms' }} />
+                  {hot && <circle cx={p.x} cy={p.y} r="12" fill="none" stroke="#fff" strokeOpacity="0.7" strokeWidth="0.8" strokeDasharray="3 3" />}
                 </motion.g>
               )
             })}
@@ -90,37 +117,37 @@ export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
         </svg>
       </div>
 
-      <div className="mt-4 border-t border-line px-6 py-4">
-        <p className="text-xs text-paper-3">
+      <div className="mt-5 border-t border-line px-6 py-4">
+        <p className="text-xs font-bold text-paper-3">
           <T k="liveLatest" />
         </p>
-        <ul className="mt-2">
-          <AnimatePresence initial={false}>
-            {recent.slice(0, 4).map((item) => {
+        <ul className="mt-2 h-[13.5rem] overflow-hidden">
+          <AnimatePresence initial={false} mode="popLayout">
+            {shown.map((item, i) => {
               const name = brandName(item.brand)
               return (
                 <motion.li
                   key={`${item.domain}-${item.ts}`}
                   layout
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, y: -18, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 12 }}
                   transition={T_LAYOUT}
                 >
-                  <Link to={itemHref(item)} className="group flex items-center gap-3 py-2">
-                    <BrandMark brand={item.brand} className="size-8" />
+                  <Link to={itemHref(item)} className={`group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors ${i === 0 ? 'bg-scam/8' : ''}`}>
+                    <BrandMark brand={item.brand} className="size-9" />
                     <span className="min-w-0 flex-1">
-                      <span className="evidence block truncate text-sm text-paper group-hover:text-gold">{item.domain}</span>
+                      <span className="evidence block truncate text-sm font-bold text-paper group-hover:text-gold">{item.domain}</span>
                       {name && (
                         <span className="block truncate text-xs text-paper-3">
                           <T text={name} />
                         </span>
                       )}
                     </span>
-                    <span className="evidence num shrink-0 text-sm" style={{ color: VERDICT_COLOR[verdictFromScore(item.score)] }}>
+                    <span className="display num shrink-0 text-base" style={{ color: VERDICT_COLOR[verdictFromScore(item.score)] }}>
                       {item.score}
                     </span>
-                    <span className="evidence num w-8 shrink-0 text-end text-xs text-paper-3">{shortAgo(item.ts)}</span>
+                    <span className="num w-8 shrink-0 text-end text-xs text-paper-3">{shortAgo(item.ts)}</span>
                   </Link>
                 </motion.li>
               )
@@ -137,13 +164,6 @@ export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
   )
 }
 
-const CELL = [
-  '',
-  'border-s border-line ps-4 sm:ps-8',
-  'border-t border-line lg:border-s lg:border-t-0 lg:ps-8',
-  'border-s border-t border-line ps-4 sm:ps-8 lg:border-t-0',
-]
-
 export function LiveStrip({ feed, brandsCount }: { feed: LiveFeed | null; brandsCount: number }) {
   const stats = [
     { k: 'liveCerts' as const, value: feed?.certs_checked, tone: 'text-paper' },
@@ -152,13 +172,15 @@ export function LiveStrip({ feed, brandsCount }: { feed: LiveFeed | null; brands
     { k: 'liveBrands' as const, value: feed?.brands_protected || brandsCount || undefined, tone: 'text-gold' },
   ]
   return (
-    <dl className="grid grid-cols-2 border-y border-line lg:grid-cols-4">
-      {stats.map((s, i) => (
-        <div key={s.k} className={`flex flex-col-reverse gap-1 py-6 pe-4 ${CELL[i]}`}>
-          <dt className="text-sm text-paper-3">
+    <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {stats.map((s) => (
+        <div key={s.k} className="flex min-w-0 flex-col-reverse gap-1 rounded-2xl bg-ink-850 p-4 sm:p-6">
+          <dt className="text-sm font-bold text-paper-3">
             <T k={s.k} />
           </dt>
-          <dd className={`evidence num text-xl sm:text-2xl ${s.tone}`}>{s.value != null ? <Counter value={s.value} /> : <span className="text-paper-3">·</span>}</dd>
+          <dd className={`display num text-[1.6rem] leading-tight sm:text-4xl ${s.tone}`}>
+            {s.value != null ? <Counter value={s.value} duration={1.6} /> : <span className="text-paper-3">·</span>}
+          </dd>
         </div>
       ))}
     </dl>

@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { motion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
@@ -58,14 +59,23 @@ const STEPS: { title: StringKey; body: StringKey }[] = [
 function HowItWorks() {
   return (
     <section className="shell py-16 lg:py-24">
-      <SectionHead index={1} title="howTitle" />
-      <Stagger className="grid-12 mt-12 gap-y-8" gap={0.08}>
+      <SectionHead title="howTitle" />
+      <Stagger className="mt-10 flex flex-col items-stretch gap-3 lg:flex-row" gap={0.1}>
         {STEPS.map((s, i) => (
-          <StaggerItem key={s.title} className="col-span-4 border-t border-line pt-6 sm:col-span-8 lg:col-span-4">
-            <span className="display text-4xl text-gold">{i + 1}</span>
-            <Tx k={s.title} as="h3" className="display mt-4 text-xl text-paper" split="stack" />
-            <Tx k={s.body} className="mt-2 max-w-[44ch] text-base text-paper-2" split="stack" />
-          </StaggerItem>
+          <Fragment key={s.title}>
+            {i > 0 && (
+              <StaggerItem className="grid shrink-0 place-items-center">
+                <span className="grid size-11 place-items-center rounded-full bg-linear-to-r from-[#5a48f2] to-[#8a4df0] text-white shadow-[0_10px_24px_-10px_rgb(90_72_242/0.7)]">
+                  <ArrowRight className="size-5 rotate-90 lg:rotate-0 lg:rtl:rotate-180" aria-hidden="true" />
+                </span>
+              </StaggerItem>
+            )}
+            <StaggerItem className="flex-1 rounded-2xl bg-ink-850 p-6 lg:p-7">
+              <span className="text-grad display text-5xl">{i + 1}</span>
+              <Tx k={s.title} as="h3" className="display mt-4 text-xl text-paper" />
+              <Tx k={s.body} className="mt-2 text-base text-paper-2" />
+            </StaggerItem>
+          </Fragment>
         ))}
       </Stagger>
     </section>
@@ -73,26 +83,27 @@ function HowItWorks() {
 }
 
 function BrandWall({ brands }: { brands: BrandRef[] }) {
+  const row = brands.length ? brands : null
   return (
-    <section>
-      <div className="shell py-16 lg:py-24">
-        <SectionHead index={2} title="brandsTitle" />
-        <Tx text={fill(S.brandsSub, { n: brands.length || 49 })} className="mt-4 max-w-[60ch] text-base text-paper-2" split="stack" />
-        <Stagger className="mt-12 grid grid-cols-4 gap-2 sm:grid-cols-7 lg:grid-cols-10" gap={0.015}>
-          {brands.length === 0
-            ? Array.from({ length: 20 }, (_, i) => (
-                <StaggerItem key={i}>
-                  <Skeleton className="aspect-square" />
-                </StaggerItem>
-              ))
-            : brands.map((b) => (
-                <StaggerItem key={b.id}>
-                  <div className="hover-lift group relative" title={b.name_en}>
-                    <BrandMark brand={b} className="aspect-square w-full p-2 sm:p-3" />
-                  </div>
-                </StaggerItem>
-              ))}
-        </Stagger>
+    <section className="py-16 lg:py-24">
+      <div className="shell">
+        <SectionHead title="brandsTitle" />
+        <Tx text={fill(S.brandsSub, { n: brands.length || 49 })} className="mt-4 max-w-[60ch] text-base text-paper-2" />
+      </div>
+      <div className="marquee mt-10" dir="ltr">
+        {row ? (
+          <div className="marquee-track" style={{ animationDuration: `${row.length * 2.2}s` }}>
+            {[...row, ...row].map((b, i) => (
+              <div key={`${b.id}-${i}`} className="w-20 shrink-0 sm:w-24" title={b.name_en} aria-hidden={i >= row.length}>
+                <BrandMark brand={b} className="aspect-square w-full p-3" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="shell">
+            <Skeleton className="h-24" />
+          </div>
+        )}
       </div>
     </section>
   )
@@ -105,7 +116,6 @@ function TrendingPreview() {
   return (
     <section className="shell py-16 lg:py-24">
       <SectionHead
-        index={3}
         title="trendingTitle"
         sub="trendingSub"
         aside={
@@ -133,10 +143,7 @@ function ProtectBand() {
     <section className="px-3 sm:px-6">
       <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] items-center gap-y-12 rounded-[2rem] px-6 py-14 sm:px-10 lg:px-14 lg:py-20">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
-          <div className="flex items-baseline gap-4">
-            <span className="evidence shrink-0 text-sm text-gold">04</span>
             <Tx k="protectCtaTitle" as="h2" className="display text-3xl text-paper sm:text-4xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
-          </div>
           <Tx k="protectCtaBody" className="mt-4 max-w-[52ch] text-lg text-paper-2" split="stack" />
           <Link to="/protect" className={`${btn.primary} mt-8`}>
             <T k="navProtect" />
@@ -156,10 +163,7 @@ function FamilyBand() {
     <section className="px-3 py-10 sm:px-6 lg:py-14">
       <div className="field-dawn grid-12 mx-auto max-w-[1232px] items-center gap-y-8 rounded-[2rem] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
-          <div className="flex items-baseline gap-4">
-            <span className="evidence shrink-0 text-sm text-gold">05</span>
             <Tx k="famBandTitle" as="h2" className="display text-3xl text-paper sm:text-4xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
-          </div>
           <Tx k="famBandBody" className="mt-4 max-w-[56ch] text-lg text-paper-2" split="stack" />
         </Reveal>
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-4 lg:col-start-9 lg:justify-self-end" delay={0.1}>

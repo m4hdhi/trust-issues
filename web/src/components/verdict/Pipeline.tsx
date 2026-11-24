@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { Check, Minus, X } from 'lucide-react'
-import { T, useLang } from '../../lib/lang'
+import { T } from '../../lib/lang'
 import { caseNumber, ms } from '../../lib/format'
 import { EASE_OUT, T_LAYOUT, T_STAMP } from '../../lib/motion'
 import type { StringKey } from '../../lib/i18n'
@@ -47,7 +47,6 @@ function StatusMark({ status }: { status: StageState['status'] }) {
 }
 
 export function Pipeline({ id, host, stages, order, elapsed }: { id: string; host: string; stages: Record<string, StageState>; order: string[]; elapsed: number }) {
-  const { mode } = useLang()
   const finished = order.filter((s) => ['done', 'skipped', 'error'].includes(stages[s]?.status ?? '')).length
   const progress = order.length ? finished / order.length : 0
 
@@ -100,8 +99,7 @@ export function Pipeline({ id, host, stages, order, elapsed }: { id: string; hos
                     {st.detail ? (
                       <span className="evidence block truncate text-xs text-paper-3">{st.detail}</span>
                     ) : (
-                      known &&
-                      mode !== 'both' && (
+                      known && (
                         <span className="block truncate text-xs text-paper-3">
                           <T k={`st_${sid}_d` as StringKey} />
                         </span>
