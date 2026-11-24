@@ -148,7 +148,7 @@ class Registry:
             off_label = dom.split(".")[0]
             if len(off_label) >= 4 and reg_label != off_label:
                 dist = Levenshtein.distance(reg_label, off_label)
-                if dist <= (1 if len(off_label) <= 5 else 2):
+                if dist <= (1 if len(off_label) <= 8 else 2) and reg_label[0] == off_label[0]:
                     return self.brands[bid], "typosquat", dom
         if hostname != host_sk:
             for token, bid in self.keyword_index.items():

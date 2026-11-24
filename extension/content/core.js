@@ -7,6 +7,7 @@
     '"IBM Plex Sans Arabic", "Geeza Pro", "Noto Sans Arabic", "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif';
   const MONO = 'ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace';
   const SVG_NS = 'http://www.w3.org/2000/svg';
+  const HOLD_MS = 4000;
   const SHIELD = 'M12 2.2 4.2 5.1v6.1c0 5 3.3 9.3 7.8 10.6 4.5-1.3 7.8-5.6 7.8-10.6V5.1L12 2.2z';
   const GLYPHS = {
     official: 'M8.4 12.3l2.5 2.5 4.8-5.1',
@@ -40,6 +41,7 @@
     starting: ['Starting a deep scan…', 'جارٍ بدء الفحص المعمّق…'],
     opened: ['Full analysis opened in a new tab', 'فُتح التحليل الكامل في علامة تبويب جديدة'],
     failed: ["Couldn't reach the Trust Issues server", 'تعذّر الوصول إلى خادم «أزمة ثقة»'],
+    checking: ['Checking this link…', 'جارٍ فحص الرابط…'],
     phoneHint: [
       'The website on this listing is flagged. Only call numbers published on the official website.',
       'موقع هذا النشاط مُصنَّف كمشبوه. اتصل فقط بالأرقام المنشورة على الموقع الرسمي.',
@@ -56,6 +58,7 @@
   let backoff = 0;
   let lastFlagged = -1;
   let warning = null;
+  let passThrough = null;
 
   const cache = new Map();
   const entries = new WeakMap();
@@ -233,12 +236,11 @@
     const detail = detailFor(kind, result);
     const chip = host.shadowRoot.querySelector('.chip');
     chip.className = `chip ${tone}`;
+    chip.dir = lang === 'ar' ? 'rtl' : 'ltr';
     chip.title = tooltipFor(kind, result);
-    chip.replaceChildren(
-      shieldIcon(tone),
-      h('span', { class: 'label' }, bi(label.en, label.ar)),
-      detail ? h('span', { class: 'detail' }, bi(detail[0], detail[1])) : null,
-    );
+    const parts = [shieldIcon(tone), h('span', { class: 'label' }, bi(label.en, label.ar))];
+    if (detail) parts.push(h('span', { class: 'detail' }, bi(detail[0], detail[1])));
+    chip.replaceChildren(...parts);
     info.lang = lang;
   }
 
@@ -280,6 +282,16 @@
     }
   }
 
+  function track(el, url) {
+    const entry = { url, result: null, placed: false };
+    entry.ready = new Promise((resolve) => {
+      entry.settle = resolve;
+    });
+    entries.set(el, entry);
+    watched.add(el);
+    return entry;
+  }
+
   async function pass() {
     if (running) {
       again = true;
@@ -297,12 +309,15 @@
         const url = resolveUrl(item.href);
         if (!url) continue;
         const previous = entries.get(item.el);
-        if (previous && previous.url === url) continue;
+        if (previous && previous.url === url) {
+          if (item.place && previous.result && !previous.placed) {
+            previous.placed = true;
+            badge(item.el, item.place, previous.result);
+          }
+          continue;
+        }
         if (previous) unbadge(item.el);
-        const entry = { url, result: null };
-        entries.set(item.el, entry);
-        watched.add(item.el);
-        fresh.push({ el: item.el, place: item.place, entry });
+        fresh.push({ el: item.el, place: item.place, entry: track(item.el, url) });
       }
       if (fresh.length) await resolveFresh(fresh);
       adapter.afterFlush?.(api);
@@ -324,22 +339,23 @@
         backoff = 0;
         for (const url of missing) cache.set(url, response.results[url] || { url, verdict: 'unknown', score: 0 });
       } else {
-        for (const f of fresh) {
-          if (!cache.has(f.entry.url)) {
-            entries.delete(f.el);
-            watched.delete(f.el);
-          }
-        }
         backoff = Math.min(backoff ? backoff * 2 : 5000, 60000);
         pausedUntil = Date.now() + backoff;
         setTimeout(() => schedule(0), backoff + 50);
       }
     }
     for (const f of fresh) {
-      const result = cache.get(f.entry.url);
-      if (!result) continue;
+      const result = cache.get(f.entry.url) || null;
+      if (!result && entries.get(f.el) === f.entry) {
+        entries.delete(f.el);
+        watched.delete(f.el);
+      }
       f.entry.result = result;
-      if (f.place) badge(f.el, f.place, result);
+      f.entry.settle(result);
+      if (result && f.place) {
+        f.entry.placed = true;
+        badge(f.el, f.place, result);
+      }
     }
   }
 
@@ -384,16 +400,75 @@
       const source = info && entries.get(info.source);
       if (info && info.kind !== 'official' && source?.result) {
         halt(event);
-        showWarning(info.source, source.url, source.result);
+        showWarning(info.source, source.url, source.result, { newTab: false });
       }
       return;
     }
     const anchor = target.closest('a[href]');
     if (!anchor || allowed.has(anchor)) return;
-    const entry = entries.get(anchor);
-    if (!entry || !shouldBlock(entry.result)) return;
+    if (anchor === passThrough) {
+      passThrough = null;
+      return;
+    }
+    const intent = { newTab: event.button === 1 || event.ctrlKey || event.metaKey || event.shiftKey };
+    let entry = entries.get(anchor);
+    if (!entry) {
+      const url = resolveUrl(anchor.href);
+      if (!url || !alive()) return;
+      entry = track(anchor, url);
+      resolveFresh([{ el: anchor, place: null, entry }]);
+    }
+    if (entry.result) {
+      if (!shouldBlock(entry.result)) return;
+      halt(event);
+      showWarning(anchor, entry.url, entry.result, intent);
+      return;
+    }
     halt(event);
-    showWarning(anchor, entry.url, entry.result);
+    holdClick(anchor, entry, intent);
+  }
+
+  async function holdClick(anchor, entry, intent) {
+    const toast = showToast(COPY.checking);
+    const result = await Promise.race([entry.ready, new Promise((resolve) => setTimeout(() => resolve(null), HOLD_MS))]);
+    toast.remove();
+    if (shouldBlock(result)) showWarning(anchor, entry.url, result, intent);
+    else follow(anchor, entry.url, intent);
+  }
+
+  const TOAST_CSS = `
+    :host { all: initial; position: fixed; left: 50%; bottom: 28px; z-index: 2147483646; transform: translateX(-50%); }
+    .toast { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: #0b1220;
+      color: #edf2f9; border: 1px solid #22304d; box-shadow: 0 12px 32px rgb(0 0 0 / 0.35); font: 600 13px/1.3 ${FONT};
+      animation: in 0.15s ease-out; }
+    [lang="ar"] { font-family: ${AR_FONT}; }
+    .sep { opacity: 0.5; }
+    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #22304d; border-top-color: #14b8a6; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+    @media (prefers-reduced-motion: reduce) { .toast, .spin { animation: none; } }
+  `;
+
+  function showToast(pair) {
+    const host = document.createElement('div');
+    host.setAttribute('data-trust-issues', 'toast');
+    const root = host.attachShadow({ mode: 'closed' });
+    root.append(
+      h('style', null, TOAST_CSS),
+      h('div', { class: 'toast', role: 'status' }, h('span', { class: 'spin', 'aria-hidden': 'true' }), bi(pair[0], pair[1])),
+    );
+    document.documentElement.append(host);
+    return host;
+  }
+
+  function follow(anchor, url, intent) {
+    if (intent?.newTab || !anchor.isConnected) {
+      window.open(anchor.isConnected ? anchor.href : url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    passThrough = anchor;
+    anchor.click();
+    passThrough = null;
   }
 
   const WARNING_CSS = `
@@ -407,6 +482,7 @@
     .suspicious { --accent: #fbbf24; --accent-solid: #f59e0b; --glow: rgb(245 158 11 / 0.22); --tint: rgb(245 158 11 / 0.12); }
     .panel { width: min(900px, 100%); background: #0e1627; border: 1px solid #22304d; border-radius: 22px; overflow: hidden;
       box-shadow: 0 30px 80px rgb(0 0 0 / 0.55); animation: rise 0.22s ease-out; }
+    .panel[lang="ar"] { font-family: ${AR_FONT}; }
     .band { height: 4px; background: linear-gradient(90deg, var(--accent-solid), #f97316); }
     .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 32px 0; }
     .alert { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--tint); color: var(--accent-solid); }
@@ -476,7 +552,7 @@
     );
   }
 
-  function showWarning(el, url, result) {
+  function showWarning(el, url, result, intent) {
     closeWarning(false);
     const tone = result.verdict === 'scam' ? 'scam' : 'suspicious';
     let hostname = url;
@@ -509,6 +585,8 @@
       'div',
       {
         class: 'panel',
+        dir: lang === 'ar' ? 'rtl' : 'ltr',
+        lang: lang === 'ar' ? 'ar' : 'en',
         role: 'alertdialog',
         'aria-modal': 'true',
         'aria-labelledby': languages.map((c) => `ti-title-${c}`).join(' '),
@@ -549,7 +627,7 @@
     proceed.addEventListener('click', () => {
       allowed.add(el);
       closeWarning(false);
-      if (el.isConnected && el.matches('a[href]')) el.click();
+      if (el.matches('a[href]')) follow(el, url, intent);
       else window.open(url, '_blank', 'noopener,noreferrer');
     });
     analyze.addEventListener('click', async () => {

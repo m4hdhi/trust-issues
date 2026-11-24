@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import logging
+import re
 import struct
 
 from cryptography import x509
@@ -23,7 +24,7 @@ LOGS = [
     "https://wyvern.ct.digicert.com/2026h2/",
     "https://sphinx.ct.digicert.com/2026h2/",
 ]
-UAE_HINTS = ("uae", "dubai", "abudhabi", "abu-dhabi", "sharjah", "emirat", "ajman", "-ae.", ".ae.", "aed")
+UAE_HINTS = {"uae", "dubai", "abudhabi", "sharjah", "ajman", "emirates", "ae", "rak", "alain"}
 stats = {"certs": 0, "candidates": 0}
 
 
@@ -62,7 +63,7 @@ def assess(host: str) -> tuple[str | None, float] | None:
     imp = reg.impersonation(p.hostname, p.registrable)
     if imp:
         return imp[0].id, 1.0
-    if model and any(h in p.hostname for h in UAE_HINTS):
+    if model and UAE_HINTS & set(re.split(r"[.\-]", p.hostname)):
         score = model.score_domain(p.hostname)
         if score >= 0.93:
             return None, score

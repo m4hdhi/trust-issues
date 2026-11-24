@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 import dnstwist
 
 from ..http import client
+from ..pipeline import instant
 from ..registry import get_registry
 from . import radar
 from .ct import assess
@@ -31,6 +32,8 @@ async def sweep_typosquats() -> int:
     brands = [reg.brands[b] for b in PRIORITY if b in reg.brands] or list(reg.brands.values())[:12]
     for brand in brands:
         for domain in brand.official_domains[:2]:
+            if len(domain.split(".")[0]) < 5:
+                continue
             try:
                 rows = await asyncio.to_thread(_registered_permutations, domain)
             except Exception as exc:
@@ -39,6 +42,8 @@ async def sweep_typosquats() -> int:
             for row in rows:
                 d = row.get("domain", "")
                 if d == domain or not row.get("dns_a") or reg.is_official(d, d):
+                    continue
+                if instant(f"http://{d}/")["score"] < 25:
                     continue
                 found += 1
                 asyncio.create_task(radar.investigate("typosquat", f"http://{d}/", brand.id,

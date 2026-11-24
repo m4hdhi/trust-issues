@@ -8,6 +8,7 @@ import networkx as nx
 from sqlmodel import select
 
 from .. import db
+from ..pipeline import site_key_for
 from ..schemas import Campaign, GraphEdge, GraphNode, ScanResult
 
 GENERIC_NS = ("cloudflare.com", "awsdns", "azure-dns", "googledomains.com", "domaincontrol.com", "registrar-servers.com")
@@ -50,11 +51,19 @@ def _scam_results(limit: int = 3000) -> list[dict[str, Any]]:
     return list(latest.values())
 
 
+def _site(r: dict[str, Any]) -> str:
+    try:
+        return site_key_for(r.get("final_url") or r["url"])
+    except ValueError:
+        return r["domain"]
+
+
 def build_graph(results: list[dict[str, Any]]) -> nx.Graph:
     g = nx.Graph()
     for r in results:
-        d = f"domain:{r['domain']}"
-        g.add_node(d, kind="domain", label=r["domain"], verdict=r.get("verdict"), brand=(r.get("brand") or {}).get("id"), scan_id=r.get("id"))
+        site = _site(r)
+        d = f"domain:{site}"
+        g.add_node(d, kind="domain", label=site, verdict=r.get("verdict"), brand=(r.get("brand") or {}).get("id"), scan_id=r.get("id"))
         for kind, value, rel in _features(r):
             n = f"{kind}:{value}"
             label = value if kind != "telegram" else f"bot {value}"
@@ -73,9 +82,9 @@ def campaign_for(result: ScanResult) -> Campaign | None:
     if result.verdict == "safe":
         return None
     current = result.model_dump(mode="json")
-    others = [r for r in _scam_results() if r["domain"] != result.domain]
+    others = [r for r in _scam_results() if _site(r) != _site(current)]
     g = build_graph([current, *others])
-    me = f"domain:{result.domain}"
+    me = f"domain:{_site(current)}"
     if me not in g:
         return None
     comp = nx.node_connected_component(g, me)
