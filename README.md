@@ -103,7 +103,7 @@ With live feeds, the sandbox and the AI judges switched on (the default for sing
 | Evidence | ReportLab PDF and Pillow warning cards with Arabic shaping (arabic-reshaper + python-bidi), IBM Plex Sans Arabic (OFL) |
 | Graph | networkx connected components → Cytoscape.js |
 | Front-end | React + TypeScript + Vite PWA, Tailwind, framer-motion, Cytoscape.js, Leaflet; Arabic / English / side-by-side modes with RTL |
-| Deploy | Docker (Playwright base image) on Railway with PostgreSQL |
+| Deploy | One Docker image (Python slim + headless Chromium, 754 MB) on Render with PostgreSQL (`render.yaml` blueprint) |
 
 ## 6. Build and run
 
@@ -127,6 +127,12 @@ cd web
 npm install
 npm run dev        # http://localhost:5173 (proxies /api to :8000)
 ```
+
+### Option C: deploy on Render
+1. Render dashboard → **New → Blueprint** → connect `m4hdhi/trust-issues`. Render reads `render.yaml` and creates the web service and a PostgreSQL database.
+2. When asked, paste the values from your local `.env` (API keys, `CONSOLE_PASSWORD`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`).
+3. Use the **Standard** plan (2 GB RAM) or larger: the sandbox browser needs more than the 512 MB of the smaller plans.
+4. The public URL (`https://<name>.onrender.com`) is picked up automatically for phone profiles, push links and takedown emails.
 
 ### Batch-test a list of URLs (for the hidden test set)
 ```bash

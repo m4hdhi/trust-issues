@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -46,6 +47,9 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     s = Settings()
+    hosted_url = os.environ.get("RENDER_EXTERNAL_URL")
+    if hosted_url and s.public_base_url.startswith("http://localhost"):
+        s.public_base_url = hosted_url
     s.media_dir.mkdir(parents=True, exist_ok=True)
     (s.media_dir / "shots").mkdir(exist_ok=True)
     (s.media_dir / "cards").mkdir(exist_ok=True)
