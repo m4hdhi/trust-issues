@@ -35,7 +35,7 @@ S_SMALL = ParagraphStyle("s", fontName="Plex", fontSize=7.2, leading=9.5, textCo
 
 
 def _p(text: Any, style: ParagraphStyle = S_B) -> Paragraph:
-    t = shape(str(text if text is not None else "—"))
+    t = shape(str(text if text is not None else "n/a"))
     return Paragraph(t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"), style)
 
 
@@ -60,10 +60,10 @@ def build(r: dict[str, Any]) -> bytes:
     story: list[Any] = []
 
     head = Table([[
-        _p("Trust Issues | أزمة ثقة — Digital Evidence Pack", S_TITLE),
+        _p("Trust Issues | أزمة ثقة · Digital Evidence Pack", S_TITLE),
         _p(f"{r['verdict'].upper()}  {r['score']}/100", ParagraphStyle("v", parent=S_TITLE, textColor=verdict_color, alignment=TA_RIGHT)),
     ]], colWidths=[120 * mm, 50 * mm])
-    story += [head, Spacer(1, 2 * mm), _p("حزمة الأدلة الرقمية — للاستخدام من قبل جهات إنفاذ القانون", S_AR), Spacer(1, 3 * mm)]
+    story += [head, Spacer(1, 2 * mm), _p("حزمة الأدلة الرقمية · للاستخدام من قبل جهات إنفاذ القانون", S_AR), Spacer(1, 3 * mm)]
     story += [_p(r["headline"]["en"], S_H), _p(r["headline"]["ar"], ParagraphStyle("har", parent=S_H, alignment=TA_RIGHT))]
 
     story.append(_p("1. Case identification / تعريف الحالة", S_H))
@@ -73,8 +73,8 @@ def build(r: dict[str, Any]) -> bytes:
         ("Submitted URL (defanged)", defang(r["url"])),
         ("Final URL (defanged)", defang(r.get("final_url") or r["url"])),
         ("Registrable domain", r["domain"]),
-        ("Impersonated brand", f"{brand.get('name_en', '—')} / {brand.get('name_ar', '—')}" if brand else "—"),
-        ("Official domains of brand", ", ".join(brand.get("official_domains", [])) if brand else "—"),
+        ("Impersonated brand", f"{brand.get('name_en', 'n/a')} / {brand.get('name_ar', 'n/a')}" if brand else "n/a"),
+        ("Official domains of brand", ", ".join(brand.get("official_domains", [])) if brand else "n/a"),
         ("Captured (UTC)", ev.get("captured_at_utc")),
         ("Captured (GST)", ev.get("captured_at_gst")),
     ]))
@@ -88,7 +88,7 @@ def build(r: dict[str, Any]) -> bytes:
     story.append(t)
 
     for op in r.get("ai", []):
-        story.append(_p(f"AI judge — {op['provider']} ({op['model']}): {op['verdict']} · {int(op['confidence'] * 100)}%", S_B))
+        story.append(_p(f"AI judge · {op['provider']} ({op['model']}): {op['verdict']} · {int(op['confidence'] * 100)}%", S_B))
         for en in op.get("reasons", {}).get("en", []):
             story.append(_p(f"• {en}", S_B))
         for ar in op.get("reasons", {}).get("ar", []):
@@ -102,10 +102,10 @@ def build(r: dict[str, Any]) -> bytes:
         ("Registrar abuse contact", di.get("registrar_abuse_email")),
         ("Name servers", ", ".join(di.get("nameservers") or [])),
         ("IP addresses", ", ".join(di.get("ips") or [])),
-        ("ASN / network", f"{di.get('asn') or '—'} {di.get('as_org') or ''}"),
+        ("ASN / network", f"{di.get('asn') or 'n/a'} {di.get('as_org') or ''}"),
         ("Hosting country", di.get("country")),
         ("Hosting abuse contact", di.get("host_abuse_email")),
-        ("TLS issuer / issued", f"{di.get('tls_issuer') or '—'} / {di.get('tls_not_before') or '—'}"),
+        ("TLS issuer / issued", f"{di.get('tls_issuer') or 'n/a'} / {di.get('tls_not_before') or 'n/a'}"),
         ("Certificates in CT logs", di.get("ct_cert_count")),
     ]))
 

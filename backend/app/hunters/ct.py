@@ -9,6 +9,7 @@ import struct
 
 from cryptography import x509
 
+from .. import db
 from ..http import client
 from ..pipeline import url_model_or_none
 from ..registry import get_registry
@@ -98,6 +99,7 @@ async def _poll_log(base: str) -> None:
                             asyncio.create_task(radar.investigate("ct", f"https://{host}/", brand_id,
                                                                   {"log": base.split("//")[1].split("/")[0], "confidence": conf}, delay_s=45))
                 position += len(entries)
+                db.bump("ct_certs", len(entries))
                 if size - position > 20000:
                     position = size - 256
             await asyncio.sleep(4)

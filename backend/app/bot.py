@@ -36,7 +36,7 @@ def _summary(r: dict[str, Any]) -> str:
     lines = [f"{ICON.get(r['verdict'], '❔')} {r['headline']['ar']}", r["headline"]["en"], f"درجة الخطورة · Risk: {r['score']}/100"]
     reasons = [s for s in r.get("signals", []) if (s["weight"] > 0) == (r["verdict"] != "safe")][:3]
     for s in reasons:
-        lines.append(f"• {s['title']['ar']} — {s['title']['en']}")
+        lines.append(f"• {s['title']['ar']}\n  {s['title']['en']}")
     lines.append(f"\n🔎 {base}/scan/{r['id']}")
     return "\n".join(lines)
 
@@ -53,7 +53,7 @@ async def _handle(msg: dict[str, Any]) -> None:
     if not urls:
         m = message_rules.analyze(text)
         verdict = "⚠️ رسالة مشبوهة · Suspicious message" if m["is_scam"] else "✅ لا توجد مؤشرات احتيال واضحة · No clear scam signs"
-        reasons = "\n".join(f"• {a} — {e}" for a, e in zip(m["reasons_ar"], m["reasons_en"]))
+        reasons = "\n".join(f"• {a}\n  {e}" for a, e in zip(m["reasons_ar"], m["reasons_en"]))
         await _send(chat_id, f"{verdict}\n{reasons}".strip(), msg.get("message_id"))
         return
     await _send(chat_id, "⏳ جارٍ الفحص في بيئة معزولة… Scanning in a sandbox…", msg.get("message_id"))

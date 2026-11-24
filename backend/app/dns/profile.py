@@ -27,7 +27,7 @@ def mobileconfig(device_id: str) -> bytes:
                 "ProhibitDisablement": False,
             }
         ],
-        "PayloadDisplayName": "Trust Issues | أزمة ثقة — Scam Shield",
+        "PayloadDisplayName": "Trust Issues | أزمة ثقة · Scam Shield",
         "PayloadDescription": "Blocks confirmed scam and phishing websites in every app (WhatsApp, SMS, Safari, Instagram…). "
         "يحظر مواقع الاحتيال والتصيد المؤكدة في جميع التطبيقات.",
         "PayloadIdentifier": f"ae.trustissues.profile.{device_id}",

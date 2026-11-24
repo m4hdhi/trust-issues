@@ -72,7 +72,7 @@ async def _capture_refs(only: list[str]) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(prog="trust-issues", description="Trust Issues | أزمة ثقة — scam link scanner")
+    ap = argparse.ArgumentParser(prog="trust-issues", description="Trust Issues | أزمة ثقة: scam link scanner")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sc = sub.add_parser("scan", help="scan a CSV / text file of URLs (optional label column for metrics)")
     sc.add_argument("file", type=Path)

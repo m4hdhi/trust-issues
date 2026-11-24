@@ -53,7 +53,7 @@ MESSAGE_SCHEMA: dict[str, Any] = {
 
 def _brand_catalog() -> str:
     reg = get_registry()
-    rows = [f"- {b.id}: {b.name_en} / {b.name_ar} — official domains: {', '.join(b.official_domains)}" for b in reg.brands.values()]
+    rows = [f"- {b.id}: {b.name_en} / {b.name_ar}. Official domains: {', '.join(b.official_domains)}" for b in reg.brands.values()]
     return "\n".join(rows)
 
 
@@ -67,7 +67,7 @@ Decision rules:
 5. UAE-specific scam patterns: fake traffic-fine payments (Abu Dhabi Police, Dubai Police, RTA, MOI), Salik/Darb toll top-ups, TAMM / UAE PASS logins, Emirates Post / Aramex parcel fees, bank account suspension, ICP visa/Emirates ID renewal, DEWA/ADDC bill refunds, fake 70-90% discounts on fines.
 Return calibrated confidence (0-1). Reasons must be short, concrete and refer to evidence (max 4 each), written in clear English and natural Modern Standard Arabic. Use target_brand_id from the catalog when the brand is in it, otherwise null with target_brand_name set.
 
-UAE brand catalog (id: name — official domains):
+UAE brand catalog (id: name. Official domains):
 {catalog}"""
 
 

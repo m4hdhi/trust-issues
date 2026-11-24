@@ -1,6 +1,6 @@
 # Trust Issues | أزمة ثقة
 
-> **We have trust issues — so you don't have to.** · **نحن نشكّ… لتطمئن أنت**
+> **We have trust issues, so you don't have to.** · **نحن نشكّ… لتطمئن أنت**
 
 Early detection of fraudulent links and websites targeting the UAE: on the open web, in **Google Search results & ads**, and in **Google Maps listings**. Built in 24 hours for the **ScamShield AI Hackathon** (42 Abu Dhabi × Abu Dhabi Police).
 
@@ -101,7 +101,7 @@ With live feeds, the sandbox and the AI judges switched on (the default for sing
 
 ## 6. Build and run
 
-### Option A — Docker (everything in one container)
+### Option A: Docker (everything in one container)
 ```bash
 cp .env.example .env   # add your API keys (all optional; more keys = more intel)
 docker build -t trust-issues .
@@ -109,7 +109,7 @@ docker run --env-file .env -p 8000:8000 trust-issues
 ```
 Open http://localhost:8000. The police console is at `/console` and uses `CONSOLE_PASSWORD`.
 
-### Option B — local development
+### Option B: local development
 ```bash
 cd backend
 uv sync

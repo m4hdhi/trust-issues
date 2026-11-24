@@ -1,4 +1,4 @@
-"""Trust Issues | أزمة ثقة — API, protective DNS, police console and web app server."""
+"""Trust Issues | أزمة ثقة: API, protective DNS, police console and web app server."""
 from __future__ import annotations
 
 import asyncio
@@ -278,6 +278,33 @@ async def stats() -> dict[str, Any]:
     }
 
 
+@app.get("/api/live")
+async def live() -> dict[str, Any]:
+    since = db.utcnow() - timedelta(hours=24)
+    reg = get_registry()
+    with db.session() as s:
+        scams24 = s.exec(select(func.count()).select_from(db.ScanRecord).where(db.ScanRecord.verdict == "scam", db.ScanRecord.created_at >= since)).one()
+        rows = s.exec(select(db.ScanRecord).where(db.ScanRecord.verdict == "scam").order_by(db.ScanRecord.created_at.desc()).limit(60)).all()
+    recent, seen = [], set()
+    for row in rows:
+        site = row.domain
+        if site in seen:
+            continue
+        seen.add(site)
+        brand = reg.brands.get(row.brand_id) if row.brand_id else None
+        recent.append({"domain": site.replace(".", "[.]"), "brand": brand.ref().model_dump() if brand else None,
+                       "source": row.source, "score": row.score, "ts": row.created_at.isoformat(), "scan_id": row.id})
+        if len(recent) >= 12:
+            break
+    return {
+        "certs_checked": db.counter("ct_certs"),
+        "scams_today": scams24,
+        "blocked_queries": db.counter("blocked_queries"),
+        "brands_protected": len(reg.brands),
+        "recent": recent,
+    }
+
+
 @app.get("/api/brands")
 async def brands() -> list[dict[str, Any]]:
     return [b.ref().model_dump() for b in get_registry().brands.values()]
@@ -312,7 +339,7 @@ async def device_push(device_id: str, request: Request) -> dict[str, Any]:
         d.push_json = json.dumps(sub)
         s.add(d)
         s.commit()
-    await asyncio.to_thread(webpush.send, d, {"title": "🛡️ أزمة ثقة · Trust Issues", "body": "Alerts are on — التنبيهات مفعّلة", "url": "/protect"})
+    await asyncio.to_thread(webpush.send, d, {"title": "🛡️ أزمة ثقة · Trust Issues", "body": "Alerts are on · التنبيهات مفعّلة", "url": "/protect"})
     return {"ok": True}
 
 

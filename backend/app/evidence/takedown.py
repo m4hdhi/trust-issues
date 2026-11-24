@@ -22,7 +22,7 @@ def drafts(r: dict[str, Any]) -> dict[str, Any]:
         f"IP addresses: {', '.join(di.get('ips') or []) or 'n/a'}\nDetected: {r.get('evidence', {}).get('captured_at_utc')}\n"
         f"Risk score: {r['score']}/100\nFindings:\n{reasons}\n\nEvidence pack (screenshots, WHOIS, hashes): {evidence}\n"
     )
-    subject = f"Phishing / fraud takedown request — {r['domain']} impersonating {brand}"
+    subject = f"Phishing takedown request: {r['domain']} impersonating {brand}"
     return {
         "registrar": {
             "to": di.get("registrar_abuse_email") or "",
@@ -47,7 +47,7 @@ def rpz(domains: list[str]) -> str:
         "$TTL 300",
         f"@ IN SOA rpz.trust-issues. abuse.trust-issues. ({serial} 3600 600 86400 300)",
         "@ IN NS localhost.",
-        f"; Trust Issues | ازمة ثقة scam blocklist — {len(domains)} domains — generated {now.isoformat()}",
+        f"; Trust Issues | ازمة ثقة scam blocklist · {len(domains)} domains · generated {now.isoformat()}",
     ]
     for d in domains:
         lines.append(f"{d} CNAME .")

@@ -1,4 +1,4 @@
-# Trust Issues | أزمة ثقة — Chrome extension
+# Trust Issues | أزمة ثقة · Chrome extension
 
 Flags fake and scam links where people in the UAE actually meet them, and stops you before you open one.
 

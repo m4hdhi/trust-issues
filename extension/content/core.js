@@ -133,7 +133,7 @@
   }
 
   function short(text) {
-    return String(text || '').split(' — ')[0].trim();
+    return String(text || '').trim();
   }
 
   function resolveUrl(raw) {

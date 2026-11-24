@@ -82,18 +82,12 @@ def headline(verdict: str, brand: Brand | None, official: Brand | None) -> Bilin
     if verdict == "safe":
         return Bilingual(en="No signs of fraud found", ar="لم نعثر على مؤشرات احتيال")
     if verdict == "scam" and brand:
-        return Bilingual(
-            en=f"Fake {brand.name_en} site — do not enter any details",
-            ar=f"موقع مزيّف ينتحل صفة {brand.name_ar} — لا تُدخل أي بيانات",
-        )
+        return Bilingual(en=f"Fake {brand.name_en} website", ar=f"موقع مزيّف ينتحل صفة {brand.name_ar}")
     if verdict == "scam":
-        return Bilingual(en="Scam website — do not open or pay", ar="موقع احتيالي — لا تفتحه ولا تدفع")
+        return Bilingual(en="Scam website", ar="موقع احتيالي")
     if brand:
-        return Bilingual(
-            en=f"Suspicious link pretending to be {brand.name_en}",
-            ar=f"رابط مشبوه يدّعي أنه {brand.name_ar}",
-        )
-    return Bilingual(en="Suspicious link — be careful", ar="رابط مشبوه — توخَّ الحذر")
+        return Bilingual(en=f"Suspicious link posing as {brand.name_en}", ar=f"رابط مشبوه ينتحل صفة {brand.name_ar}")
+    return Bilingual(en="Suspicious link", ar="رابط مشبوه")
 
 
 def domain_diff(official: str, suspect: str) -> DomainDiff:
