@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import math
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -53,6 +54,17 @@ STAGES: dict[str, tuple[str, str]] = {
 
 Emit = Callable[[str, str, str | None], None]
 SENSITIVE_FIELDS = {"card", "cvv", "otp", "emirates_id", "password", "iban"}
+PARKING_NS = ("parkingcrew.net", "sedoparking.com", "bodis.com", "above.com", "dan.com", "afternic.com", "parklogic.com",
+              "uniregistrymarket.link", "domainparking", "ztomy.com", "dsredirection.com", "namedrive.com")
+PARKING_TEXT = re.compile(r"related searches|sponsored listings|this domain (?:may be|is) for sale|buy this domain|domain parking",
+                          re.I)
+
+
+def _parked_or_empty(text: str, nameservers: list[str]) -> bool:
+    """Parking and near-empty pages say nothing about intent: typosquat parking is a common traffic source for scam redirects."""
+    if any(p in ns for ns in nameservers for p in PARKING_NS):
+        return True
+    return len(text.strip()) < 200 or bool(PARKING_TEXT.search(text))
 
 
 _model_failed_at = 0.0
@@ -380,7 +392,11 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
             sig.add("favicon_clone", "visual", 3.5, f"Uses the official {fav.brand.name_en} icon",
                     f"يستخدم الأيقونة الرسمية لـ{fav.brand.name_ar}", brand=fav.brand.id, distance=fav.distance)
         emit("visual", "done", page_brand.id if page_brand else None)
-        if prim.ok and not rr.cloaking and page_brand is None and not set(asks) & SENSITIVE_FIELDS:
+        parked = prim.ok and _parked_or_empty(prim.text, dom.nameservers)
+        if parked and impersonated:
+            sig.add("parked_lookalike", "render", 0.8, f"Parked look-alike of {impersonated.name_en}: such pages often redirect visitors to scams",
+                    f"نطاق مقلّد لـ{impersonated.name_ar} في وضع الركن: هذه الصفحات كثيرًا ما تحوّل الزوار إلى مواقع احتيال")
+        if prim.ok and not parked and not rr.cloaking and page_brand is None and not set(asks) & SENSITIVE_FIELDS:
             for item in sig.items:
                 if item.id in ("lookalike_domain", "brand_in_domain") and item.weight > 1.2:
                     item.weight = round(item.weight * 0.4, 2)
@@ -410,12 +426,16 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
         if ai_openai.available():
             jobs.append(_timed(ai_openai.judge(judge_in), 40))
         opinions = [o for o in await asyncio.gather(*jobs) if o]
+        split = {"scam", "safe"} <= {o.verdict for o in opinions}
         for o in opinions:
-            w = {"scam": 3.5, "suspicious": 1.0, "safe": -3.0}[o.verdict] * o.confidence
+            w = {"scam": 3.5, "suspicious": 1.0, "safe": -3.0}[o.verdict] * o.confidence * (0.5 if split else 1.0)
             sig.add(f"ai_{o.provider.lower()}", "ai", w, f"{o.provider} AI judge: {o.verdict} ({int(o.confidence * 100)}% confident)",
                     f"قاضي الذكاء الاصطناعي {o.provider}: {_verdict_ar(o.verdict)} (ثقة {int(o.confidence * 100)}%)",
                     "; ".join(o.reasons.get("en", [])[:3]) or None, "؛ ".join(o.reasons.get("ar", [])[:3]) or None,
                     model=o.model)
+        if split:
+            sig.add("ai_split", "ai", 0, "The two AI judges disagree, so their opinions count half",
+                    "قاضيا الذكاء الاصطناعي مختلفان، لذا يُحتسب رأيهما بنصف الوزن")
         if len(opinions) >= 2 and all(o.verdict == "scam" for o in opinions):
             sig.add("ai_consensus", "ai", 1.0, "Both independent AI judges agree: scam", "قاضيا الذكاء الاصطناعي المستقلان يتفقان: احتيال")
         lap("ai", st)

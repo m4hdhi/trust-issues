@@ -70,11 +70,23 @@ def _path(job_id: str):
     return get_settings().cache_dir / f"batch_{job_id}.csv"
 
 
+NAME_ONLY = {"lookalike_domain", "brand_in_domain", "url_model"}
+
+
+def _needs_deep(r: Any) -> bool:
+    """Gray-zone scores, and scam scores that rest only on an established domain's name, need the page itself."""
+    if 30 <= r.score <= 75:
+        return True
+    positive = {s.id for s in r.signals if s.weight > 0}
+    established = (r.domain_intel.age_days or 0) > 365
+    return r.verdict == "scam" and established and bool(positive) and positive <= NAME_ONLY
+
+
 async def scan_one(url: str, label: int | None, deep: bool, sem: asyncio.Semaphore) -> dict[str, Any]:
     async with sem:
         try:
             r = await scans.run_inline(url, mode="fast", source="batch")
-            if r and deep and 30 <= r.score <= 75:
+            if r and deep and _needs_deep(r):
                 r = await scans.run_inline(url, mode="deep", source="batch") or r
         except Exception as exc:
             log.info("batch item failed %s: %s", url, exc)

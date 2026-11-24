@@ -23,6 +23,8 @@ USDT_TRON = re.compile(r"\bT[1-9A-HJ-NP-Za-km-z]{33}\b")
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]{2,}")
 
 
+SEARCH_ENGINES = {"google.com", "bing.com", "duckduckgo.com", "yahoo.com", "yandex.com", "yandex.ru", "baidu.com", "ecosia.org"}
+
 def extract(cap: PersonaCapture, page_registrable: str) -> list[ExfilLead]:
     blobs = [cap.html] + list(cap.scripts.values())
     corpus = "\n".join(blobs)
@@ -51,7 +53,7 @@ def extract(cap: PersonaCapture, page_registrable: str) -> list[ExfilLead]:
                 reg = parse(action).registrable
             except ValueError:
                 continue
-            if reg != page_registrable:
+            if reg != page_registrable and reg not in SEARCH_ENGINES:
                 add("form_post", action[:200], f"form {f.get('method', 'get').upper()} to another domain")
     for m in WHATSAPP.finditer(corpus + "\n" + "\n".join(cap.links)):
         add("whatsapp", m.group(1))
