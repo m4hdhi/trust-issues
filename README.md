@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/brand/banner.jpg" alt="Trust Issues: blocks scam sites on every phone, Family Shield for parents and kids, early warnings for police" width="100%"></p>
+
 # Trust Issues | أزمة ثقة
 
 > **We have trust issues, so you don't have to.** · **نحن نشكّ… لتطمئن أنت**

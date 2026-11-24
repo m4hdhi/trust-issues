@@ -381,6 +381,16 @@
       0 18px 40px -18px rgb(16 12 60 / 0.6);
   }
 
+  .brand-symbol {
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  /* On night surfaces the symbol turns white, as in the brand kit. */
+  .zone-dark .brand-symbol {
+    filter: brightness(0) invert(1);
+  }
+
   .text-grad {
     background: linear-gradient(100deg, #5a48f2 0%, #c64fd8 55%, #ff7a59 100%);
     -webkit-background-clip: text;

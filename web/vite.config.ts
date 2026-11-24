@@ -16,7 +16,7 @@ export default defineConfig(() => {
         filename: 'sw.ts',
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+        includeAssets: ['favicon.png', 'apple-touch-icon.png', 'brand/*.png'],
         injectManifest: {
           globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,

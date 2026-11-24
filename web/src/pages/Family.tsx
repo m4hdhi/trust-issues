@@ -696,6 +696,7 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
             <SignInLink />
           </div>
         )}
+        <img src="/brand/family-shield.png" alt="" className="mb-6 size-20" />
         <p className="evidence text-sm text-gold">
           <T k="famKicker" />
         </p>
