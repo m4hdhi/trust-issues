@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Check, PanelRightOpen, X } from 'lucide-react'
-import { PageHeader, Panel, Segmented, SourceIcon, sourceMeta } from './ui'
+import { PageHeader, Panel, Segmented, SourceIcon, SourceLabel } from './ui'
 import { ScanDrawer } from './ScanDrawer'
 import { brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
@@ -99,7 +99,7 @@ export function Cases() {
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center gap-2 whitespace-nowrap text-mist-300">
                           <SourceIcon source={c.source} className="size-7" />
-                          <T k={sourceMeta(c.source).k} />
+                          <SourceLabel source={c.source} />
                         </span>
                       </td>
                       <td className="px-4 py-3 text-mist-200">{brand ? <T text={brand} /> : '—'}</td>

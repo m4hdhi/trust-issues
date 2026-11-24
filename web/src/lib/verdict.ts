@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react'
 import type { Severity, Verdict } from './types'
 import type { StringKey } from './i18n'
 
@@ -36,8 +35,4 @@ export function verdictFromScore(score: number): Verdict {
   if (score >= 75) return 'scam'
   if (score >= 40) return 'suspicious'
   return 'safe'
-}
-
-export function verdictVars(v: Verdict): CSSProperties {
-  return { '--v': VERDICT_COLOR[v] } as CSSProperties
 }

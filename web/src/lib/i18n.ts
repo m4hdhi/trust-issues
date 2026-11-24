@@ -379,6 +379,7 @@ export const S = {
   src_nrd: { en: 'New domains', ar: 'نطاقات جديدة' },
   src_report: { en: 'Reports', ar: 'البلاغات' },
   src_batch: { en: 'Batch', ar: 'دفعة' },
+  src_scan: { en: 'Citizen check', ar: 'فحص من مواطن' },
 
   radarSub: { en: 'Live detections from every hunter', ar: 'رصد مباشر من جميع أدوات التعقّب' },
   live: { en: 'Live', ar: 'مباشر' },

@@ -8,7 +8,7 @@ from typing import Any
 from ..registry import Brand
 from ..schemas import Bilingual, DomainDiff, Severity, Signal
 
-SCAM_THRESHOLD = 70
+SCAM_THRESHOLD = 65
 SUSPICIOUS_THRESHOLD = 40
 
 

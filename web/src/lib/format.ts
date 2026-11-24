@@ -128,11 +128,6 @@ export function hostOf(url: string): string {
   }
 }
 
-export function clockTime(iso: string): string {
-  const d = new Date(toMs(iso))
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-}
-
 export function dateTime(iso: string): string {
   const d = new Date(toMs(iso))
   return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })

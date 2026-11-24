@@ -7,6 +7,7 @@ import {
   FileSpreadsheet,
   Flag,
   MapPin,
+  ScanSearch,
   Search,
   SpellCheck2,
   X,
@@ -24,10 +25,16 @@ export const SOURCE_META: Record<CaseSource, { icon: LucideIcon; color: string; 
   nrd: { icon: CalendarPlus, color: '#a78bfa', k: 'src_nrd' },
   report: { icon: Flag, color: '#ef4444', k: 'src_report' },
   batch: { icon: FileSpreadsheet, color: '#94a3b8', k: 'src_batch' },
+  scan: { icon: ScanSearch, color: '#14b8a6', k: 'src_scan' },
 }
 
 export function sourceMeta(source: string) {
   return SOURCE_META[source as CaseSource] ?? SOURCE_META.batch
+}
+
+export function SourceLabel({ source }: { source: string }) {
+  const meta = SOURCE_META[source as CaseSource]
+  return meta ? <T k={meta.k} /> : <span>{source}</span>
 }
 
 export function SourceIcon({ source, className = 'size-9' }: { source: string; className?: string }) {

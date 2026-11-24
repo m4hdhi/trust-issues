@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ShieldQuestion } from 'lucide-react'
-import { PageHeader, Panel, SOURCE_META, SourceIcon, sourceMeta } from './ui'
+import { PageHeader, Panel, SOURCE_META, SourceIcon, SourceLabel, sourceMeta } from './ui'
 import { ScanDrawer } from './ScanDrawer'
 import { brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
@@ -189,7 +189,7 @@ export function Radar() {
                         </p>
                         <p className="mt-0.5 truncate text-xs text-mist-400">
                           <span style={{ color: sourceMeta(r.source).color }}>
-                            <T k={sourceMeta(r.source).k} />
+                            <SourceLabel source={r.source} />
                           </span>
                           {brand && (
                             <span className="ms-2 text-mist-300">

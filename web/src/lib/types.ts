@@ -339,7 +339,7 @@ export interface BlockItem {
   scan_id: string | null
 }
 
-export type CaseSource = 'report' | 'ct' | 'search' | 'maps' | 'typosquat' | 'nrd' | 'batch'
+export type CaseSource = 'report' | 'ct' | 'search' | 'maps' | 'typosquat' | 'nrd' | 'batch' | 'scan'
 export type CaseStatus = 'pending' | 'confirmed' | 'rejected'
 
 export interface CaseItem {
