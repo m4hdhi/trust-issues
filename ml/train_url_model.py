@@ -233,7 +233,9 @@ def main() -> None:
 
     dcal_val = dcal.predict_proba(logit(pd_val).reshape(-1, 1))[:, 1]
     pd.DataFrame({"kind": "url", "label": y_val, "score": p_val, "url": val["url"]}).pipe(
-        lambda a: pd.concat([a, pd.DataFrame({"kind": "domain", "label": dval["label"], "score": dcal_val, "url": dval["url"]})])
+        lambda a: pd.concat(
+            [a, pd.DataFrame({"kind": "domain", "label": dval["label"], "score": dcal_val, "url": dval["url"]})]
+        )
     ).to_csv(PROCESSED / "validation_scores.csv.gz", index=False)
 
     sizes = {p.name: round(p.stat().st_size / 1e6, 2) for p in MODELS.iterdir() if p.is_file()}

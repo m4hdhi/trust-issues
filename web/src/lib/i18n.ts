@@ -510,6 +510,10 @@ export const S = {
   m_scams: { en: 'Scams', ar: 'الاحتيالات' },
   m_reports: { en: 'Reports', ar: 'البلاغات' },
   m_blocks: { en: 'Blocks', ar: 'الحظر' },
+  rocAuc: { en: 'ROC AUC', ar: 'المساحة تحت منحنى ROC' },
+  latencyPerUrl: { en: 'AI model time per link', ar: 'زمن النموذج لكل رابط' },
+  uaeLures: { en: 'UAE scam lures and their AI scores', ar: 'طُعوم احتيال إماراتية ودرجاتها في النموذج' },
+  bySource: { en: 'Results by test source', ar: 'النتائج حسب مصدر الاختبار' },
   noEval: { en: 'Run a labelled batch test to populate quality metrics.', ar: 'شغّل اختبار دفعة بعلامات لعرض مؤشرات الجودة.' },
 } satisfies Record<string, Bilingual>
 

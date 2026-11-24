@@ -73,16 +73,14 @@ export function TrendingCard({ item }: { item: TrendingItem }) {
       to={itemLink(item)}
       className="group block rounded-3xl border border-ink-600 bg-ink-800 p-5 transition-colors hover:border-ink-500"
     >
-      <div className="flex items-start gap-4">
-        <BrandMark brand={item.brand} className="size-12" />
-        <div className="min-w-0 flex-1">
-          <Tx text={item.headline} className="text-[17px] font-bold leading-snug text-paper" split="stack" />
-          <p className="mt-1.5 truncate font-mono text-sm text-mist-300" dir="ltr">
-            {item.domain}
-          </p>
-        </div>
+      <div className="flex items-center gap-3">
+        <BrandMark brand={item.brand} className="size-11" />
+        <p className="min-w-0 flex-1 truncate font-mono text-sm text-mist-300" dir="ltr">
+          {item.domain}
+        </p>
         <VerdictChip verdict={item.verdict} score={item.score} />
       </div>
+      <Tx text={item.headline} className="mt-4 text-[17px] font-bold leading-snug text-paper" split="stack" />
       <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
         <div className="rounded-2xl bg-ink-750 px-4 py-3">
           <div className="num text-2xl font-bold text-scam">{item.reports_24h}</div>

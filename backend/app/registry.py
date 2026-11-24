@@ -140,6 +140,9 @@ class Registry:
         for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
             if token in labels or (len(token) >= 5 and token in joined):
                 return self.brands[bid], "keyword", token
+        for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
+            if len(token) == 4 and any(lbl.startswith(token) and len(lbl) <= 10 for lbl in labels if lbl != token):
+                return self.brands[bid], "prefix", token
         reg_label = skeleton(registrable.split(".")[0])
         for dom, bid in self.official.items():
             off_label = dom.split(".")[0]

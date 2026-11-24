@@ -191,9 +191,23 @@ for _group, _names in {
     "length": ("host_len", "sld_len", "max_label_len"),
     "random": ("host_entropy", "sld_entropy", "sld_consonant_run", "sld_vowel_ratio"),
     "path": (
-        "url_len", "path_len", "query_len", "fragment_len", "n_segments", "max_segment_len", "url_digits",
-        "url_digit_ratio", "url_hyphens", "url_dots", "url_special", "url_slashes", "path_entropy", "hex_run",
-        "n_tokens", "max_token_len", "tilde",
+        "url_len",
+        "path_len",
+        "query_len",
+        "fragment_len",
+        "n_segments",
+        "max_segment_len",
+        "url_digits",
+        "url_digit_ratio",
+        "url_hyphens",
+        "url_dots",
+        "url_special",
+        "url_slashes",
+        "path_entropy",
+        "hex_run",
+        "n_tokens",
+        "max_token_len",
+        "tilde",
     ),
     "keywords": ("kw_host", "kw_path"),
     "uae_lure": ("uae_lure_host", "uae_lure_path"),
@@ -218,7 +232,9 @@ def _keywords(parsed: uf.ParsedUrl, words: tuple[str, ...]) -> str:
     return ", ".join(dict.fromkeys(hits[:4]))
 
 
-def _reason(key: str, feature: str, f: dict[str, float], p: uf.ParsedUrl, ctx: uf.FeatureContext) -> tuple[str, str] | None:
+def _reason(
+    key: str, feature: str, f: dict[str, float], p: uf.ParsedUrl, ctx: uf.FeatureContext
+) -> tuple[str, str] | None:
     tld = uf.tld_of(p)
     brands = _foreign_brands(p)
     brand = brands[0] if brands else ""
@@ -339,11 +355,17 @@ def _reason(key: str, feature: str, f: dict[str, float], p: uf.ParsedUrl, ctx: u
             "الرابط يحتوي على الرمز '@' الذي قد يُخفي الوجهة الحقيقية",
         )
     if key == "double_slash":
-        return ("Link contains a redirect-style double slash", "الرابط يحتوي على شرطتين مائلتين (//) بأسلوب إعادة التوجيه")
+        return (
+            "Link contains a redirect-style double slash",
+            "الرابط يحتوي على شرطتين مائلتين (//) بأسلوب إعادة التوجيه",
+        )
     if key == "has_port":
         return ("Link uses a non-standard network port", "الرابط يستخدم منفذ شبكة غير قياسي")
     if key == "http_in_path":
-        return ("Link embeds another web address (possible redirect)", "الرابط يتضمن عنوانًا إلكترونيًا آخر (إعادة توجيه محتملة)")
+        return (
+            "Link embeds another web address (possible redirect)",
+            "الرابط يتضمن عنوانًا إلكترونيًا آخر (إعادة توجيه محتملة)",
+        )
     if key == "email_in_url":
         return (
             "Link contains an email address, typical of targeted phishing kits",

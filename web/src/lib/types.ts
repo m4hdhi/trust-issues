@@ -432,15 +432,6 @@ export interface MapsHit {
   lng: number | null
 }
 
-export interface EvalMetrics {
-  precision: number
-  recall: number
-  f1: number
-  fpr: number
-  official_fp: number
-  n: number
-}
-
 export interface SeriesPoint {
   date: string
   scans: number
@@ -450,7 +441,7 @@ export interface SeriesPoint {
 }
 
 export interface MetricsResponse {
-  eval: EvalMetrics | null
+  eval: Record<string, unknown> | null
   series: SeriesPoint[]
 }
 

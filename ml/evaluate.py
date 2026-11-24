@@ -1,7 +1,8 @@
 """Evaluate the URL / domain models on the held-out time-split test set.
 
-* Picks the decision threshold on the validation split (never on test):
-  maximise F1 subject to FPR <= 1 %, and stores it in url_model_meta.json.
+* Splits the time-split test set by registrable-domain hash into a dev half
+  and a report half; picks the decision threshold on the dev half only
+  (maximise F1 subject to FPR <= 1 %) and stores it in url_model_meta.json.
 * Reports precision, recall, F1, ROC-AUC, FPR and the confusion matrix on the
   test set, per-source breakdowns, a long-tail slice (legit domains outside
   the Tranco top 100k), false positives on UAE official domains, and latency.
@@ -16,6 +17,7 @@ import json
 import statistics
 import sys
 import time
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -130,9 +132,21 @@ def main() -> None:
 
     val = pd.read_csv(PROCESSED / "validation_scores.csv.gz", keep_default_na=False)
     v_url = val[val["kind"] == "url"]
-    v_dom = val[val["kind"] == "domain"]
-    thr = pick_threshold(v_url["label"].to_numpy(), v_url["score"].to_numpy())
-    dthr = pick_threshold(v_dom["label"].to_numpy(), v_dom["score"].to_numpy())
+    val_thr = pick_threshold(v_url["label"].to_numpy(), v_url["score"].to_numpy())
+
+    test = pd.read_csv(PROCESSED / "test.csv.gz", keep_default_na=False)
+    urls = test["url"].tolist()
+    test["score"] = np.concatenate([model.score_urls(urls[i : i + 4096]) for i in range(0, len(urls), 4096)])
+    test["host"] = [uf.parse(u).host for u in urls]
+    test["dev"] = [zlib.crc32(d.encode()) % 2 == 0 for d in test["domain"]]
+    dev, rep = test[test["dev"]], test[~test["dev"]]
+    thr = pick_threshold(dev["label"].to_numpy(), dev["score"].to_numpy())
+
+    hosts = test.drop_duplicates("host")
+    hosts = hosts[hosts["host"] != ""].copy()
+    hosts["hscore"] = [model.score_domain(h) for h in hosts["host"]]
+    h_dev, h_rep = hosts[hosts["dev"]], hosts[~hosts["dev"]]
+    dthr = pick_threshold(h_dev["label"].to_numpy(), h_dev["hscore"].to_numpy())
 
     meta_path = uf.MODELS_DIR / META_FILE
     meta = json.loads(meta_path.read_text())
@@ -140,41 +154,39 @@ def main() -> None:
     meta_path.write_text(json.dumps(meta, indent=1))
     model.threshold, model.domain_threshold = thr, dthr
 
-    test = pd.read_csv(PROCESSED / "test.csv.gz", keep_default_na=False)
-    urls = test["url"].tolist()
-    scores = np.concatenate([model.score_urls(urls[i : i + 4096]) for i in range(0, len(urls), 4096)])
-    test["score"] = scores
-    y, s = test["label"].to_numpy(), test["score"].to_numpy()
-
+    y, s = rep["label"].to_numpy(), rep["score"].to_numpy()
     result: dict = {
         "generated": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "split": json.loads((PROCESSED / "summary.json").read_text()),
-        "threshold_selection": "max F1 on the validation split subject to FPR <= 1%; test set never used for tuning",
-        "validation": binary_metrics(v_url["label"].to_numpy(), v_url["score"].to_numpy(), thr),
+        "protocol": (
+            "train = PhiUSIIL + Phishing.Database + OpenPhish snapshots up to the train cutoff + legit crawl; "
+            "test = OpenPhish URLs first seen in the last 30 days + held-out legit domains; no registrable domain "
+            "is shared between train and test. The test set is split by domain hash into a dev half (used only to "
+            "pick the threshold: max F1 subject to FPR <= 1%) and a report half (all 'test' numbers below)."
+        ),
+        "validation": binary_metrics(v_url["label"].to_numpy(), v_url["score"].to_numpy(), val_thr),
         "test": binary_metrics(y, s, thr),
+        "test_dev_half": binary_metrics(dev["label"].to_numpy(), dev["score"].to_numpy(), thr),
     }
     result["test"]["recall_at_fpr_0.1pct"] = recall_at_fpr(y, s, 0.001)
     result["test"]["recall_at_fpr_1pct"] = recall_at_fpr(y, s, 0.01)
+    result["test_at_validation_threshold"] = binary_metrics(y, s, val_thr)
     result["test_threshold_0.5"] = binary_metrics(y, s, 0.5)
 
     by_source = {}
-    for src, g in test.groupby("source"):
+    for src, g in rep.groupby("source"):
         pred = g["score"] >= thr
         key = "recall" if g["label"].iloc[0] == 1 else "fpr"
         by_source[src] = {"n": int(len(g)), key: round(float(pred.mean()), 4)}
     result["test_by_source"] = by_source
 
-    ranked = test["domain"].map(lambda d: model.tranco_rank(d) is not None)
-    tail = test[(test["label"] == 1) | ~ranked]
+    ranked = rep["domain"].map(lambda d: model.tranco_rank(d) is not None)
+    tail = rep[(rep["label"] == 1) | ~ranked]
     result["test_long_tail"] = {
         "description": "legit URLs restricted to domains outside the Tranco top 100k (reputation feature cannot help)",
         **binary_metrics(tail["label"].to_numpy(), tail["score"].to_numpy(), thr),
     }
-
-    hosts = test.assign(host=[uf.parse(u).host for u in urls]).drop_duplicates("host")
-    hosts = hosts[hosts["host"] != ""]
-    hscores = np.array([model.score_domain(h) for h in hosts["host"]])
-    result["test_domain_model"] = binary_metrics(hosts["label"].to_numpy(), hscores, dthr)
+    result["test_domain_model"] = binary_metrics(h_rep["label"].to_numpy(), h_rep["hscore"].to_numpy(), dthr)
 
     result["uae_official"] = uae_check(model)
     result["illustrative_uae_lures"] = {
@@ -187,8 +199,8 @@ def main() -> None:
     }
     result["artifacts_total_mb"] = round(sum(result["artifacts_mb"].values()), 2)
 
-    fp_examples = test[(test["label"] == 0) & (test["score"] >= thr)].nlargest(15, "score")
-    fn_examples = test[(test["label"] == 1) & (test["score"] < thr)].nsmallest(15, "score")
+    fp_examples = rep[(rep["label"] == 0) & (rep["score"] >= thr)].nlargest(15, "score")
+    fn_examples = rep[(rep["label"] == 1) & (rep["score"] < thr)].nsmallest(15, "score")
     result["error_examples"] = {
         "false_positives": [[u, round(v, 3)] for u, v in zip(fp_examples["url"], fp_examples["score"])],
         "false_negatives": [[u, round(v, 3)] for u, v in zip(fn_examples["url"], fn_examples["score"])],
@@ -264,7 +276,7 @@ def latency(model: UrlModel, urls: list[str], load_s: float) -> dict:
 
 def summarize(r: dict) -> None:
     t = r["test"]
-    print(f"threshold={t['threshold']}  (validation FPR={r['validation']['fpr']})")
+    print(f"threshold={t['threshold']}  (dev-half FPR={r['test_dev_half']['fpr']})")
     print(
         f"TEST  n={t['n']} P={t['precision']} R={t['recall']} F1={t['f1']} "
         f"AUC={t.get('roc_auc')} FPR={t['fpr']} CM={t['confusion_matrix']}"
@@ -275,7 +287,9 @@ def summarize(r: dict) -> None:
     print(f"DOMAIN  n={d['n']} P={d['precision']} R={d['recall']} F1={d['f1']} AUC={d.get('roc_auc')} FPR={d['fpr']}")
     print("by source:", json.dumps(r["test_by_source"]))
     u = r["uae_official"]
-    print(f"UAE official: {u['false_positives']} FP / {u['n_urls_checked']} URLs; domain-model FP {u['domain_model_false_positives']}")
+    print(
+        f"UAE official: {u['false_positives']} FP / {u['n_urls_checked']} URLs; domain-model FP {u['domain_model_false_positives']}"
+    )
     print("latency:", json.dumps(r["latency"]))
     print(f"artifacts: {r['artifacts_total_mb']} MB")
 

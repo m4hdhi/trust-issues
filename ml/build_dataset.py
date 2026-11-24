@@ -52,28 +52,124 @@ CRAWL_ATTEMPTED = RAW / "legit_crawl_attempted.txt"
 COMMONCRAWL_FILE = RAW / "commoncrawl.csv"
 FOCUS_PATTERN = r"bank|\.gov|gov\.|police|ministry|\.mil|tax|customs|finance|credit|insur|\.ae$|post\.|court|health"
 CC_PATTERNS = (
-    [f"*.{h}" for h in (
-        "github.io", "notion.site", "vercel.app", "netlify.app", "pages.dev", "web.app", "firebaseapp.com",
-        "blogspot.com", "wordpress.com", "wixsite.com", "weebly.com", "webflow.io", "framer.website", "carrd.co",
-        "herokuapp.com", "gitbook.io", "substack.com", "myshopify.com", "square.site", "godaddysites.com",
-        "glitch.me", "surge.sh", "azurewebsites.net", "workers.dev", "sharepoint.com",
-    )]
+    [
+        f"*.{h}"
+        for h in (
+            "github.io",
+            "notion.site",
+            "vercel.app",
+            "netlify.app",
+            "pages.dev",
+            "web.app",
+            "firebaseapp.com",
+            "blogspot.com",
+            "wordpress.com",
+            "wixsite.com",
+            "weebly.com",
+            "webflow.io",
+            "framer.website",
+            "carrd.co",
+            "herokuapp.com",
+            "gitbook.io",
+            "substack.com",
+            "myshopify.com",
+            "square.site",
+            "godaddysites.com",
+            "glitch.me",
+            "surge.sh",
+            "azurewebsites.net",
+            "workers.dev",
+            "sharepoint.com",
+        )
+    ]
     + ["sites.google.com/*", "docs.google.com/*", "forms.gle/*", "storage.googleapis.com/*"]
-    + [f"{h}/*" for h in (
-        "bit.ly", "t.co", "tinyurl.com", "ow.ly", "buff.ly", "rebrand.ly", "cutt.ly", "is.gd", "lnkd.in",
-        "youtu.be", "amzn.to", "linktr.ee", "t.me", "wa.me", "aka.ms", "goo.gl",
-    )]
-    + [f"*.{d}" for d in (
-        "google.com", "microsoft.com", "live.com", "office.com", "apple.com", "paypal.com", "amazon.com",
-        "netflix.com", "facebook.com", "instagram.com", "whatsapp.com", "linkedin.com", "dhl.com", "fedex.com",
-        "ups.com", "usps.com", "chase.com", "wellsfargo.com", "bankofamerica.com", "hsbc.com", "coinbase.com",
-        "binance.com", "adobe.com", "dropbox.com", "docusign.com", "yahoo.com", "ebay.com", "steamcommunity.com",
-        "emiratesnbd.com", "adcb.com", "bankfab.com", "mashreq.com", "adib.ae", "dib.ae", "etisalat.ae",
-        "du.ae", "emirates.com", "etihad.com", "aramex.com", "noon.com", "careem.com", "dewa.gov.ae", "rta.ae",
-        "dubaipolice.gov.ae", "adpolice.gov.ae", "u.ae", "tamm.abudhabi", "icp.gov.ae", "moi.gov.ae",
-        "mohre.gov.ae", "salik.ae", "emiratespost.ae", "centralbank.ae", "uaepass.ae", "abudhabi.ae",
-        "dubai.ae", "sharjah.ae", "government.ae", "adnoc.ae", "addc.ae", "eand.com",
-    )]
+    + [
+        f"{h}/*"
+        for h in (
+            "bit.ly",
+            "t.co",
+            "tinyurl.com",
+            "ow.ly",
+            "buff.ly",
+            "rebrand.ly",
+            "cutt.ly",
+            "is.gd",
+            "lnkd.in",
+            "youtu.be",
+            "amzn.to",
+            "linktr.ee",
+            "t.me",
+            "wa.me",
+            "aka.ms",
+            "goo.gl",
+        )
+    ]
+    + [
+        f"*.{d}"
+        for d in (
+            "google.com",
+            "microsoft.com",
+            "live.com",
+            "office.com",
+            "apple.com",
+            "paypal.com",
+            "amazon.com",
+            "netflix.com",
+            "facebook.com",
+            "instagram.com",
+            "whatsapp.com",
+            "linkedin.com",
+            "dhl.com",
+            "fedex.com",
+            "ups.com",
+            "usps.com",
+            "chase.com",
+            "wellsfargo.com",
+            "bankofamerica.com",
+            "hsbc.com",
+            "coinbase.com",
+            "binance.com",
+            "adobe.com",
+            "dropbox.com",
+            "docusign.com",
+            "yahoo.com",
+            "ebay.com",
+            "steamcommunity.com",
+            "emiratesnbd.com",
+            "adcb.com",
+            "bankfab.com",
+            "mashreq.com",
+            "adib.ae",
+            "dib.ae",
+            "etisalat.ae",
+            "du.ae",
+            "emirates.com",
+            "etihad.com",
+            "aramex.com",
+            "noon.com",
+            "careem.com",
+            "dewa.gov.ae",
+            "rta.ae",
+            "dubaipolice.gov.ae",
+            "adpolice.gov.ae",
+            "u.ae",
+            "tamm.abudhabi",
+            "icp.gov.ae",
+            "moi.gov.ae",
+            "mohre.gov.ae",
+            "salik.ae",
+            "emiratespost.ae",
+            "centralbank.ae",
+            "uaepass.ae",
+            "abudhabi.ae",
+            "dubai.ae",
+            "sharjah.ae",
+            "government.ae",
+            "adnoc.ae",
+            "addc.ae",
+            "eand.com",
+        )
+    ]
 )
 CURATED_LISTS = [
     "https://raw.githubusercontent.com/EbookFoundation/free-programming-books/main/books/free-programming-books-langs.md",
@@ -102,8 +198,7 @@ TRAIN_GAP_DAYS = 7
 SEED = 42
 
 USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 )
 
 

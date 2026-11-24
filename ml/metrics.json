@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-24T13:20:48",
+  "generated": "2026-11-24T13:24:12",
   "split": {
     "test_window": [
       "2026-10-25",
@@ -101,7 +101,7 @@
       }
     ]
   },
-  "threshold_selection": "max F1 on the validation split subject to FPR <= 1%; test set never used for tuning",
+  "protocol": "train = PhiUSIIL + Phishing.Database + OpenPhish snapshots up to the train cutoff + legit crawl; test = OpenPhish URLs first seen in the last 30 days + held-out legit domains; no registrable domain is shared between train and test. The test set is split by domain hash into a dev half (used only to pick the threshold: max F1 subject to FPR <= 1%) and a report half (all 'test' numbers below).",
   "validation": {
     "n": 88687,
     "n_phishing": 50736,
@@ -121,113 +121,149 @@
     "pr_auc": 0.9869
   },
   "test": {
-    "n": 33519,
-    "n_phishing": 12667,
-    "n_legit": 20852,
-    "threshold": 0.8735,
-    "precision": 0.9674,
-    "recall": 0.9081,
-    "f1": 0.9368,
-    "fpr": 0.0186,
+    "n": 16953,
+    "n_phishing": 6423,
+    "n_legit": 10530,
+    "threshold": 0.9456,
+    "precision": 0.9805,
+    "recall": 0.8765,
+    "f1": 0.9256,
+    "fpr": 0.0106,
     "confusion_matrix": {
-      "tn": 20464,
-      "fp": 388,
-      "fn": 1164,
-      "tp": 11503
+      "tn": 10418,
+      "fp": 112,
+      "fn": 793,
+      "tp": 5630
     },
-    "roc_auc": 0.99,
-    "pr_auc": 0.9868,
-    "recall_at_fpr_0.1pct": 0.7628,
-    "recall_at_fpr_1pct": 0.8743
+    "roc_auc": 0.9901,
+    "pr_auc": 0.9869,
+    "recall_at_fpr_0.1pct": 0.7593,
+    "recall_at_fpr_1pct": 0.8751
+  },
+  "test_dev_half": {
+    "n": 16566,
+    "n_phishing": 6244,
+    "n_legit": 10322,
+    "threshold": 0.9456,
+    "precision": 0.9815,
+    "recall": 0.8736,
+    "f1": 0.9244,
+    "fpr": 0.01,
+    "confusion_matrix": {
+      "tn": 10219,
+      "fp": 103,
+      "fn": 789,
+      "tp": 5455
+    },
+    "roc_auc": 0.9899,
+    "pr_auc": 0.9868
+  },
+  "test_at_validation_threshold": {
+    "n": 16953,
+    "n_phishing": 6423,
+    "n_legit": 10530,
+    "threshold": 0.8735,
+    "precision": 0.9664,
+    "recall": 0.9095,
+    "f1": 0.9371,
+    "fpr": 0.0193,
+    "confusion_matrix": {
+      "tn": 10327,
+      "fp": 203,
+      "fn": 581,
+      "tp": 5842
+    },
+    "roc_auc": 0.9901,
+    "pr_auc": 0.9869
   },
   "test_threshold_0.5": {
-    "n": 33519,
-    "n_phishing": 12667,
-    "n_legit": 20852,
+    "n": 16953,
+    "n_phishing": 6423,
+    "n_legit": 10530,
     "threshold": 0.5,
-    "precision": 0.8889,
-    "recall": 0.9684,
-    "f1": 0.927,
-    "fpr": 0.0735,
+    "precision": 0.8865,
+    "recall": 0.9695,
+    "f1": 0.9262,
+    "fpr": 0.0757,
     "confusion_matrix": {
-      "tn": 19319,
-      "fp": 1533,
-      "fn": 400,
-      "tp": 12267
+      "tn": 9733,
+      "fp": 797,
+      "fn": 196,
+      "tp": 6227
     },
-    "roc_auc": 0.99,
-    "pr_auc": 0.9868
+    "roc_auc": 0.9901,
+    "pr_auc": 0.9869
   },
   "test_by_source": {
     "commoncrawl": {
-      "n": 154,
-      "fpr": 0.1494
+      "n": 93,
+      "fpr": 0.043
     },
     "crawl": {
-      "n": 7903,
-      "fpr": 0.0118
+      "n": 4015,
+      "fpr": 0.0072
     },
     "crawl_external": {
-      "n": 2443,
-      "fpr": 0.0426
+      "n": 1205,
+      "fpr": 0.034
     },
     "curated_lists": {
-      "n": 1329,
-      "fpr": 0.0497
+      "n": 667,
+      "fpr": 0.018
     },
     "openphish_recent": {
-      "n": 12667,
-      "recall": 0.9081
+      "n": 6423,
+      "recall": 0.8765
     },
     "phiusiil": {
-      "n": 6000,
-      "fpr": 0.0023
+      "n": 3011,
+      "fpr": 0.0013
     },
     "tranco_homepage": {
-      "n": 3000,
-      "fpr": 0.0293
+      "n": 1529,
+      "fpr": 0.0144
     },
     "uae_official": {
-      "n": 23,
+      "n": 10,
       "fpr": 0.0
     }
   },
   "test_long_tail": {
     "description": "legit URLs restricted to domains outside the Tranco top 100k (reputation feature cannot help)",
-    "n": 27268,
-    "n_phishing": 12667,
-    "n_legit": 14601,
-    "threshold": 0.8735,
-    "precision": 0.9692,
-    "recall": 0.9081,
-    "f1": 0.9376,
-    "fpr": 0.0251,
+    "n": 13787,
+    "n_phishing": 6423,
+    "n_legit": 7364,
+    "threshold": 0.9456,
+    "precision": 0.981,
+    "recall": 0.8765,
+    "f1": 0.9258,
+    "fpr": 0.0148,
     "confusion_matrix": {
-      "tn": 14235,
-      "fp": 366,
-      "fn": 1164,
-      "tp": 11503
+      "tn": 7255,
+      "fp": 109,
+      "fn": 793,
+      "tp": 5630
     },
-    "roc_auc": 0.9869,
+    "roc_auc": 0.987,
     "pr_auc": 0.9876
   },
   "test_domain_model": {
-    "n": 25360,
-    "n_phishing": 11162,
-    "n_legit": 14198,
-    "threshold": 0.9135,
-    "precision": 0.9633,
-    "recall": 0.8442,
-    "f1": 0.8998,
-    "fpr": 0.0253,
+    "n": 12732,
+    "n_phishing": 5614,
+    "n_legit": 7118,
+    "threshold": 0.969,
+    "precision": 0.9863,
+    "recall": 0.7836,
+    "f1": 0.8733,
+    "fpr": 0.0086,
     "confusion_matrix": {
-      "tn": 13839,
-      "fp": 359,
-      "fn": 1739,
-      "tp": 9423
+      "tn": 7057,
+      "fp": 61,
+      "fn": 1215,
+      "tp": 4399
     },
-    "roc_auc": 0.9656,
-    "pr_auc": 0.9676
+    "roc_auc": 0.9652,
+    "pr_auc": 0.9673
   },
   "uae_official": {
     "note": "sanity check, not a held-out metric: pages of these official domains are part of the legitimate training data (about 80% of the domains; the rest fall in the test split)",
@@ -253,13 +289,13 @@
     }
   },
   "latency": {
-    "load_s": 0.085,
-    "score_url_ms_mean": 0.225,
-    "score_url_ms_p99": 0.371,
-    "score_urls_batch_ms_per_url": 0.1114,
-    "score_domain_ms_mean": 0.083,
-    "score_domain_ms_p99": 0.14,
-    "explain_ms_mean": 6.992
+    "load_s": 0.073,
+    "score_url_ms_mean": 0.257,
+    "score_url_ms_p99": 0.568,
+    "score_urls_batch_ms_per_url": 0.0888,
+    "score_domain_ms_mean": 0.106,
+    "score_domain_ms_p99": 0.545,
+    "explain_ms_mean": 6.955
   },
   "artifacts_mb": {
     "domain_lgbm.txt": 2.05,
@@ -289,35 +325,11 @@
         1.0
       ],
       [
-        "https://rocs771778-efcwgbhjczbxbed8.a02.azurefd.net/",
-        0.999
-      ],
-      [
         "https://ispxwld2-download.azureedge.net/release/uploaded/application/f9bbbb0f1fadc36435c2a01be8b4f9029dca46d5782a7597b7d42d6beff29b0a/InspixWorldLauncherSetup.exe?v=f9bbbb0f1fadc36435c2a01be8b4f9029dca46d5782a7597b7d42d6beff29b0a",
         0.999
       ],
       [
-        "https://whistleblowing-portal.webnode.page/",
-        0.999
-      ],
-      [
-        "https://madrollindollsmerch.square.site/",
-        0.999
-      ],
-      [
-        "https://networkingfromscratch.vercel.app",
-        0.998
-      ],
-      [
-        "https://dte-institute-list.netlify.app/",
-        0.998
-      ],
-      [
         "https://hanjinchatbot-web.azurewebsites.net/",
-        0.998
-      ],
-      [
-        "https://afflat3b3.com/trk/lnk/70493105-047B-4C8F-A923-8E94EBAF3647/?o=31555&amp;c=918277&amp;a=670214&amp;k=9DEC97ED14879688E13FD9157386768E&amp;l=37101",
         0.998
       ],
       [
@@ -331,40 +343,44 @@
       [
         "https://inventory.rawsec.ml/index.html",
         0.997
+      ],
+      [
+        "https://www.tara777help.com/chat/pc/v6/index.html?sysnum=1d62401534f549b69071d723a8615057",
+        0.997
+      ],
+      [
+        "https://download.myluck.click/app/",
+        0.996
+      ],
+      [
+        "https://www.yasamin.page/hdnet_tiktok",
+        0.995
+      ],
+      [
+        "https://920269.click/",
+        0.995
+      ],
+      [
+        "https://mb-168.com/facebook",
+        0.994
+      ],
+      [
+        "https://alpinebank.auth.razr-jackhenry.com/2798000000308",
+        0.994
       ]
     ],
     "false_negatives": [
       [
-        "https://eg1xbet.com/en/games/under-and-over-seven",
-        0.0
-      ],
-      [
         "https://desiaustralia.com/news/community/teej-mahotsav-brings-thousands-together-in-celebration-and-solidarity",
         0.0
-      ],
-      [
-        "http://www.motorola.com/us/en/smartphones/",
-        0.001
       ],
       [
         "https://pandemicrecords2020.com/products/the-weeknd-hurry-up-tomorrow-limited-edition-crystal-clear-color-vinyl-lp/",
         0.003
       ],
       [
-        "https://royalcollege.lk/clubs-and-societies/radio-club/",
-        0.004
-      ],
-      [
-        "https://eg1xbet.com/en/live/football/2590430-mls",
-        0.005
-      ],
-      [
         "https://bank-of-america.ai.studio/en/saving-budgeting/",
         0.011
-      ],
-      [
-        "https://www.awscfdns.com/customer-preferences/edit",
-        0.013
       ],
       [
         "https://www.the-hole-picture.com/articles/",
@@ -375,24 +391,44 @@
         0.017
       ],
       [
-        "https://qr-codes.io/ClLXCX",
-        0.022
-      ],
-      [
         "https://chatgpt0005.eu.org/blog/save-and-display-your-faves-add-discord-shop-marvel-rivals-items-to-your-profiles-wishlist/",
         0.027
       ],
       [
-        "https://qr-codes.io/qMGrEq",
-        0.027
+        "https://zagrosnova.com/docs/",
+        0.03
       ],
       [
-        "https://pcswap.org/liquidity/pools/",
-        0.028
+        "https://internationaldatasystems.ca/speed/",
+        0.032
       ],
       [
-        "https://2h.ae/eJceI",
-        0.028
+        "http://moviesplitter.com/",
+        0.032
+      ],
+      [
+        "https://lucas-design.com/",
+        0.039
+      ],
+      [
+        "https://www.vergidairesi.org/",
+        0.044
+      ],
+      [
+        "http://bnbvf.org/",
+        0.048
+      ],
+      [
+        "http://www.alignityx.ai/alignityx.ai/srconsult/",
+        0.05
+      ],
+      [
+        "https://jasejournals.com/",
+        0.054
+      ],
+      [
+        "https://smarto.agency/privacy-policy/",
+        0.056
       ]
     ]
   }

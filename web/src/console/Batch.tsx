@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { CheckCircle2, Download, FileSpreadsheet, FileUp, RotateCcw, XCircle } from 'lucide-react'
 import { PageHeader, Panel } from './ui'
+import { Confusion } from './Confusion'
 import { VerdictChip } from '../components/VerdictChip'
 import { Spinner } from '../components/States'
 import { T, Tx } from '../lib/lang'
 import { consoleApi } from '../lib/api'
 import { num, pct } from '../lib/format'
 import type { StringKey } from '../lib/i18n'
-import type { BatchMetrics, BatchStatus, Verdict } from '../lib/types'
+import type { BatchStatus, Verdict } from '../lib/types'
 
 const SAMPLE = 'url,label\nhttps://adpolice-fines-pay.com/pay,scam\nhttps://www.emiratesnbd.com/en,safe\nhttps://salik-recharge-ae.com/topup,scam\nhttps://www.tamm.abudhabi/,safe\n'
 const VERDICTS: Verdict[] = ['safe', 'suspicious', 'scam', 'unknown']
@@ -23,41 +24,6 @@ function MetricTile({ k, value }: { k: StringKey; value: number | undefined }) {
         <T k={k} />
       </p>
       <p className="num mt-1 text-3xl font-extrabold tracking-tight text-paper">{pct(value, 1)}</p>
-    </div>
-  )
-}
-
-function Confusion({ m }: { m: BatchMetrics }) {
-  const cell = (label: string, value: number, good: boolean) => (
-    <div className={`rounded-xl p-4 text-center ${good ? 'bg-safe/15 text-safe' : 'bg-scam/15 text-scam'}`}>
-      <p className="num text-2xl font-extrabold">{num(value)}</p>
-      <p className="mt-0.5 font-mono text-[11px] font-semibold opacity-80">{label}</p>
-    </div>
-  )
-  return (
-    <div>
-      <p className="mb-3 text-sm font-semibold text-paper">
-        <T k="confusion" />
-      </p>
-      <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-2 text-xs text-mist-400" dir="ltr">
-        <span />
-        <span className="text-center">
-          <T k="predicted" /> scam
-        </span>
-        <span className="text-center">
-          <T k="predicted" /> safe
-        </span>
-        <span className="pe-2 text-end">
-          <T k="actual" /> scam
-        </span>
-        {cell('TP', m.tp, true)}
-        {cell('FN', m.fn, false)}
-        <span className="pe-2 text-end">
-          <T k="actual" /> safe
-        </span>
-        {cell('FP', m.fp, false)}
-        {cell('TN', m.tn, true)}
-      </div>
     </div>
   )
 }

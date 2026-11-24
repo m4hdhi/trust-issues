@@ -731,7 +731,37 @@ export const mapsHits: MapsHit[] = [
 ]
 
 export const metrics: MetricsResponse = {
-  eval: { precision: 0.964, recall: 0.941, f1: 0.952, fpr: 0.012, official_fp: 0, n: 1200 },
+  eval: {
+    generated: new Date(NOW - 3 * H * 60_000).toISOString(),
+    threshold_selection: 'max F1 on the validation split subject to FPR <= 1%; test set never used for tuning',
+    test: {
+      n: 33519,
+      threshold: 0.8735,
+      precision: 0.9674,
+      recall: 0.9081,
+      f1: 0.9368,
+      fpr: 0.0186,
+      roc_auc: 0.99,
+      recall_at_fpr_1pct: 0.8743,
+      confusion_matrix: { tn: 20464, fp: 388, fn: 1164, tp: 11503 },
+    },
+    test_by_source: {
+      openphish_recent: { n: 12667, recall: 0.9081 },
+      tranco_homepage: { n: 3000, fpr: 0.0293 },
+      uae_official: { n: 23, fpr: 0 },
+    },
+    uae_official: { n_domains: 399, n_urls_checked: 1263, false_positives: 0 },
+    illustrative_uae_lures: {
+      scores: {
+        'https://rta-ae-pay.top/fines/pay': 0.9988,
+        'salik-uae-toll.info/pay?ref=8812': 0.9635,
+        'https://dubaipolice-gov.com/traffic-fine/login': 0.8365,
+        'http://emiratesnbd-secure-update.xyz/verify': 1,
+        'tamm-fines.com': 0.6154,
+      },
+    },
+    latency: { score_url_ms_mean: 0.225, score_url_ms_p99: 0.371 },
+  },
   series: Array.from({ length: 14 }, (_, i) => {
     const day = new Date(NOW - (13 - i) * D)
     const wave = Math.sin(i / 2) * 40

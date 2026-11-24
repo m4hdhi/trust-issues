@@ -294,8 +294,9 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
     if imp and not anchored:
         brand, method, token = imp
         impersonated = brand
-        if method == "keyword":
-            sig.add("brand_in_domain", "url", 1.2 if p.suffix == "ae" else 2.2, f"Uses the name '{token}' ({brand.name_en}) in a domain {brand.name_en} does not own",
+        if method in ("keyword", "prefix"):
+            base_w = 2.2 if method == "keyword" else 1.2
+            sig.add("brand_in_domain", "url", base_w / 2 if p.suffix == "ae" else base_w, f"Uses the name '{token}' ({brand.name_en}) in a domain {brand.name_en} does not own",
                     f"يستخدم اسم '{token}' ({brand.name_ar}) في نطاق لا تملكه {brand.name_ar}", brand=brand.id, token=token)
         else:
             sig.add("lookalike_domain", "url", 3.5, f"Look-alike of the official domain {token}",

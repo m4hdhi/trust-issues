@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import json
 import logging
+import time
 from contextlib import asynccontextmanager
 from datetime import timedelta
 from typing import Any, Literal
@@ -21,13 +22,13 @@ from sse_starlette.sse import EventSourceResponse
 from . import batch, bus, db, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
-from .detectors import ai_anthropic, anchors, feeds
+from .detectors import ai_anthropic, anchors, feeds, message_rules
 from .detectors.render import sandbox
 from .dns import doh, profile
 from .evidence import card, pdf, takedown
 from .graph.campaigns import global_graph
 from .http import close as close_http
-from .hunters import ct, radar, serp, typosquat
+from .hunters import ct, feedwatch, radar, serp, typosquat
 from .notify import webpush
 from .pipeline import instant, url_model_or_none
 from .registry import BRANDS_DIR, get_registry
@@ -67,6 +68,7 @@ async def lifespan(_: FastAPI):
             asyncio.create_task(_every(6 * 3600, typosquat.sweep_typosquats, initial_delay=120)),
             asyncio.create_task(_every(12 * 3600, typosquat.sweep_nrd, initial_delay=300)),
             asyncio.create_task(_every(6 * 3600, serp.sweep, initial_delay=600)),
+            asyncio.create_task(_every(3 * 3600, feedwatch.sweep, initial_delay=90)),
         ]
     yield
     for j in jobs:
@@ -126,7 +128,20 @@ async def health() -> dict[str, Any]:
     }
 
 
-@app.post("/api/scans")
+_hits: dict[str, list[float]] = {}
+
+
+def rate_limit(request: Request, per_minute: int = 30) -> None:
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+    now = time.time()
+    window = [t for t in _hits.get(ip, []) if now - t < 60]
+    if len(window) >= per_minute:
+        raise HTTPException(429, "too many requests, please wait a minute")
+    window.append(now)
+    _hits[ip] = window
+
+
+@app.post("/api/scans", dependencies=[Depends(rate_limit)])
 async def create_scan(body: ScanIn) -> dict[str, Any]:
     text = body.input.strip()
     if not text:
@@ -140,14 +155,17 @@ async def create_scan(body: ScanIn) -> dict[str, Any]:
             urls = []
     started = [{"id": scans.start(u, mode=body.mode, source=body.source), "url": u} for u in urls[:5]]
     message = None
-    if is_message and ai_anthropic.available():
-        try:
-            m = await asyncio.wait_for(ai_anthropic.analyze_message(text), 30)
-            message = {"is_scam_text": m["is_scam"], "score": m["score"], "scam_type": m["scam_type"],
-                       "brand_id": m.get("impersonated_brand_id"), "reasons": {"en": m["reasons_en"], "ar": m["reasons_ar"]},
-                       "urls_found": urls}
-        except Exception as exc:
-            log.info("message analysis failed: %s", exc)
+    if is_message:
+        m = None
+        if ai_anthropic.available():
+            try:
+                m = await asyncio.wait_for(ai_anthropic.analyze_message(text), 30)
+            except Exception as exc:
+                log.info("AI message analysis failed, using rules: %s", exc)
+        m = m or message_rules.analyze(text)
+        message = {"is_scam_text": m["is_scam"], "score": m["score"], "scam_type": m["scam_type"],
+                   "brand_id": m.get("impersonated_brand_id"), "reasons": {"en": m["reasons_en"], "ar": m["reasons_ar"]},
+                   "urls_found": urls}
     if not started and message is None:
         raise HTTPException(422, "no link found in the input")
     return {"scans": started, "message": message}
@@ -228,7 +246,7 @@ async def takedown_drafts(scan_id: str) -> dict[str, Any]:
     return takedown.drafts(_result_or_404(scan_id))
 
 
-@app.post("/api/reports")
+@app.post("/api/reports", dependencies=[Depends(rate_limit)])
 async def create_report(body: ReportIn) -> dict[str, Any]:
     try:
         return reports.submit(body.url, body.channel, body.note, body.device_id)

@@ -138,8 +138,8 @@
   "coef": 0.9213197240050641,
   "intercept": 0.016395313182710352
  },
- "threshold": 0.8735,
- "domain_threshold": 0.9135,
+ "threshold": 0.9456,
+ "domain_threshold": 0.969,
  "train_rows": 589687,
  "train_phishing_share": 0.5761
 }

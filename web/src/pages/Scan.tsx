@@ -154,7 +154,14 @@ export function Scan() {
           </motion.div>
         ) : phase === 'done' && result ? (
           <motion.div key="verdict" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-            <VerdictView result={result} message={nav?.message} animated />
+            <VerdictView
+              result={result}
+              message={nav?.message}
+              animated
+              onReported={() => {
+                void api.getScan(id).then((r) => r && setResult(r))
+              }}
+            />
           </motion.div>
         ) : (
           <motion.div key="problem" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-lg py-10">
