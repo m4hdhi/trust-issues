@@ -38,6 +38,8 @@ Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes 
 
 <p align="center"><img src="docs/screens/mobile_home.png" width="200" alt="Mobile home"> <img src="docs/screens/mobile_verdict.png" width="200" alt="Mobile verdict"> <img src="docs/screens/mobile_protect.png" width="200" alt="Protect my phone"> <img src="docs/screens/mobile_trending.png" width="200" alt="Trending scams"></p>
 
+**1-minute demo video:** [`docs/Trust-Issues-Demo.mp4`](docs/Trust-Issues-Demo.mp4), recorded from the running product on live data.
+
 **Pitch deck:** [`docs/Trust-Issues-ScamShield.pptx`](docs/Trust-Issues-ScamShield.pptx) and [PDF](docs/Trust-Issues-ScamShield.pdf). The animated version is [`docs/deck/index.html`](docs/deck/index.html): open it in a browser and use the arrow keys.
 
 ## 3. How detection works
