@@ -75,7 +75,7 @@ The full system was also run in fast mode (no sandbox, no AI, **live feeds switc
 
 | Test set | Precision | Recall | F1 | False positives |
 |---|---|---|---|---|
-| 150 live phishing URLs + 411 official UAE bank and government sites | **1.000** | 0.933 | 0.966 | **0 / 411** |
+| 150 live phishing URLs + 411 official UAE bank and government sites | **1.000** | 0.967 | 0.983 | **0 / 411** |
 | 1,200 held-out real URLs (600 phishing first seen after the training cutoff + 600 legitimate, unseen domains) | 0.974 | 0.935 | 0.954 | 15 / 600 |
 
 With live feeds, the sandbox and the AI judges switched on (the default for single scans), recall rises further: known phishing is matched instantly, and unknown pages are judged visually.
@@ -125,8 +125,8 @@ npm run dev        # http://localhost:5173 (proxies /api to :8000)
 ### Batch-test a list of URLs (for the hidden test set)
 ```bash
 cd backend
-uv run trust-issues scan your_urls.csv -o results.csv          # fast mode, thousands of URLs
-uv run trust-issues scan your_urls.csv -o results.csv --deep   # also sandbox + AI for uncertain URLs
+uv run python -m app.cli scan your_urls.csv -o results.csv          # fast mode, thousands of URLs
+uv run python -m app.cli scan your_urls.csv -o results.csv --deep   # also sandbox + AI for uncertain URLs
 ```
 The CSV needs a `url` column (or one URL per line). If it also has a `label` column (`phishing`/`legitimate` or `1`/`0`), precision, recall and F1 are printed. You can also upload the same CSV in **Console → Batch test**.
 
