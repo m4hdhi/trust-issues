@@ -20,12 +20,12 @@ export function Trending() {
   }, [setData])
 
   return (
-    <div className="shell pt-12 pb-16 lg:pt-20 lg:pb-24">
+    <div className="shell pt-8 pb-8 lg:pt-10 lg:pb-10">
       <Reveal as="header" className="max-w-3xl">
         <Tx k="trendingTitle" as="h1" className="display text-4xl text-paper sm:text-5xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
         <Tx k="trendingSub" className="mt-4 max-w-[60ch] text-lg text-paper-2" split="stack" />
       </Reveal>
-      <div className="mt-12">
+      <div className="mt-8">
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }, (_, i) => (

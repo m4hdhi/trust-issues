@@ -44,14 +44,14 @@ export function Join() {
   }
   if (error || !info) {
     return (
-      <div className="shell py-16">
+      <div className="shell py-8">
         <ErrorState message={error instanceof ApiError && error.status === 404 ? 'joinNotFound' : 'loadFailed'} />
       </div>
     )
   }
   if (devFailed || !reg) {
     return (
-      <div className="shell py-16">
+      <div className="shell py-8">
         <ErrorState message="deviceFailed" onRetry={retry} />
       </div>
     )
@@ -59,7 +59,7 @@ export function Join() {
 
   const guardian = info.guardians[0] ?? ''
   return (
-    <section className="shell grid-12 gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
+    <section className="shell grid-12 gap-y-10 pt-8 pb-8 lg:pt-10 lg:pb-10">
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
         <p className="evidence text-sm text-gold">
           {info.family} · <T k="famKicker" />
@@ -112,7 +112,7 @@ export function Join() {
         )}
       </Reveal>
       {joined && (
-        <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+        <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
           <TestProtection />
           <Alerts deviceId={reg.device_id} />
         </div>

@@ -172,7 +172,7 @@ export function Account() {
 
   if (failed) {
     return (
-      <div className="shell py-16">
+      <div className="shell py-8">
         <ErrorState message="deviceFailed" onRetry={retry} />
       </div>
     )
@@ -238,7 +238,7 @@ export function Account() {
   }
 
   return (
-    <section className="shell pt-8 pb-24 sm:pt-12">
+    <section className="shell pt-8 pb-10 sm:pt-10">
       <div className="max-w-xl">
         <p className="evidence text-sm text-gold">
           <T k="famKicker" />

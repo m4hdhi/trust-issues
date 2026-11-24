@@ -286,11 +286,11 @@ export function Protect() {
 
   return (
     <div>
-      <section className="shell grid-12 items-center gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
+      <section className="shell grid-12 items-center gap-y-10 pt-8 pb-8 lg:pt-10 lg:pb-10">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
           <Tx k="protectTitle" as="h1" className="display text-4xl text-paper sm:text-5xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
           <Tx k="protectBody" className="mt-6 max-w-[60ch] text-lg text-paper-2" split="stack" />
-          <Stagger as="div" className="mt-12 grid gap-x-8 sm:grid-cols-3" gap={0.08}>
+          <Stagger as="div" className="mt-8 grid gap-x-8 sm:grid-cols-3" gap={0.08}>
             {HOW.map((k, i) => (
               <StaggerItem key={k} className="border-t border-line pt-4 pb-6">
                 <span className="evidence num text-sm text-gold">{i + 1}</span>
@@ -306,7 +306,7 @@ export function Protect() {
       </section>
 
       <section className="border-t border-line bg-ink-850">
-        <div className="shell grid-12 gap-y-16 py-16 lg:py-24">
+        <div className="shell grid-12 gap-y-10 py-8 lg:py-10">
           <div className="col-span-4 sm:col-span-8 lg:col-span-7">
             <SectionHead index={1} title="setupTitle" />
             <div role="tablist" aria-label={t('navProtect')} className="mt-8 inline-flex h-12 rounded-lg bg-ink-900 p-1">
@@ -330,7 +330,7 @@ export function Protect() {
               {failed ? (
                 <ErrorState message="deviceFailed" onRetry={() => setAttempt((a) => a + 1)} />
               ) : !reg ? (
-                <div className="flex items-center gap-3 py-12 text-base text-paper-3">
+                <div className="flex items-center gap-3 py-8 text-base text-paper-3">
                   <Spinner />
                   <T k="settingUp" />
                 </div>
@@ -343,7 +343,7 @@ export function Protect() {
               )}
             </div>
           </div>
-          <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+          <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
             {reg && <TestProtection />}
             {reg && <Alerts deviceId={reg.device_id} />}
             {reg && <Blocks deviceId={reg.device_id} />}

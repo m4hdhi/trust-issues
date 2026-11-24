@@ -58,7 +58,7 @@ const STEPS: { title: StringKey; body: StringKey }[] = [
 
 function HowItWorks() {
   return (
-    <section className="shell py-16 lg:py-24">
+    <section className="shell py-8 lg:py-10">
       <SectionHead title="howTitle" />
       <Stagger className="mt-10 flex flex-col items-stretch gap-3 lg:flex-row" gap={0.1}>
         {STEPS.map((s, i) => (
@@ -85,7 +85,7 @@ function HowItWorks() {
 function BrandWall({ brands }: { brands: BrandRef[] }) {
   const row = brands.length ? brands : null
   return (
-    <section className="py-16 lg:py-24">
+    <section className="py-8 lg:py-10">
       <div className="shell">
         <SectionHead title="brandsTitle" />
         <Tx text={fill(S.brandsSub, { n: brands.length || 49 })} className="mt-4 max-w-[60ch] text-base text-paper-2" />
@@ -114,7 +114,7 @@ function TrendingPreview() {
   const items = data?.slice(0, 5) ?? []
   if (!loading && items.length === 0) return null
   return (
-    <section className="shell py-16 lg:py-24">
+    <section className="shell py-8 lg:py-10">
       <SectionHead
         title="trendingTitle"
         sub="trendingSub"
@@ -141,7 +141,7 @@ function TrendingPreview() {
 function ProtectBand() {
   return (
     <section className="px-3 sm:px-6">
-      <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] items-center gap-y-12 rounded-[2rem] px-6 py-14 sm:px-10 lg:px-14 lg:py-20">
+      <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] items-center gap-y-10 rounded-[2rem] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
             <Tx k="protectCtaTitle" as="h2" className="display text-3xl text-paper sm:text-4xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
           <Tx k="protectCtaBody" className="mt-4 max-w-[52ch] text-lg text-paper-2" split="stack" />
@@ -160,8 +160,8 @@ function ProtectBand() {
 
 function FamilyBand() {
   return (
-    <section className="px-3 py-10 sm:px-6 lg:py-14">
-      <div className="field-dawn grid-12 mx-auto max-w-[1232px] items-center gap-y-8 rounded-[2rem] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+    <section className="px-3 py-6 sm:px-6">
+      <div className="field-dawn grid-12 mx-auto max-w-[1232px] items-center gap-y-8 rounded-[2rem] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
             <Tx k="famBandTitle" as="h2" className="display text-3xl text-paper sm:text-4xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
           <Tx k="famBandBody" className="mt-4 max-w-[56ch] text-lg text-paper-2" split="stack" />
@@ -183,10 +183,10 @@ export function Home() {
   const { data: brands } = useAsync(() => api.brands(), [])
   return (
     <>
-      <section className="shell grid-12 gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
+      <section className="shell grid-12 gap-y-10 pt-8 pb-8 lg:pt-10 lg:pb-10">
         <div className="col-span-4 sm:col-span-8 lg:col-span-7">
           <Headline />
-          <div className="mt-8 lg:mt-12">
+          <div className="mt-8 lg:mt-10">
             <Composer initial={params.get('u') ?? ''} openQr={params.get('qr') === '1'} />
           </div>
           <Tx k="heroSub" className="mt-8 max-w-[60ch] text-base text-paper-2" split="stack" />

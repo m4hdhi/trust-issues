@@ -145,7 +145,7 @@ export function Scan() {
     : (stages.trust?.detail ?? (nav?.url ? hostOf(nav.url) : ''))
 
   return (
-    <div className="shell pt-8 pb-16 lg:pt-12 lg:pb-24">
+    <div className="shell pt-8 pb-8 lg:pt-10 lg:pb-10">
       <AnimatePresence mode="wait">
         {phase === 'running' || (phase === 'done' && !result) ? (
           <motion.div key="pipeline" exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}>
@@ -164,7 +164,7 @@ export function Scan() {
             />
           </motion.div>
         ) : (
-          <motion.div key="problem" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-lg py-12">
+          <motion.div key="problem" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-lg py-8">
             <ErrorState
               message={phase === 'notfound' ? 'scanNotFound' : 'loadFailed'}
               onRetry={phase === 'error' ? () => setAttempt((a) => a + 1) : undefined}

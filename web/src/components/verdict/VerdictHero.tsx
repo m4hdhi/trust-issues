@@ -156,7 +156,7 @@ export function VerdictHero({ result, animated }: { result: ScanResult; animated
         {sha && <span className="evidence hidden sm:inline">sha256 {sha.slice(0, 12)}…</span>}
       </div>
 
-      <div className="grid-12 gap-y-12 pt-12 lg:pt-16">
+      <div className="grid-12 gap-y-10 pt-8 lg:pt-10">
         <div className="col-span-4 sm:col-span-8 lg:col-span-4">
           <Dial score={result.score} color={color} animated={play} />
         </div>

@@ -128,17 +128,17 @@ export function VerdictView({ result, message, animated = false, showActions = t
         initial={play ? { opacity: 0, y: 16 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: play ? 0.7 : 0, ease: EASE_OUT }}
-        className="mt-12 space-y-8"
+        className="mt-8 space-y-8"
       >
         {showActions && <ActionsBar result={result} onReported={onReported} />}
         <WhatToDo verdict={result.verdict} />
       </motion.div>
       {message && (
-        <div className="mt-12">
+        <div className="mt-8">
           <MessageAnalysisCard message={message} />
         </div>
       )}
-      <div className="mt-12">
+      <div className="mt-8">
         {exhibits.map((ex, i) => (
           <Exhibit key={ex.key} index={i + 1} title={ex.title} titleText={ex.titleText} sub={ex.sub} tone={ex.danger ? 'danger' : 'default'}>
             {ex.body}

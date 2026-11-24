@@ -419,7 +419,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
 
   return (
     <div>
-      <section className="shell grid-12 gap-y-10 pt-12 pb-12 lg:pt-16">
+      <section className="shell grid-12 gap-y-10 pt-8 pb-8 lg:pt-10">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-12">
           <p className="evidence text-sm text-gold">
             <T k="famKicker" />
@@ -438,7 +438,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
 
       {pending.length > 0 && (
         <section className="border-t border-line bg-ink-850/60">
-          <div className="shell py-12">
+          <div className="shell py-8">
             <SectionHead title="famApprovals" sub="famApprovalsSub" />
             <ul className="mt-8 grid gap-4 lg:grid-cols-2">
               <AnimatePresence initial={false}>
@@ -452,7 +452,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
       )}
 
       <section className="border-t border-line">
-        <div className="shell grid-12 gap-y-16 py-12 lg:py-16">
+        <div className="shell grid-12 gap-y-10 py-8 lg:py-10">
           <div className="col-span-4 sm:col-span-8 lg:col-span-7">
             <SectionHead
               title="famMembers"
@@ -483,7 +483,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
               <Alerts deviceId={deviceId} />
             </div>
           </div>
-          <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+          <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
             <Warnings state={state} />
             <Timeline events={state.events ?? []} />
           </div>
@@ -600,7 +600,7 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
   const mine = (state.events ?? []).filter((e) => e.member === me.name && ['blocked', 'held', 'allowed', 'kept_blocked', 'test'].includes(e.kind))
   return (
     <div>
-      <section className="shell grid-12 gap-y-10 pt-12 pb-12 lg:pt-16">
+      <section className="shell grid-12 gap-y-10 pt-8 pb-8 lg:pt-10">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
           <p className="evidence text-sm text-gold">
             {state.family?.name} · <T k="famKicker" />
@@ -643,7 +643,7 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
           </button>
         </Reveal>
 
-        <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+        <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
           {me.status !== 'protected' && (
             <section>
               {isAndroid() ? <AndroidSetup reg={reg} /> : <IphoneSetup reg={reg} />}
@@ -689,10 +689,10 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
     }
   }
   return (
-    <section className="shell grid-12 items-start gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
+    <section className="shell grid-12 items-start gap-y-10 pt-8 pb-8 lg:pt-10 lg:pb-10">
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
         {installed && (
-          <div className="mb-12">
+          <div className="mb-8">
             <SignInLink />
           </div>
         )}
@@ -769,7 +769,7 @@ export function Family() {
 
   if (failed || loadFailed) {
     return (
-      <div className="shell py-16">
+      <div className="shell py-8">
         <ErrorState message="deviceFailed" onRetry={retry} />
       </div>
     )

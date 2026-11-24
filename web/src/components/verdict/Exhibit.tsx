@@ -16,7 +16,7 @@ interface ExhibitProps {
 
 export function Exhibit({ index, title, titleText, sub, subText, tone = 'default', children }: ExhibitProps) {
   return (
-    <Reveal as="section" className="grid-12 gap-y-8 border-t border-line py-12 lg:py-16">
+    <Reveal as="section" className="grid-12 gap-y-8 border-t border-line py-8 lg:py-10">
       <header className="col-span-4 sm:col-span-8 lg:col-span-4 lg:pe-8">
         <span className={`evidence text-sm ${tone === 'danger' ? 'text-scam' : 'text-gold'}`}>{String(index).padStart(2, '0')}</span>
         <Tx k={title} text={titleText} as="h2" className="display mt-2 text-2xl text-paper" arClassName="text-xl text-paper-2" split="stack" />

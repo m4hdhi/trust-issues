@@ -73,18 +73,18 @@ export function Check() {
   const { response, input } = state
 
   return (
-    <div className="shell pt-12 pb-16 lg:pt-16 lg:pb-24">
+    <div className="shell pt-8 pb-8 lg:pt-10 lg:pb-10">
       <figure className="max-w-3xl rounded-xl rounded-ss-sm bg-ink-800 px-6 py-4">
         <p className="line-clamp-6 whitespace-pre-wrap break-words text-base text-paper-2" dir="auto">
           {input}
         </p>
       </figure>
       {response.message && (
-        <div className="mt-12">
+        <div className="mt-8">
           <MessageAnalysisCard message={response.message} />
         </div>
       )}
-      <section className="mt-12">
+      <section className="mt-8">
         <SectionHead title="linksInMessage" />
         {response.scans.length ? (
           <ul className="mt-6 border-t border-line">
@@ -96,7 +96,7 @@ export function Check() {
           <Tx k="noLinksFound" className="mt-6 text-base text-paper-2" split="stack" />
         )}
       </section>
-      <Link to="/" className="mt-12 inline-flex text-sm font-medium text-gold hover:underline">
+      <Link to="/" className="mt-8 inline-flex text-sm font-medium text-gold hover:underline">
         <T k="scanAnother" />
       </Link>
     </div>

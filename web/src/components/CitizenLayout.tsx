@@ -61,7 +61,7 @@ export function CitizenLayout() {
         <Outlet />
       </main>
 
-      <footer className="px-3 pt-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-6">
+      <footer className="px-3 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-6">
         <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] gap-y-8 rounded-[2rem] px-6 py-12 sm:px-10">
           <div className="col-span-4 sm:col-span-8 lg:col-span-6">
             <Wordmark size="lg" />
