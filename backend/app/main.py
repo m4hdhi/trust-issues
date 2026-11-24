@@ -62,6 +62,7 @@ async def _every(seconds: float, fn, initial_delay: float = 0) -> None:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     db.init_db()
+    accounts.migrate()
     webpush.keys()
     jobs = [asyncio.create_task(_every(3600, lambda: feeds.refresh(_protected))), asyncio.create_task(bot.run())]
     if settings.enable_hunters:
@@ -446,15 +447,14 @@ def _registration(device_id: str) -> dict[str, Any]:
     }
 
 
-class AccountIn(BaseModel):
-    device_id: str
+class CodeIn(BaseModel):
     login: str
-    password: str
+    purpose: Literal["register", "sign_in"]
+    device_id: str | None = None
 
 
-class SignInIn(BaseModel):
-    login: str
-    password: str
+class VerifyIn(CodeIn):
+    code: str
 
 
 async def _account(fn, *args: Any) -> Any:
@@ -469,16 +469,16 @@ async def account_status(device_id: str) -> dict[str, Any]:
     return await _account(accounts.status, device_id)
 
 
-@app.post("/api/account", dependencies=[Depends(rate_limit)])
-async def account_save(body: AccountIn) -> dict[str, Any]:
-    """Save a sign-in for this phone, so the Home Screen app or a new phone can open the same family."""
-    return await _account(accounts.save, body.device_id, body.login, body.password)
+@app.post("/api/account/code", dependencies=[Depends(rate_limit)])
+async def account_code(body: CodeIn, request: Request) -> dict[str, Any]:
+    """Email a one-time code, to register this phone's family or to sign in on another screen."""
+    return await _account(accounts.request_code, body.login, body.purpose, body.device_id, client_ip(request))
 
 
-@app.post("/api/account/sign-in")
-async def account_sign_in(body: SignInIn, request: Request) -> dict[str, Any]:
-    device_id = await _account(accounts.sign_in, body.login, body.password, client_ip(request))
-    return _registration(device_id)
+@app.post("/api/account/verify", dependencies=[Depends(rate_limit)])
+async def account_verify(body: VerifyIn, request: Request) -> dict[str, Any]:
+    out = await _account(accounts.verify, body.login, body.code, body.purpose, body.device_id, client_ip(request))
+    return _registration(out["device_id"]) if body.purpose == "sign_in" else out
 
 
 @app.get("/api/devices/{device_id}/blocks")

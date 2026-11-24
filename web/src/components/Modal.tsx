@@ -16,12 +16,16 @@ interface ModalProps {
 export function Modal({ open, onClose, title, children, wide = false }: ModalProps) {
   const { t } = useLang()
   const panel = useRef<HTMLDivElement>(null)
+  // Parents pass a new onClose on every render. Keeping it in a ref means a background refresh of the page
+  // does not re-run the effect below, which would move focus to the panel and close the phone keyboard.
+  const closeRef = useRef(onClose)
+  closeRef.current = onClose
 
   useEffect(() => {
     if (!open) return
     const prev = document.activeElement as HTMLElement | null
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') closeRef.current()
     }
     document.addEventListener('keydown', onKey)
     const overflow = document.body.style.overflow
@@ -32,7 +36,7 @@ export function Modal({ open, onClose, title, children, wide = false }: ModalPro
       document.body.style.overflow = overflow
       prev?.focus()
     }
-  }, [open, onClose])
+  }, [open])
 
   return createPortal(
     <AnimatePresence>

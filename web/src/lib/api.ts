@@ -195,13 +195,17 @@ export const api = {
     return request<{ login: string | null }>(`/api/account/${encodeURIComponent(deviceId)}`)
   },
 
-  saveAccount(deviceId: string, login: string, password: string): Promise<{ login: string }> {
-    return post<{ login: string }>('/api/account', { device_id: deviceId, login, password })
+  requestCode(login: string, purpose: 'register' | 'sign_in', deviceId?: string): Promise<{ to: string }> {
+    return post<{ to: string }>('/api/account/code', { login, purpose, device_id: deviceId ?? null })
   },
 
-  /** Signs in and makes this screen the saved phone: same family, requests and blocks. */
-  async signIn(login: string, password: string): Promise<DeviceRegistration> {
-    const reg = await post<DeviceRegistration>('/api/account/sign-in', { login, password })
+  registerEmail(login: string, code: string, deviceId: string): Promise<{ login: string }> {
+    return post<{ login: string }>('/api/account/verify', { login, code, purpose: 'register', device_id: deviceId })
+  },
+
+  /** Confirms the emailed code and makes this screen the registered phone: same family, requests and blocks. */
+  async signIn(login: string, code: string): Promise<DeviceRegistration> {
+    const reg = await post<DeviceRegistration>('/api/account/verify', { login, code, purpose: 'sign_in' })
     writeJson(DEVICE_KEY, reg)
     removeItem(ALERTS_KEY)
     linkManifest()

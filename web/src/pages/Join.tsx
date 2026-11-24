@@ -8,7 +8,8 @@ import { T, Tx } from '../lib/lang'
 import { ApiError, api } from '../lib/api'
 import { isAndroid } from '../lib/push'
 import { useAsync } from '../lib/useAsync'
-import { Avatar, ROLE, iso, useDevice } from './Family'
+import { Avatar, ROLE, iso } from './Family'
+import { useDevice } from '../lib/useDevice'
 import { Alerts, AndroidSetup, IphoneSetup, TestProtection } from './Protect'
 
 export function Join() {

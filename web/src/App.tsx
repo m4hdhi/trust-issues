@@ -11,6 +11,7 @@ import { Check } from './pages/Check'
 import { Trending } from './pages/Trending'
 import { Protect } from './pages/Protect'
 import { Family } from './pages/Family'
+import { Account } from './pages/Account'
 import { Join } from './pages/Join'
 import { Share } from './pages/Share'
 import { NotFound } from './pages/NotFound'
@@ -31,6 +32,7 @@ export function App() {
                 <Route path="trending" element={<Trending />} />
                 <Route path="protect" element={<Protect />} />
                 <Route path="family" element={<Family />} />
+                <Route path="account" element={<Account />} />
                 <Route path="join/:code" element={<Join />} />
                 <Route path="share" element={<Share />} />
                 <Route path="*" element={<NotFound />} />

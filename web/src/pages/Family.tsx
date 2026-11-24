@@ -30,11 +30,12 @@ import { T, Tx, useLang } from '../lib/lang'
 import { api } from '../lib/api'
 import { defang, timeAgo } from '../lib/format'
 import { EASE_OUT } from '../lib/motion'
-import { isAndroid, isIOS, isStandalone } from '../lib/push'
+import { isAndroid, isStandalone } from '../lib/push'
 import { S, type StringKey } from '../lib/i18n'
 import type { Bilingual, DeviceRegistration, FamilyEventItem, FamilyInviteResult, FamilyMember, FamilyRequest, FamilyRole, FamilyState, Helpline } from '../lib/types'
 import { Alerts, AndroidSetup, IphoneSetup, TestProtection } from './Protect'
-import { SaveSignIn, SignInCard } from './Account'
+import { AccountLink, SignInLink } from './Account'
+import { useDevice } from '../lib/useDevice'
 
 export const ROLE: Record<FamilyRole, { k: StringKey; icon: LucideIcon }> = {
   guardian: { k: 'roleGuardian', icon: Crown },
@@ -50,25 +51,6 @@ const STRICT_DEFAULT: Record<FamilyRole, boolean> = { guardian: false, elder: tr
 export const iso = (v: string) => `\u2068${v}\u2069`
 
 const field = 'h-12 w-full rounded-lg bg-ink-950 px-4 text-base text-paper placeholder:text-paper-3 focus:outline-2 focus:outline-gold'
-
-export function useDevice(): { reg: DeviceRegistration | null; failed: boolean; retry: () => void } {
-  const { mode } = useLang()
-  const [reg, setReg] = useState<DeviceRegistration | null>(null)
-  const [failed, setFailed] = useState(false)
-  const [attempt, setAttempt] = useState(0)
-  useEffect(() => {
-    let alive = true
-    setFailed(false)
-    api
-      .registerDevice(isIOS() ? 'ios' : isAndroid() ? 'android' : 'other', mode === 'ar' ? 'ar' : 'en')
-      .then((r) => alive && setReg(r))
-      .catch(() => alive && setFailed(true))
-    return () => {
-      alive = false
-    }
-  }, [attempt, mode])
-  return { reg, failed, retry: () => setAttempt((a) => a + 1) }
-}
 
 export function Avatar({ name, role, size = 'size-12' }: { name: string; role: FamilyRole; size?: string }) {
   const Icon = ROLE[role].icon
@@ -449,7 +431,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
             <Stat value={pending.length} label="famWaiting" tone={pending.length ? 'text-warn' : 'text-paper'} />
           </div>
           <div className="mt-8 max-w-3xl">
-            <SaveSignIn deviceId={deviceId} />
+            <AccountLink deviceId={deviceId} />
           </div>
         </Reveal>
       </section>
@@ -667,7 +649,7 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
               {isAndroid() ? <AndroidSetup reg={reg} /> : <IphoneSetup reg={reg} />}
             </section>
           )}
-          <SaveSignIn deviceId={reg.device_id} />
+          <AccountLink deviceId={reg.device_id} />
           <TestProtection />
           <Alerts deviceId={reg.device_id} />
           {mine.length > 0 && <Timeline events={mine} />}
@@ -711,7 +693,7 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
         {installed && (
           <div className="mb-12">
-            <SignInCard startOpen />
+            <SignInLink />
           </div>
         )}
         <p className="evidence text-sm text-gold">
@@ -729,7 +711,7 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
         </Stagger>
       </Reveal>
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-5 lg:col-start-8" delay={0.1}>
-        {!installed && <SignInCard />}
+        {!installed && <SignInLink />}
         <form onSubmit={(e) => void submit(e)} className={`${installed ? '' : 'mt-6 '}space-y-5 rounded-2xl bg-ink-850 p-6`}>
           <Tx k="famCreateTitle" as="h2" className="display text-2xl text-paper" split="stack" />
           <label className="block">
@@ -763,16 +745,19 @@ export function Family() {
   useEffect(() => {
     if (!reg) return
     let alive = true
+    let loaded = false
     const load = () =>
       api
         .familyState(reg.device_id)
         .then((s) => {
           if (alive) {
+            loaded = true
             setState(s)
             setLoadFailed(false)
           }
         })
-        .catch(() => alive && setLoadFailed(true))
+        // A failed background refresh keeps the page as it is; only a failed first load shows the error.
+        .catch(() => alive && !loaded && setLoadFailed(true))
     void load()
     const timer = window.setInterval(() => void load(), 8000)
     return () => {

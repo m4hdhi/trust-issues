@@ -31,7 +31,7 @@ UAE residents receive links through WhatsApp, SMS and social media every day. Fa
 2. A QR code appears. The family member scans it with their phone camera, taps **Join and protect this phone** and installs the DNS profile (iPhone) or pastes its personal link into Intra or RethinkDNS (Android).
 3. From then on, every lookup from that phone goes through our resolver. Confirmed scams return "site not found". Risky unknown sites are held and appear in the guardian's **Waiting for you** list, with push notifications on both phones when the guardian decides.
 4. One honest limit: DNS cannot pause a page while it waits for approval, so the family member opens the link again after the guardian allows it.
-5. **Save a sign-in** (phone number or email and a password the phone's password manager remembers). An iPhone Home Screen app has its own storage, separate from Safari, so it starts as a new phone: open it, sign in, and the same family, requests and alerts are there. The same works on a new phone or another browser.
+5. **Register the family** with an email address, confirmed by a 6-digit code we email. An iPhone Home Screen app has its own storage, separate from Safari, so it starts as a new phone: open it, tap **Sign in**, enter the emailed code, and the same family, requests and alerts are there. The same works on a new phone or another browser.
 
 ### Why it catches scams *before* the first victim
 Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes out. Our **CT-log monitor** reads every new certificate from public CT logs as it is issued. It flags look-alikes of 49 UAE brands (TAMM, UAE PASS, Abu Dhabi Police, Salik, Emirates NBD, ADCB…), sandbox-scans them and pushes them into the DNS blocklist. When the link reaches a protected phone, it is already blocked.
@@ -181,7 +181,7 @@ uv run python ../ml/build_dataset.py && uv run python ../ml/train_url_model.py &
 
 ## 7. Privacy and safety
 - The DNS resolver sees **domain names only**, never full URLs or message content. Allowed lookups are not logged. Only block events are stored, against a random device ID.
-- Family Shield shows the guardian **only blocked or held domains**, never the family member's normal browsing. A family stores a display name per phone and, optionally, the guardian's number for the Call button. Any member can leave, and the guardian can remove a phone at any time. The optional sign-in stores only a phone number or email and a scrypt hash of the password.
+- Family Shield shows the guardian **only blocked or held domains**, never the family member's normal browsing. A family stores a display name per phone and, optionally, the guardian's number for the Call button. Any member can leave, and the guardian can remove a phone at any time. Registering is optional and stores only the email address. Sign-in codes are kept as salted hashes, expire after 10 minutes and are cancelled after 5 wrong tries.
 - Community reports are anonymous and trust-weighted. Official domains cannot be blocked by reports.
 - The sandbox only reads pages. It never submits forms or credentials.
 - Takedown emails are drafted for an officer to review. Nothing is sent automatically.
