@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import json
 import io
 import logging
+import sys
 import zipfile
 from datetime import datetime, timedelta, timezone
 
-import dnstwist
 
 from ..http import client
 from ..config import get_settings
@@ -23,9 +24,23 @@ log = logging.getLogger(__name__)
 PRIORITY = ["tamm", "uaepass", "adpolice", "dubaipolice", "salik", "darb", "rta", "emiratesnbd", "adcb", "fab", "emiratespost", "etisalat", "du", "dewa", "icp"]
 
 
-def _registered_permutations(domain: str) -> list[dict]:
-    return dnstwist.run(domain=domain, registered=True, format="null", threads=4 if get_settings().low_resource else 32,
-                        fuzzers="addition,bitsquatting,homoglyph,hyphenation,insertion,omission,repetition,replacement,subdomain,transposition,vowel-swap,dictionary")
+FUZZERS = "addition,bitsquatting,homoglyph,hyphenation,insertion,omission,repetition,replacement,subdomain,transposition,vowel-swap,dictionary"
+
+
+async def _registered_permutations(domain: str) -> list[dict]:
+    """dnstwist runs as its own low-priority process, so its DNS threads never compete with the web server."""
+    threads = "4" if get_settings().low_resource else "32"
+    proc = await asyncio.create_subprocess_exec(
+        "nice", "-n", "15", sys.executable, "-m", "dnstwist", "--registered", "--format", "json",
+        "--threads", threads, "--fuzzers", FUZZERS, domain,
+        stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+    )
+    try:
+        out, _ = await asyncio.wait_for(proc.communicate(), timeout=900)
+    except asyncio.TimeoutError:
+        proc.kill()
+        raise
+    return json.loads(out or b"[]")
 
 
 async def sweep_typosquats() -> int:
@@ -37,7 +52,7 @@ async def sweep_typosquats() -> int:
             if len(domain.split(".")[0]) < 5:
                 continue
             try:
-                rows = await asyncio.to_thread(_registered_permutations, domain)
+                rows = await _registered_permutations(domain)
             except Exception as exc:
                 log.info("dnstwist %s failed: %s", domain, exc)
                 continue

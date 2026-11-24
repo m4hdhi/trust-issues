@@ -42,6 +42,7 @@ dependencies = [
   "sse-starlette>=2.1",
   "beautifulsoup4>=4.12",
   "lxml>=5.3",
+  "segno>=1.6.6",
 ]
 
 [project.scripts]

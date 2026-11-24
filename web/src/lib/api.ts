@@ -1,28 +1,4 @@
-import type {
-  BatchStatus,
-  BlockItem,
-  BrandRef,
-  CaseItem,
-  CaseStatus,
-  CreateScanRequest,
-  CreateScanResponse,
-  DeviceRegistration,
-  GraphResponse,
-  LiveFeed,
-  MapsHit,
-  MetricsResponse,
-  Platform,
-  RadarItem,
-  RadarRecent,
-  ReportRequest,
-  ReportResponse,
-  ScanResult,
-  ScanStage,
-  SearchHit,
-  Stats,
-  Takedown,
-  TrendingItem,
-} from './types'
+import type { BatchStatus, BlockItem, BrandRef, CaseItem, CaseStatus, CreateScanRequest, CreateScanResponse, DeviceRegistration, GraphResponse, LiveFeed, MapsHit, MetricsResponse, Platform, RadarItem, RadarRecent, ReportRequest, ReportResponse, ScanResult, ScanStage, SearchHit, Stats, Takedown, TrendingItem, FamilyState, FamilyInviteResult, FamilyRole, InviteInfo, Helpline } from './types'
 import { readItem, readJson, removeItem, writeItem, writeJson } from './storage'
 
 export class ApiError extends Error {
@@ -183,6 +159,42 @@ export const api = {
     const reg = await post<DeviceRegistration>('/api/devices', { platform, lang })
     writeJson(DEVICE_KEY, reg)
     return reg
+  },
+
+  familyState(deviceId: string): Promise<FamilyState> {
+    return request<FamilyState>(`/api/family/${encodeURIComponent(deviceId)}`)
+  },
+
+  createFamily(deviceId: string, familyName: string, myName: string, phone: string): Promise<FamilyState> {
+    return post<FamilyState>('/api/family', { device_id: deviceId, family_name: familyName, my_name: myName, phone: phone || null })
+  },
+
+  inviteMember(deviceId: string, name: string, role: FamilyRole, strict: boolean): Promise<FamilyInviteResult> {
+    return post<FamilyInviteResult>('/api/family/invites', { device_id: deviceId, name, role, strict })
+  },
+
+  inviteInfo(code: string): Promise<InviteInfo> {
+    return request<InviteInfo>(`/api/join/${encodeURIComponent(code)}`)
+  },
+
+  joinFamily(code: string, deviceId: string): Promise<FamilyState> {
+    return post<FamilyState>(`/api/join/${encodeURIComponent(code)}`, { device_id: deviceId })
+  },
+
+  decideRequest(deviceId: string, requestId: string, decision: 'allow' | 'block'): Promise<FamilyState> {
+    return post<FamilyState>(`/api/family/requests/${encodeURIComponent(requestId)}`, { device_id: deviceId, decision })
+  },
+
+  setStrict(deviceId: string, memberId: string, strict: boolean): Promise<FamilyState> {
+    return post<FamilyState>(`/api/family/members/${encodeURIComponent(memberId)}/strict`, { device_id: deviceId, strict })
+  },
+
+  removeMember(deviceId: string, memberId: string): Promise<FamilyState> {
+    return post<FamilyState>(`/api/family/members/${encodeURIComponent(memberId)}/remove`, { device_id: deviceId })
+  },
+
+  sendSos(deviceId: string): Promise<{ notified: number; helplines: Helpline[] }> {
+    return post<{ notified: number; helplines: Helpline[] }>('/api/family/sos', { device_id: deviceId })
   },
 
   async deviceBlocks(deviceId: string): Promise<BlockItem[]> {

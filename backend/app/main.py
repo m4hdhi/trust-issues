@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import hmac
+import io
 import json
 import logging
 import time
@@ -19,7 +20,7 @@ from pydantic import BaseModel
 from sqlmodel import func, select
 from sse_starlette.sse import EventSourceResponse
 
-from . import batch, bot, bus, db, scans
+from . import batch, bot, bus, db, family, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
 from .detectors import ai_anthropic, anchors, feeds, message_rules
@@ -303,6 +304,107 @@ async def live() -> dict[str, Any]:
         "brands_protected": len(reg.brands),
         "recent": recent,
     }
+
+
+class FamilyCreateIn(BaseModel):
+    device_id: str
+    family_name: str
+    my_name: str
+    phone: str | None = None
+
+
+class InviteIn(BaseModel):
+    device_id: str
+    name: str
+    role: Literal["guardian", "elder", "child", "helper", "adult"]
+    strict: bool | None = None
+
+
+class JoinIn(BaseModel):
+    device_id: str
+    phone: str | None = None
+
+
+class DecisionIn(BaseModel):
+    device_id: str
+    decision: Literal["allow", "block"]
+
+
+class StrictIn(BaseModel):
+    device_id: str
+    strict: bool
+
+
+class DeviceOnlyIn(BaseModel):
+    device_id: str
+
+
+async def _family(fn, *args: Any) -> Any:
+    try:
+        return await asyncio.to_thread(fn, *args)
+    except family.FamilyError as exc:
+        raise HTTPException(exc.status, str(exc)) from exc
+
+
+@app.get("/api/family/{device_id}")
+async def family_state(device_id: str) -> dict[str, Any]:
+    return await _family(family.state, device_id)
+
+
+@app.post("/api/family")
+async def family_create(body: FamilyCreateIn) -> dict[str, Any]:
+    return await _family(family.create, body.device_id, body.family_name, body.my_name, body.phone)
+
+
+@app.post("/api/family/invites")
+async def family_invite(body: InviteIn) -> dict[str, Any]:
+    return await _family(family.invite, body.device_id, body.name, body.role, body.strict)
+
+
+@app.get("/api/join/{code}")
+async def family_invite_info(code: str) -> dict[str, Any]:
+    return await _family(family.invite_info, code)
+
+
+@app.get("/api/join/{code}/qr.svg")
+async def family_invite_qr(code: str) -> Response:
+    import segno
+
+    url = f"{settings.public_base_url.rstrip('/')}/join/{code.upper()}"
+    buf = io.BytesIO()
+    segno.make(url, error="m").save(buf, kind="svg", scale=8, border=2, dark="#0b0d10", light="#ffffff", xmldecl=False)
+    return Response(buf.getvalue(), media_type="image/svg+xml", headers={"Cache-Control": "public, max-age=86400"})
+
+
+@app.post("/api/join/{code}")
+async def family_join(code: str, body: JoinIn) -> dict[str, Any]:
+    return await _family(family.join, code, body.device_id, body.phone)
+
+
+@app.post("/api/family/requests/{request_id}")
+async def family_decide(request_id: str, body: DecisionIn) -> dict[str, Any]:
+    return await _family(family.decide, body.device_id, request_id, body.decision)
+
+
+@app.post("/api/family/members/{member_id}/strict")
+async def family_strict(member_id: str, body: StrictIn) -> dict[str, Any]:
+    return await _family(family.set_strict, body.device_id, member_id, body.strict)
+
+
+@app.post("/api/family/members/{member_id}/remove")
+async def family_remove(member_id: str, body: DeviceOnlyIn) -> dict[str, Any]:
+    return await _family(family.remove, body.device_id, member_id)
+
+
+@app.post("/api/family/sos")
+async def family_sos(body: DeviceOnlyIn) -> dict[str, Any]:
+    out = await _family(family.sos, body.device_id)
+    return {**out, "helplines": family.helplines()}
+
+
+@app.get("/api/helplines")
+async def bank_helplines() -> dict[str, Any]:
+    return {"items": family.helplines()}
 
 
 @app.get("/api/brands")

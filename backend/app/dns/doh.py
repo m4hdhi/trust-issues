@@ -10,7 +10,7 @@ from typing import Any
 from dnslib import QTYPE, RCODE, DNSRecord
 from sqlmodel import select
 
-from .. import db, scans
+from .. import db, family, scans
 from ..detectors import feeds
 from ..http import client
 from ..notify import webpush
@@ -102,12 +102,29 @@ async def resolve(wire: bytes, device_id: str | None) -> bytes:
     q = req.q
     qname = str(q.qname).rstrip(".").lower()
     action, entry, source = policy(qname)
+    loop = asyncio.get_running_loop()
+    mem = family.member(device_id)
+    if mem and family.needs_touch(device_id):
+        loop.run_in_executor(None, family.touch, device_id)
     if action == "block":
         if source != "test":
             db.bump("blocked_queries")
         if device_id:
-            asyncio.get_running_loop().run_in_executor(None, _record_block, device_id, qname, entry)
+            loop.run_in_executor(None, _record_block, device_id, qname, entry)
         return _blocked_response(req)
+    if mem and q.qtype in (QTYPE.A, QTYPE.AAAA, QTYPE.HTTPS):
+        try:
+            registrable = registrable_of(qname)
+        except ValueError:
+            registrable = qname
+        rule = family.rule_for(mem["family_id"], registrable)
+        if rule == "block":
+            return _blocked_response(req)
+        if rule != "allow" and mem["strict"]:
+            reason = family.risky(qname)
+            if reason:
+                loop.run_in_executor(None, family.hold, mem, qname, reason)
+                return _blocked_response(req)
     if q.qtype in (QTYPE.A, QTYPE.AAAA, QTYPE.HTTPS):
         try:
             _maybe_queue(qname)
@@ -124,6 +141,9 @@ def _record_block(device_id: str, domain: str, entry: db.BlockEntry | None) -> N
         s.commit()
     result = scans.get(entry.scan_id) if entry and entry.scan_id else None
     webpush.notify_block(device_id, domain, result, headline=TEST_HEADLINE if domain in TEST_DOMAINS else None)
+    mem = family.member(device_id)
+    if mem:
+        family.on_block(mem, domain, TEST_HEADLINE if domain in TEST_DOMAINS else (result or {}).get("headline"), domain in TEST_DOMAINS)
 
 
 def decode_get(dns_param: str) -> bytes:

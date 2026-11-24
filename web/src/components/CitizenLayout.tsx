@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { motion } from 'motion/react'
-import { Flame, ScanSearch, ShieldCheck } from 'lucide-react'
+import { Flame, ScanSearch, ShieldCheck, Users } from 'lucide-react'
 import { Wordmark } from './Logo'
 import { LangToggle } from './LangToggle'
 import { T, Tx } from '../lib/lang'
@@ -12,10 +12,12 @@ const NAV: { to: string; k: StringKey; icon: typeof Flame; end?: boolean }[] = [
   { to: '/', k: 'navCheck', icon: ScanSearch, end: true },
   { to: '/trending', k: 'navTrending', icon: Flame },
   { to: '/protect', k: 'navProtect', icon: ShieldCheck },
+  { to: '/family', k: 'navFamily', icon: Users },
 ]
 
 function isActive(pathname: string, to: string, end?: boolean) {
   if (end) return pathname === to || pathname.startsWith('/scan') || pathname.startsWith('/check')
+  if (to === '/family') return pathname.startsWith('/family') || pathname.startsWith('/join')
   return pathname.startsWith(to)
 }
 
@@ -75,7 +77,7 @@ export function CitizenLayout() {
       </footer>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink-900 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-4">
           {NAV.map(({ to, k, icon: Icon, end }) => {
             const active = isActive(pathname, to, end)
             return (

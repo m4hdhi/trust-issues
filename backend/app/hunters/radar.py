@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 _seen: dict[str, float] = {}
 _scan_times: list[float] = []
-MAX_DEEP_PER_MIN = 3 if get_settings().low_resource else 12
+MAX_DEEP_PER_MIN = 2 if get_settings().low_resource else 12
 
 
 def _allow_deep() -> bool:

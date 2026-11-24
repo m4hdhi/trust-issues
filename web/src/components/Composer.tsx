@@ -10,11 +10,11 @@ import { useStartScan } from '../lib/useStartScan'
 
 const QrScanner = lazy(() => import('./QrScanner').then((m) => ({ default: m.QrScanner })))
 
-export function Composer({ initial = '' }: { initial?: string }) {
+export function Composer({ initial = '', openQr = false }: { initial?: string; openQr?: boolean }) {
   const { mode, t, pick } = useLang()
   const [value, setValue] = useState(initial)
   const [hint, setHint] = useState<'clipboardDenied' | 'emptyInput' | null>(null)
-  const [qrOpen, setQrOpen] = useState(false)
+  const [qrOpen, setQrOpen] = useState(openQr)
   const area = useRef<HTMLTextAreaElement>(null)
   const { start, busy, failed } = useStartScan()
 

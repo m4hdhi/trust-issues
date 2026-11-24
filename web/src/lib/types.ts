@@ -475,3 +475,78 @@ export interface Takedown {
   host: DraftEmail | null
   safe_browsing_url: string | null
 }
+
+export type FamilyRole = 'guardian' | 'elder' | 'child' | 'helper' | 'adult'
+
+export interface FamilyMember {
+  device_id: string
+  name: string
+  role: FamilyRole
+  strict: boolean
+  phone: string | null
+  status: 'protected' | 'setup'
+  last_seen: string | null
+  stopped_week: number
+  me: boolean
+}
+
+export interface FamilyRequest {
+  id: string
+  device_id: string
+  member: string
+  host: string
+  domain: string
+  reason: Bilingual & { brand: string | null }
+  status: 'pending' | 'allowed' | 'blocked'
+  ts: string
+}
+
+export interface FamilyEventItem {
+  id: number
+  kind: 'created' | 'joined' | 'held' | 'blocked' | 'allowed' | 'kept_blocked' | 'sos' | 'test' | 'left'
+  member: string | null
+  domain: string | null
+  detail: { headline?: Bilingual; reason?: Bilingual; by?: string }
+  ts: string
+}
+
+export interface FamilyWarning {
+  domain: string
+  brand: BrandRef
+  source: string
+  ts: string
+  lure: Bilingual
+}
+
+export interface FamilyState {
+  family: { id: string; name: string } | null
+  me?: FamilyMember
+  members?: FamilyMember[]
+  requests?: FamilyRequest[]
+  events?: FamilyEventItem[]
+  stats?: { stopped_week: number; members: number; protected: number }
+  warnings?: FamilyWarning[]
+}
+
+export interface FamilyInviteResult {
+  code: string
+  url: string
+  name: string
+  role: FamilyRole
+}
+
+export interface InviteInfo {
+  code: string
+  family: string
+  guardians: string[]
+  name: string
+  role: FamilyRole
+  strict: boolean
+  used: boolean
+}
+
+export interface Helpline {
+  brand: BrandRef
+  number: string
+  label: string
+}

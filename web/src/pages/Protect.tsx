@@ -81,7 +81,7 @@ const IOS_ART = {
   ),
 }
 
-function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
+export function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
   return (
     <div>
       <a href={reg.ios_profile_url} download className={`${btn.primary} w-full`}>
@@ -97,7 +97,7 @@ function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
   )
 }
 
-function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
+export function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
   const hostname = reg.android_hostname_hint && !reg.android_hostname_hint.includes('://') ? reg.android_hostname_hint : null
   return (
     <ol>
@@ -151,7 +151,7 @@ function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
   )
 }
 
-function Alerts({ deviceId }: { deviceId: string }) {
+export function Alerts({ deviceId }: { deviceId: string }) {
   const [state, setState] = useState<AlertsState>(alertsState)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -198,7 +198,7 @@ function Alerts({ deviceId }: { deviceId: string }) {
 
 const TEST_URL = 'https://testsafebrowsing.appspot.com/'
 
-function TestProtection() {
+export function TestProtection() {
   return (
     <section className="border-t border-line pt-6">
       <Tx k="testTitle" as="h2" className="display text-xl text-paper" split="stack" />
@@ -213,7 +213,7 @@ function TestProtection() {
   )
 }
 
-function Blocks({ deviceId }: { deviceId: string }) {
+export function Blocks({ deviceId }: { deviceId: string }) {
   const { data, loading, error, reload } = useAsync(() => api.deviceBlocks(deviceId), [deviceId])
   return (
     <section className="border-t border-line pt-6">

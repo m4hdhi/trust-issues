@@ -151,6 +151,28 @@ function ProtectBand() {
   )
 }
 
+function FamilyBand() {
+  return (
+    <section className="border-t border-line">
+      <div className="shell grid-12 items-center gap-y-8 py-16 lg:py-20">
+        <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
+          <div className="flex items-baseline gap-4">
+            <span className="evidence shrink-0 text-sm text-gold">05</span>
+            <Tx k="famBandTitle" as="h2" className="display text-3xl text-paper sm:text-4xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
+          </div>
+          <Tx k="famBandBody" className="mt-4 max-w-[56ch] text-lg text-paper-2" split="stack" />
+        </Reveal>
+        <Reveal className="col-span-4 sm:col-span-8 lg:col-span-4 lg:col-start-9 lg:justify-self-end" delay={0.1}>
+          <Link to="/family" className={btn.primary}>
+            <T k="famBandCta" />
+            <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+          </Link>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 export function Home() {
   const [params] = useSearchParams()
   const feed = useLive(5000)
@@ -161,7 +183,7 @@ export function Home() {
         <div className="col-span-4 sm:col-span-8 lg:col-span-7">
           <Headline />
           <div className="mt-8 lg:mt-12">
-            <Composer initial={params.get('u') ?? ''} />
+            <Composer initial={params.get('u') ?? ''} openQr={params.get('qr') === '1'} />
           </div>
           <Tx k="heroSub" className="mt-8 max-w-[60ch] text-base text-paper-2" split="stack" />
         </div>
@@ -176,6 +198,7 @@ export function Home() {
       <BrandWall brands={brands ?? []} />
       <TrendingPreview />
       <ProtectBand />
+      <FamilyBand />
     </>
   )
 }

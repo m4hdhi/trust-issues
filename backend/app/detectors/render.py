@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import glob
+import os
+import sys
 import hashlib
 import io
 import logging
@@ -179,6 +182,20 @@ def classify_input(inp: dict[str, Any]) -> str | None:
     return None
 
 
+def _low_priority_executable() -> str | None:
+    """On small Linux servers, start Chromium through `nice` so the web server and DNS always get the CPU first."""
+    if not get_settings().low_resource or not sys.platform.startswith("linux"):
+        return None
+    root = os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or os.path.expanduser("~/.cache/ms-playwright")
+    found = sorted(glob.glob(f"{root}/chromium_headless_shell-*/*/chrome-headless-shell")) or sorted(glob.glob(f"{root}/chromium_headless_shell-*/*/headless_shell"))
+    if not found:
+        return None
+    wrapper = get_settings().cache_dir / "chromium-nice.sh"
+    wrapper.write_text(f'#!/bin/sh\nexec nice -n 15 "{found[-1]}" "$@"\n')
+    wrapper.chmod(0o755)
+    return str(wrapper)
+
+
 class Sandbox:
     def __init__(self) -> None:
         self._pw: Playwright | None = None
@@ -191,6 +208,7 @@ class Sandbox:
             if self._browser is None or not self._browser.is_connected():
                 self._pw = self._pw or await async_playwright().start()
                 self._browser = await self._pw.chromium.launch(
+                    executable_path=_low_priority_executable(),
                     headless=True,
                     args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-blink-features=AutomationControlled"],
                 )
