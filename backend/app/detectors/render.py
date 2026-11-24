@@ -271,7 +271,7 @@ class Sandbox:
                 path = get_settings().media_dir / "shots" / f"{shot_name}.png"
                 vp = PERSONAS[persona]["viewport"]
                 clip_h = min(max(cap.height, vp["height"]), vp["height"] * 3)
-                await page.screenshot(path=str(path), full_page=True, clip={"x": 0, "y": 0, "width": vp["width"], "height": clip_h}, timeout=10000)
+                await page.screenshot(path=str(path), full_page=True, clip={"x": 0, "y": 0, "width": vp["width"], "height": clip_h}, timeout=8000)
                 cap.screenshot_path = str(path)
                 cap.screenshot_url = f"/media/shots/{shot_name}.png"
             await self._favicon(page, cap)
@@ -289,9 +289,9 @@ class Sandbox:
         if cap.final_url and cap.final_url.startswith("http"):
             fp = parse(cap.final_url)
             candidates.append(f"{fp.scheme}://{fp.hostname}/favicon.ico")
-        for href in candidates[:3]:
+        for href in candidates[:2]:
             try:
-                r = await page.request.get(href, timeout=5000)
+                r = await page.request.get(href, timeout=3000)
                 if r.ok:
                     body = await r.body()
                     if len(body) < 50 or len(body) > 500_000:
@@ -307,11 +307,17 @@ class Sandbox:
 
     async def render(self, url: str, scan_id: str, timeout_s: float | None = None) -> RenderResult:
         timeout_s = timeout_s or get_settings().render_timeout_s
+        async def bounded(persona: str, shot: str) -> PersonaCapture:
+            try:
+                return await asyncio.wait_for(self.capture(url, persona, shot, timeout_s), timeout_s + 18)
+            except asyncio.TimeoutError:
+                return PersonaCapture(name=persona, error="TimeoutError: page took too long to load")
+
         async with self._sem:
             caps = await asyncio.gather(
-                self.capture(url, "uae_mobile", f"{scan_id}_mobile", timeout_s),
-                self.capture(url, "desktop", f"{scan_id}_desktop", timeout_s),
-                self.capture(url, "googlebot", f"{scan_id}_bot", timeout_s),
+                bounded("uae_mobile", f"{scan_id}_mobile"),
+                bounded("desktop", f"{scan_id}_desktop"),
+                bounded("googlebot", f"{scan_id}_bot"),
             )
         personas = {c.name: c for c in caps}
         primary = max(caps, key=lambda c: (c.ok, len(c.asks_for()), c.name == "uae_mobile"))

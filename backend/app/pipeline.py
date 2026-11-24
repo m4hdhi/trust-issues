@@ -146,7 +146,7 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
     render_task: asyncio.Task | None = None
     if deep:
         emit("render", "running")
-        render_task = asyncio.create_task(_timed(sandbox.render(p0.url, scan_id), s.render_timeout_s + 15))
+        render_task = asyncio.create_task(_timed(sandbox.render(p0.url, scan_id), s.render_timeout_s + 25))
 
     emit("url_model", "running")
     st = time.perf_counter()
