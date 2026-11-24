@@ -81,7 +81,8 @@ async def investigate(source: str, url: str, brand_id: str | None, detail: dict[
         return
     if delay_s:
         await asyncio.sleep(delay_s)
-    result = await scans.run_inline(url, mode="deep", source=source)
+    # On a 1-CPU server the sandbox browser is kept for scans people start; hunters use the fast path there.
+    result = await scans.run_inline(url, mode="fast" if get_settings().low_resource else "deep", source=source)
     if result is None:
         return
     with db.session() as s:
