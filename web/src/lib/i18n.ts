@@ -478,6 +478,16 @@ export const S = {
   ad: { en: 'Ad', ar: 'إعلان' },
   position: { en: 'Pos.', ar: 'الترتيب' },
   noResults: { en: 'No results.', ar: 'لا توجد نتائج.' },
+  testTitle: { en: 'Test it in 10 seconds', ar: 'اختبرها خلال 10 ثوانٍ' },
+  testBody: {
+    en: 'This is a safe test page from Google for checking security tools. It opens on any phone. On a protected phone it will not load.',
+    ar: 'هذه صفحة اختبار آمنة من Google لفحص أدوات الحماية. تُفتح على أي هاتف، أما على الهاتف المحمي فلن تُفتح.',
+  },
+  testOpen: { en: 'Open the test page', ar: 'افتح صفحة الاختبار' },
+  testResult: {
+    en: 'If it says the site cannot be found, protection is on. The block then appears under My blocks.',
+    ar: 'إذا ظهرت رسالة بأن الموقع غير موجود، فالحماية تعمل، ويظهر الحظر ضمن قائمة الحظر الخاصة بي.',
+  },
   huntFailed: { en: 'The hunt failed. Check the backend and try again.', ar: 'فشل التعقّب. تحقّق من الخادم وحاول مرة أخرى.' },
   huntQuota: { en: 'This month\'s SerpAPI searches are used up. Earlier results stay cached; new hunts resume next month or with a paid key.', ar: 'نفدت عمليات بحث SerpAPI لهذا الشهر. تبقى النتائج السابقة محفوظة، وتُستأنف عمليات التعقّب الجديدة الشهر القادم أو بمفتاح مدفوع.' },
 

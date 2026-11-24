@@ -15,6 +15,7 @@ from ..config import get_settings
 from ..pipeline import instant
 from ..registry import get_registry
 from . import radar
+from .cpu import breathe, offload
 from .ct import assess
 
 log = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ PRIORITY = ["tamm", "uaepass", "adpolice", "dubaipolice", "salik", "darb", "rta"
 
 
 def _registered_permutations(domain: str) -> list[dict]:
-    return dnstwist.run(domain=domain, registered=True, format="null", threads=8 if get_settings().low_resource else 32,
+    return dnstwist.run(domain=domain, registered=True, format="null", threads=4 if get_settings().low_resource else 32,
                         fuzzers="addition,bitsquatting,homoglyph,hyphenation,insertion,omission,repetition,replacement,subdomain,transposition,vowel-swap,dictionary")
 
 
@@ -64,7 +65,7 @@ async def sweep_nrd() -> int:
     except Exception as exc:
         log.info("NRD download failed: %s", exc)
         return 0
-    matches = await asyncio.to_thread(_match_all, names)
+    matches = await offload(_match_all, names)
     for host, verdict in matches:
         asyncio.create_task(radar.investigate("nrd", f"http://{host}/", verdict[0], {"registered": day}))
     log.info("NRD %s: %s domains, %s candidates", day, len(names), len(matches))
@@ -73,7 +74,8 @@ async def sweep_nrd() -> int:
 
 def _match_all(names: list[str]) -> list[tuple[str, tuple[str, float]]]:
     out = []
-    for raw in names:
+    for i, raw in enumerate(names):
+        breathe(i)
         host = raw.strip().lower()
         verdict = assess(host)
         if verdict:

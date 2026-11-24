@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { BellRing, ChevronRight, Download, RefreshCw, Settings, ShieldCheck } from 'lucide-react'
+import { BellRing, ChevronRight, Download, ExternalLink, RefreshCw, Settings, ShieldCheck } from 'lucide-react'
 import { siGoogleplay } from 'simple-icons'
 import { ProtectIllustration } from '../components/ProtectIllustration'
 import { CopyButton } from '../components/CopyButton'
@@ -196,6 +196,23 @@ function Alerts({ deviceId }: { deviceId: string }) {
   )
 }
 
+const TEST_URL = 'https://testsafebrowsing.appspot.com/'
+
+function TestProtection() {
+  return (
+    <section className="border-t border-line pt-6">
+      <Tx k="testTitle" as="h2" className="display text-xl text-paper" split="stack" />
+      <Tx k="testBody" className="mt-2 text-base text-paper-2" split="stack" />
+      <p className="evidence mt-4 text-sm text-gold">testsafebrowsing.appspot.com</p>
+      <a href={TEST_URL} target="_blank" rel="noopener noreferrer" className={`${btn.secondary} mt-4`}>
+        <ExternalLink className="size-4" aria-hidden="true" />
+        <T k="testOpen" />
+      </a>
+      <Tx k="testResult" className="mt-4 text-sm text-paper-3" split="stack" />
+    </section>
+  )
+}
+
 function Blocks({ deviceId }: { deviceId: string }) {
   const { data, loading, error, reload } = useAsync(() => api.deviceBlocks(deviceId), [deviceId])
   return (
@@ -327,6 +344,7 @@ export function Protect() {
             </div>
           </div>
           <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+            {reg && <TestProtection />}
             {reg && <Alerts deviceId={reg.device_id} />}
             {reg && <Blocks deviceId={reg.device_id} />}
           </div>

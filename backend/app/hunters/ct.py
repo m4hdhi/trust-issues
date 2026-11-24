@@ -16,6 +16,7 @@ from ..pipeline import url_model_or_none
 from ..registry import get_registry
 from ..urlutil import parse
 from . import radar
+from .cpu import breathe, offload
 
 log = logging.getLogger(__name__)
 
@@ -79,7 +80,8 @@ def _scan_batch(entries: list[dict]) -> tuple[int, list[tuple[str, tuple[str, fl
     """Parse one batch of log entries and match their names against the brand watchlist (runs in a worker thread)."""
     parsed = 0
     hits: list[tuple[str, tuple[str, float]]] = []
-    for e in entries:
+    for i, e in enumerate(entries):
+        breathe(i)
         try:
             names = _names_from_entry(e)
         except Exception:
@@ -106,7 +108,7 @@ async def _poll_log(base: str) -> None:
                 entries = r.json().get("entries", [])
                 if not entries:
                     break
-                parsed, hits = await asyncio.to_thread(_scan_batch, entries)
+                parsed, hits = await offload(_scan_batch, entries)
                 stats["certs"] += parsed
                 for host, (brand_id, conf) in hits:
                     stats["candidates"] += 1

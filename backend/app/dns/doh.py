@@ -21,6 +21,12 @@ from ..urlutil import parse, registrable_of
 log = logging.getLogger(__name__)
 
 UPSTREAM = "https://cloudflare-dns.com/dns-query"
+# Harmless page Google publishes for testing security tools: it opens everywhere, so blocking it shows protection is on.
+TEST_DOMAINS = {"testsafebrowsing.appspot.com"}
+TEST_HEADLINE = {
+    "en": "Protection test: a safe Google test page, blocked to show your protection works",
+    "ar": "اختبار الحماية: صفحة اختبار آمنة من Google، حُظرت لتأكيد أن الحماية تعمل",
+}
 _cache: dict[tuple[str, int], tuple[float, bytes]] = {}
 _queued: dict[str, float] = {}
 
@@ -33,6 +39,8 @@ def policy(name: str) -> tuple[str, db.BlockEntry | None, str | None]:
     host = name.rstrip(".").lower()
     if not host or "." not in host:
         return "allow", None, None
+    if host in TEST_DOMAINS:
+        return "block", None, "test"
     reg = registrable_of(host)
     registry = get_registry()
     if registry.is_official(reg, host):
@@ -95,7 +103,8 @@ async def resolve(wire: bytes, device_id: str | None) -> bytes:
     qname = str(q.qname).rstrip(".").lower()
     action, entry, source = policy(qname)
     if action == "block":
-        db.bump("blocked_queries")
+        if source != "test":
+            db.bump("blocked_queries")
         if device_id:
             asyncio.get_running_loop().run_in_executor(None, _record_block, device_id, qname, entry)
         return _blocked_response(req)
@@ -114,7 +123,7 @@ def _record_block(device_id: str, domain: str, entry: db.BlockEntry | None) -> N
         s.add(db.BlockEvent(device_id=device_id, domain=domain, scan_id=entry.scan_id if entry else None))
         s.commit()
     result = scans.get(entry.scan_id) if entry and entry.scan_id else None
-    webpush.notify_block(device_id, domain, result)
+    webpush.notify_block(device_id, domain, result, headline=TEST_HEADLINE if domain in TEST_DOMAINS else None)
 
 
 def decode_get(dns_param: str) -> bytes:
@@ -132,7 +141,7 @@ def blocks_for(device_id: str, limit: int = 50) -> list[dict[str, Any]]:
             "domain": r.domain,
             "ts": r.ts.isoformat(),
             "brand": (res or {}).get("brand"),
-            "headline": (res or {}).get("headline") or {"en": "Known scam domain", "ar": "نطاق احتيالي معروف"},
+            "headline": TEST_HEADLINE if r.domain in TEST_DOMAINS else (res or {}).get("headline") or {"en": "Known scam domain", "ar": "نطاق احتيالي معروف"},
             "scan_id": r.scan_id,
         })
     return out

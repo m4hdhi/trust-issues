@@ -118,6 +118,13 @@ class Registry:
             for k in b.keywords_en + [d.split(".")[0] for d in b.official_domains]:
                 if len(k) >= 4 and k not in GENERIC_TOKENS:
                     self.keyword_index.setdefault(k, b.id)
+        self.keywords_longest_first = sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0]))
+        self._token_rx = re.compile("|".join(re.escape(t) for t, _ in self.keywords_longest_first)) if self.keyword_index else None
+        self._typo_index: dict[str, list[tuple[str, str, str]]] = {}
+        for dom, bid in self.official.items():
+            off_label = dom.split(".")[0]
+            if len(off_label) >= 5:
+                self._typo_index.setdefault(off_label[0], []).append((off_label, bid, dom))
         self.arabic_index = {k: b.id for b in self.brands.values() for k in [b.name_ar, *b.keywords_ar] if len(k) >= 2}
 
     def official_brand(self, registrable: str, hostname: str) -> Brand | None:
@@ -141,20 +148,20 @@ class Registry:
         labels = re.split(r"[.\-_]", host_sk)
         joined = host_sk.replace("-", "").replace(".", "")
         labels = [lbl for lbl in labels if not any(w in lbl for w in ENGLISH_COLLISIONS)] or labels
-        for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
+        has_token = bool(self._token_rx and self._token_rx.search(host_sk))
+        for token, bid in self.keywords_longest_first if has_token else ():
             if token in labels or (len(token) >= 5 and any(lbl.startswith(token) or lbl.endswith(token) for lbl in labels if len(lbl) > len(token))):
                 return self.brands[bid], "keyword" if token in host_u.lower() else "homoglyph", token
-        for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
+        for token, bid in self.keywords_longest_first if has_token else ():
             if len(token) == 4 and any(lbl.startswith(token) and len(lbl) - len(token) <= 3 for lbl in labels if lbl != token):
                 return self.brands[bid], "prefix", token
         reg_label = skeleton(to_unicode(registrable).split(".")[0])
-        for dom, bid in self.official.items():
-            off_label = dom.split(".")[0]
-            if len(off_label) >= 5 and reg_label != off_label:
+        for off_label, bid, dom in self._typo_index.get(reg_label[:1], ()):
+            if reg_label != off_label:
                 dist = Levenshtein.distance(reg_label, off_label)
                 if len(reg_label) >= 5 and dist <= (1 if len(off_label) <= 8 else 2) and reg_label[0] == off_label[0]:
                     return self.brands[bid], "typosquat", dom
-        if host_u != host_sk:
+        if has_token and host_u != host_sk:
             raw_labels = re.split(r"[.\-_]", host_u.lower())
             for token, bid in self.keyword_index.items():
                 hit = any(lbl == token or (len(token) >= 5 and (lbl.startswith(token) or lbl.endswith(token))) for lbl in labels)

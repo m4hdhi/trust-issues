@@ -12,6 +12,7 @@ from ..http import client
 from ..urlutil import parse
 from .anchors import SHORTENERS, USER_CONTENT_HOSTS
 
+from ..hunters.cpu import breathe, offload
 log = logging.getLogger(__name__)
 
 FEEDS = {
@@ -104,7 +105,8 @@ def _build(texts: list[str], is_protected: Callable[[str, str], bool] | None) ->
                     _ingest_url(idx, ln, name.split("_links")[0])
         idx.counts[name] = len(idx.urls) + len(idx.hosts) - before
     if is_protected:
-        for h in list(idx.hosts):
+        for i, h in enumerate(list(idx.hosts)):
+            breathe(i)
             try:
                 p = parse(h)
             except ValueError:
@@ -118,7 +120,7 @@ async def refresh(is_protected: Callable[[str, str], bool] | None = None) -> Fee
     global _index
     async with _lock:
         texts = await asyncio.gather(*(_fetch(n, u) for n, u in FEEDS.items()))
-        idx = await asyncio.to_thread(_build, list(texts), is_protected)
+        idx = await offload(_build, list(texts), is_protected)
         idx.loaded_at = time.time()
         _index = idx
         log.info("feeds loaded: %s urls, %s hosts", len(idx.urls), len(idx.hosts))

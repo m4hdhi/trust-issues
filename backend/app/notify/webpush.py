@@ -74,14 +74,14 @@ def _throttled(key: str, seconds: int) -> bool:
     return False
 
 
-def notify_block(device_id: str, domain: str, result: dict[str, Any] | None) -> None:
+def notify_block(device_id: str, domain: str, result: dict[str, Any] | None, headline: dict[str, str] | None = None) -> None:
     if _throttled(f"{device_id}:{domain}", 600):
         return
     with db.session() as s:
         device = s.get(db.Device, device_id)
     if not device:
         return
-    head = (result or {}).get("headline") or {}
+    head = headline or (result or {}).get("headline") or {}
     ar = device.lang == "ar"
     title = "🛡️ تم حظر رابط احتيالي" if ar else "🛡️ Scam link blocked"
     body = (head.get("ar") if ar else head.get("en")) or domain
