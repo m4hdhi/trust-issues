@@ -71,6 +71,26 @@ def assess(host: str) -> tuple[str | None, float] | None:
     return None
 
 
+BATCH_PAUSE_S = 0.5
+
+
+def _scan_batch(entries: list[dict]) -> tuple[int, list[tuple[str, tuple[str, float]]]]:
+    """Parse one batch of log entries and match their names against the brand watchlist (runs in a worker thread)."""
+    parsed = 0
+    hits: list[tuple[str, tuple[str, float]]] = []
+    for e in entries:
+        try:
+            names = _names_from_entry(e)
+        except Exception:
+            continue
+        parsed += 1
+        for host in set(names):
+            verdict = assess(host)
+            if verdict:
+                hits.append((host, verdict))
+    return parsed, hits
+
+
 async def _poll_log(base: str) -> None:
     position: int | None = None
     while True:
@@ -85,23 +105,17 @@ async def _poll_log(base: str) -> None:
                 entries = r.json().get("entries", [])
                 if not entries:
                     break
-                for e in entries:
-                    try:
-                        names = _names_from_entry(e)
-                    except Exception:
-                        continue
-                    stats["certs"] += 1
-                    for host in set(names):
-                        verdict = assess(host)
-                        if verdict:
-                            stats["candidates"] += 1
-                            brand_id, conf = verdict
-                            asyncio.create_task(radar.investigate("ct", f"https://{host}/", brand_id,
-                                                                  {"log": base.split("//")[1].split("/")[0], "confidence": conf}, delay_s=45))
+                parsed, hits = await asyncio.to_thread(_scan_batch, entries)
+                stats["certs"] += parsed
+                for host, (brand_id, conf) in hits:
+                    stats["candidates"] += 1
+                    asyncio.create_task(radar.investigate("ct", f"https://{host}/", brand_id,
+                                                          {"log": base.split("//")[1].split("/")[0], "confidence": conf}, delay_s=45))
                 position += len(entries)
                 db.bump("ct_certs", len(entries))
                 if size - position > 20000:
                     position = size - 256
+                await asyncio.sleep(BATCH_PAUSE_S)
             await asyncio.sleep(4)
         except Exception as exc:
             log.info("ct log %s error: %s", base, exc)

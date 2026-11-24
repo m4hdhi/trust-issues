@@ -88,32 +88,37 @@ async def _fetch(name: str, url: str) -> str:
         return cache.read_text(encoding="utf-8") if cache.exists() else ""
 
 
+def _build(texts: list[str], is_protected: Callable[[str, str], bool] | None) -> FeedIndex:
+    idx = FeedIndex()
+    for (name, _), text in zip(FEEDS.items(), texts):
+        before = len(idx.urls) + len(idx.hosts)
+        if name == "phishing_database_domains":
+            for ln in text.splitlines():
+                ln = ln.strip().lower()
+                if ln and not ln.startswith("#") and _host_allowed(ln):
+                    idx.hosts.setdefault(ln, "phishing_database")
+        else:
+            for ln in text.splitlines():
+                ln = ln.strip()
+                if ln.startswith("http"):
+                    _ingest_url(idx, ln, name.split("_links")[0])
+        idx.counts[name] = len(idx.urls) + len(idx.hosts) - before
+    if is_protected:
+        for h in list(idx.hosts):
+            try:
+                p = parse(h)
+            except ValueError:
+                continue
+            if is_protected(p.registrable, p.hostname):
+                del idx.hosts[h]
+    return idx
+
+
 async def refresh(is_protected: Callable[[str, str], bool] | None = None) -> FeedIndex:
     global _index
     async with _lock:
         texts = await asyncio.gather(*(_fetch(n, u) for n, u in FEEDS.items()))
-        idx = FeedIndex()
-        for (name, _), text in zip(FEEDS.items(), texts):
-            before = len(idx.urls) + len(idx.hosts)
-            if name == "phishing_database_domains":
-                for ln in text.splitlines():
-                    ln = ln.strip().lower()
-                    if ln and not ln.startswith("#") and _host_allowed(ln):
-                        idx.hosts.setdefault(ln, "phishing_database")
-            else:
-                for ln in text.splitlines():
-                    ln = ln.strip()
-                    if ln.startswith("http"):
-                        _ingest_url(idx, ln, name.split("_links")[0])
-            idx.counts[name] = len(idx.urls) + len(idx.hosts) - before
-        if is_protected:
-            for h in list(idx.hosts):
-                try:
-                    p = parse(h)
-                except ValueError:
-                    continue
-                if is_protected(p.registrable, p.hostname):
-                    del idx.hosts[h]
+        idx = await asyncio.to_thread(_build, list(texts), is_protected)
         idx.loaded_at = time.time()
         _index = idx
         log.info("feeds loaded: %s urls, %s hosts", len(idx.urls), len(idx.hosts))

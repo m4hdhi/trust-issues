@@ -63,11 +63,18 @@ async def sweep_nrd() -> int:
     except Exception as exc:
         log.info("NRD download failed: %s", exc)
         return 0
-    hits = 0
-    for host in names:
-        verdict = assess(host.strip().lower())
+    matches = await asyncio.to_thread(_match_all, names)
+    for host, verdict in matches:
+        asyncio.create_task(radar.investigate("nrd", f"http://{host}/", verdict[0], {"registered": day}))
+    log.info("NRD %s: %s domains, %s candidates", day, len(names), len(matches))
+    return len(matches)
+
+
+def _match_all(names: list[str]) -> list[tuple[str, tuple[str, float]]]:
+    out = []
+    for raw in names:
+        host = raw.strip().lower()
+        verdict = assess(host)
         if verdict:
-            hits += 1
-            asyncio.create_task(radar.investigate("nrd", f"http://{host.strip().lower()}/", verdict[0], {"registered": day}))
-    log.info("NRD %s: %s domains, %s candidates", day, len(names), hits)
-    return hits
+            out.append((host, verdict))
+    return out
