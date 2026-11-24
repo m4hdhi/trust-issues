@@ -126,13 +126,15 @@ export function Home() {
           className="guilloche pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_70%_30%,black_10%,transparent_70%)]"
           aria-hidden="true"
         />
-        <div className="relative mx-auto max-w-6xl px-4 pt-9 pb-10 sm:px-6 md:pt-16 lg:grid lg:grid-cols-12 lg:items-center lg:gap-14 lg:pt-24 lg:pb-20">
-          <div className="lg:col-span-5">
+        <div className="relative mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-y-7 px-4 pt-8 pb-10 [grid-template-areas:'tag''comp''sub'] sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-14 lg:gap-y-5 lg:pt-24 lg:pb-20 lg:[grid-template-areas:'tag_comp''sub_comp']">
+          <div className="[grid-area:tag] lg:self-end">
             <Tagline />
-            <Tx k="heroSub" className="mt-5 max-w-xl text-[15px] leading-relaxed text-mist-300 sm:text-base" split="stack" />
           </div>
-          <div className="mt-8 lg:col-span-7 lg:mt-0">
+          <div className="[grid-area:comp] lg:self-center">
             <Composer initial={params.get('u') ?? ''} />
+          </div>
+          <div className="[grid-area:sub]">
+            <Tx k="heroSub" className="max-w-xl text-[15px] leading-relaxed text-mist-300 sm:text-base" split="stack" />
           </div>
         </div>
       </section>

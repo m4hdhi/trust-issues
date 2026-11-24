@@ -65,6 +65,7 @@ def persist(result: ScanResult, source: str) -> None:
                 case.verdict, case.score, case.scan_id, case.updated_at = result.verdict, result.score, result.id, db.utcnow()
                 s.add(case)
         s.commit()
+    db.invalidate_blocklist()
     db.bump("scans_total")
     if result.verdict == "scam":
         db.bump("scams_detected")

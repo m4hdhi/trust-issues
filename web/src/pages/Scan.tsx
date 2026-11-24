@@ -126,6 +126,10 @@ export function Scan() {
   }, [id, attempt, finish])
 
   useEffect(() => {
+    if (phase === 'done') window.scrollTo({ top: 0 })
+  }, [phase])
+
+  useEffect(() => {
     if (phase === 'done' && result) {
       document.title = `${pick(S[VERDICT_LABEL[result.verdict]])} — ${result.domain} | Trust Issues`
     }
@@ -134,7 +138,11 @@ export function Scan() {
     }
   }, [phase, result, pick])
 
-  const host = result ? (result.final_url ? hostOf(result.final_url) : result.domain) : nav?.url ? hostOf(nav.url) : ''
+  const host = result
+    ? result.final_url
+      ? hostOf(result.final_url)
+      : result.domain
+    : (stages.trust?.detail ?? (nav?.url ? hostOf(nav.url) : ''))
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">

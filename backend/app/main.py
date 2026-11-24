@@ -21,7 +21,7 @@ from sse_starlette.sse import EventSourceResponse
 from . import batch, bus, db, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
-from .detectors import ai_anthropic, feeds
+from .detectors import ai_anthropic, anchors, feeds
 from .detectors.render import sandbox
 from .dns import doh, profile
 from .evidence import card, pdf, takedown
@@ -29,7 +29,7 @@ from .graph.campaigns import global_graph
 from .http import close as close_http
 from .hunters import ct, radar, serp, typosquat
 from .notify import webpush
-from .pipeline import url_model_or_none
+from .pipeline import instant, url_model_or_none
 from .registry import BRANDS_DIR, get_registry
 from .urlutil import find_urls, parse
 
@@ -39,9 +39,11 @@ settings = get_settings()
 
 
 def _protected(registrable: str, hostname: str) -> bool:
+    if get_registry().is_official(registrable, hostname):
+        return True
     model = url_model_or_none()
     rank = model.tranco_rank(registrable) if model else None
-    return get_registry().is_official(registrable, hostname) or bool(rank and rank <= 100_000)
+    return bool(rank and rank <= 100_000 and anchors.is_plain_host(hostname, registrable))
 
 
 async def _every(seconds: float, fn, initial_delay: float = 0) -> None:
@@ -76,6 +78,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="Trust Issues | أزمة ثقة", version="1.0.0", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.mount("/media/brands", StaticFiles(directory=str(BRANDS_DIR / "assets"), check_dir=False), name="brands")
+app.mount("/media/refs", StaticFiles(directory=str(BRANDS_DIR / "refs"), check_dir=False), name="refs")
 app.mount("/media", StaticFiles(directory=str(settings.media_dir)), name="media")
 
 
@@ -104,6 +107,10 @@ class LoginIn(BaseModel):
 
 class QueryIn(BaseModel):
     query: str
+
+
+class CheckIn(BaseModel):
+    urls: list[str]
 
 
 @app.get("/api/health")
@@ -144,6 +151,17 @@ async def create_scan(body: ScanIn) -> dict[str, Any]:
     if not started and message is None:
         raise HTTPException(422, "no link found in the input")
     return {"scans": started, "message": message}
+
+
+@app.post("/api/check")
+async def instant_check(body: CheckIn) -> dict[str, Any]:
+    out = []
+    for u in body.urls[:200]:
+        try:
+            out.append(instant(u))
+        except ValueError:
+            out.append({"url": u, "verdict": "unknown", "score": 0})
+    return {"items": out}
 
 
 @app.get("/api/scans/{scan_id}/events")

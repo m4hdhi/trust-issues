@@ -58,7 +58,7 @@ function Judge({ op }: { op: AIOpinion }) {
 export function AiJudges({ opinions }: { opinions: AIOpinion[] }) {
   return (
     <Section icon={BrainCircuit} title="aiTitle">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
         {opinions.map((op) => (
           <Judge key={`${op.provider}-${op.model}`} op={op} />
         ))}

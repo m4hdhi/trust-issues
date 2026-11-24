@@ -243,10 +243,10 @@ function Blocks({ deviceId }: { deviceId: string }) {
                     {b.domain}
                   </p>
                   <Tx text={b.headline} className="truncate text-xs text-mist-400" split="stack" />
+                  <p className="mt-0.5 text-[11px] text-mist-500">
+                    <T text={timeAgo(b.ts)} />
+                  </p>
                 </div>
-                <span className="shrink-0 text-xs text-mist-500">
-                  <T text={timeAgo(b.ts)} />
-                </span>
               </>
             )
             return (

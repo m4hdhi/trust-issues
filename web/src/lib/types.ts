@@ -173,6 +173,8 @@ export interface GraphNode {
   kind: NodeKind
   label: string
   verdict?: Verdict | null
+  brand?: string | null
+  scan_id?: string | null
 }
 
 export interface GraphEdge {
@@ -412,6 +414,7 @@ export interface SearchHit {
   verdict: Verdict
   score: number
   scan_id: string | null
+  official?: boolean
 }
 
 export interface MapsHit {

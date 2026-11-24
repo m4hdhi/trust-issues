@@ -40,7 +40,7 @@ export function toElements(nodes: GraphNode[], edges: GraphEdge[], focus?: strin
   ]
 }
 
-export function graphStyle(fontSize = 9): StylesheetJson {
+export function graphStyle(fontSize = 9, minZoomedFont = 0): StylesheetJson {
   return [
     {
       selector: 'node',
@@ -58,6 +58,7 @@ export function graphStyle(fontSize = 9): StylesheetJson {
         'text-outline-width': 2,
         'border-width': 2,
         'border-color': '#0b1220',
+        'min-zoomed-font-size': minZoomedFont,
       },
     },
     { selector: 'node[kind != "domain"]', style: { shape: 'round-diamond' } },

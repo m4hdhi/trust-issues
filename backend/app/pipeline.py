@@ -245,11 +245,11 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
             hard_intel = True
             sig.add("feed_url", "intel", 6.5, f"Listed in a live phishing feed ({source})",
                     f"مُدرج في قائمة حيّة لروابط التصيّد ({source})", source=source)
-        elif not anchored and not (trust.tranco_rank and trust.tranco_rank <= 10000):
+        elif not anchored and not (trust.tranco_rank and trust.tranco_rank <= 10000 and not trust.unusual_subdomain):
             sig.add("feed_host", "intel", 4.5, f"Host appears in a live phishing feed ({source})",
                     f"الخادم مُدرج في قائمة حيّة للتصيّد ({source})", source=source)
 
-    blocklist = db.active_blocklist()
+    blocklist = db.cached_blocklist(2.0)
     for key in {_site_key(p0), _site_key(p)}:
         b = blocklist.get(key)
         if b and b.scan_id != scan_id:
@@ -562,6 +562,38 @@ def _evidence_hashes(r: ScanResult) -> dict[str, Any]:
         "pdf_url": f"/api/scans/{r.id}/evidence.pdf",
         "json_url": f"/api/scans/{r.id}/evidence.json",
     }
+
+
+def instant(url: str) -> dict[str, Any]:
+    """Offline verdict in milliseconds (trust anchors, local feeds, blocklist, URL model) for badging many links at once."""
+    p = parse(url)
+    model = url_model_or_none()
+    trust = anchors.check(p, model.tranco_rank(p.registrable) if model else None)
+    reg = get_registry()
+    if trust.anchored:
+        brand = trust.brand
+        return {"url": p.url, "verdict": "safe", "score": 2, "official": True, "brand": brand.ref().model_dump() if brand else None,
+                "headline": fusion.headline("safe", None, brand).model_dump()}
+    z = -1.0
+    reasons: list[dict[str, str]] = []
+    hit = feeds.index().lookup(p.url)
+    entry = db.cached_blocklist().get(_site_key(p))
+    if hit or entry:
+        z += 7
+        reasons.append({"en": "Known scam link", "ar": "رابط احتيالي معروف"})
+    if model:
+        z += _logit(model.score_url(p.url)) * 0.9
+    if trust.tranco_rank:
+        z += (-4.0 if trust.tranco_rank <= 1000 else -3.0 if trust.tranco_rank <= 10000 else -1.8) / (3 if trust.unusual_subdomain else 1)
+    imp = reg.impersonation(p.hostname, p.registrable)
+    if imp:
+        z += 2.5
+        reasons.append({"en": f"Imitates {imp[0].name_en}", "ar": f"ينتحل صفة {imp[0].name_ar}"})
+    score = int(round(100 / (1 + math.exp(-z))))
+    verdict = fusion.verdict_for(score)
+    brand = imp[0] if imp else None
+    return {"url": p.url, "verdict": verdict, "score": score, "official": False, "brand": brand.ref().model_dump() if brand else None,
+            "headline": fusion.headline(verdict, brand, None).model_dump(), "reasons": reasons}
 
 
 def site_key_for(url: str) -> str:

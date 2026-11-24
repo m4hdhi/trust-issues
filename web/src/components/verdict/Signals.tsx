@@ -60,7 +60,7 @@ function SignalRow({ signal, max, index }: { signal: Signal; max: number; index:
           <Icon className="size-4" aria-hidden="true" />
         </span>
         <span className="min-w-0 flex-1">
-          <Tx text={signal.title} className="text-[15px] font-semibold leading-snug text-paper" split="stack" />
+          <Tx text={signal.title} as="span" className="block text-[15px] font-semibold leading-snug text-paper" split="stack" />
           <span className="mt-2 flex items-center gap-3">
             <span
               className="inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"

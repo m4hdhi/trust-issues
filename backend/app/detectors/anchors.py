@@ -40,6 +40,10 @@ USER_CONTENT_HOSTS = {
     "webflow.com", "hpage.com", "beget.tech", "000webhost.com", "infinityfree.net", "epizy.com", "rf.gd",
     "great-site.net", "free.nf", "42web.io", "lovable.dev", "github.dev", "gitpod.io", "codeanyway.com",
     "ai.studio", "squarespace.com", "craftum.io", "builder.ai", "wixsite.net", "netlify.com", "pantheonsite.io",
+    "duckdns.org", "ddns.net", "no-ip.org", "no-ip.biz", "hopto.org", "zapto.org", "sytes.net", "servebeer.com",
+    "dynv6.net", "mooo.com", "us.to", "dyndns.org", "dynu.net", "myddns.me", "ddnsfree.com", "linkpc.net",
+    "webhop.me", "gotdns.ch", "kozow.com", "ooguy.com", "chickenkiller.com", "crabdance.com", "ignorelist.com",
+    "strangled.net", "twilightparadox.com", "ydns.eu", "freeddns.org", "duckdns.net", "serveo.net", "loca.lt",
 }
 
 COMMON_SUBDOMAINS = {"", "www", "m", "mobile", "mail", "login", "accounts", "account", "app", "apps", "api", "shop", "store",
@@ -61,6 +65,11 @@ class TrustResult:
     @property
     def anchored(self) -> bool:
         return self.official and not self.user_content
+
+
+def is_plain_host(hostname: str, registrable: str) -> bool:
+    sub = hostname[: -len(registrable)].rstrip(".") if hostname.endswith(registrable) else hostname
+    return "." not in sub and sub in COMMON_SUBDOMAINS
 
 
 def is_user_content(p: ParsedUrl) -> bool:

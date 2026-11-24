@@ -30,7 +30,7 @@ export function RealVsFake({
     { src: officialSrc, label: 'official', host: officialHost, tone: 'official' },
     { src: fakeSrc, label: 'fake', host: fakeHost, tone: 'fake' },
   ]
-  const ratio = Math.min(Math.max(aspect, 0.45), 1.6)
+  const ratio = Math.min(Math.max(aspect, 0.62), 1.6)
   return (
     <Section icon={Columns2} title="realVsFake">
       <div className="grid grid-cols-2 gap-3 sm:gap-5">

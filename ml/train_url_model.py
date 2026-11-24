@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import gzip
 import json
-import math
 import sys
 import time
 from pathlib import Path
@@ -40,6 +39,7 @@ TLD_SMOOTHING = 30.0
 NGRAM_FEATURES = 2**20
 NGRAM_RANGE = (3, 5)
 DOMAIN_NEGATIVE_TRANCO = 100_000
+SOURCE_WEIGHTS = {"crawl": 2.0, "crawl_external": 2.0, "curated_lists": 2.0, "commoncrawl": 2.0, "uae_official": 3.0}
 
 
 def write_tranco() -> dict[str, int]:
@@ -99,11 +99,22 @@ LGB_PARAMS = {
 }
 
 
-def train_lgb(X: np.ndarray, y: np.ndarray, groups: pd.Series, names: list[str], rounds: int, params: dict) -> lgb.Booster:
+def class_balanced(y: np.ndarray, base: np.ndarray) -> np.ndarray:
+    """Scale positive weights so both classes carry the same total weight."""
+    pos_w = base[y == 0].sum() / max(base[y == 1].sum(), 1e-9)
+    return np.where(y == 1, base * pos_w, base)
+
+
+def source_weights(sources: pd.Series) -> np.ndarray:
+    return sources.map(SOURCE_WEIGHTS).fillna(1.0).to_numpy()
+
+
+def train_lgb(
+    X: np.ndarray, y: np.ndarray, groups: pd.Series, names: list[str], rounds: int, params: dict, base: np.ndarray
+) -> lgb.Booster:
     inner = GroupShuffleSplit(n_splits=1, test_size=0.1, random_state=SEED)
     tr, es = next(inner.split(X, y, groups))
-    pos_w = (y[tr] == 0).sum() / max((y[tr] == 1).sum(), 1)
-    w = np.where(y == 1, pos_w, 1.0)
+    w = class_balanced(y, base)
     dtr = lgb.Dataset(X[tr], y[tr], weight=w[tr], feature_name=names, free_raw_data=False)
     des = lgb.Dataset(X[es], y[es], weight=w[es], reference=dtr)
     booster = lgb.train(
@@ -158,7 +169,8 @@ def main() -> None:
     print(f"  done in {time.time() - t0:.0f}s")
 
     print("training LightGBM (lexical) ...")
-    booster = train_lgb(X_fit, y_fit, fit["domain"], uf.URL_FEATURE_NAMES, 1500, LGB_PARAMS)
+    w_fit = source_weights(fit["source"])
+    booster = train_lgb(X_fit, y_fit, fit["domain"], uf.URL_FEATURE_NAMES, 1500, LGB_PARAMS, w_fit)
     p_lgb_val = booster.predict(X_val)
     print(f"  trees={booster.num_trees()}  val AUC={roc_auc_score(y_val, p_lgb_val):.4f}")
 
@@ -167,8 +179,8 @@ def main() -> None:
     tfidf = TfidfTransformer(sublinear_tf=True)
     T_fit = tfidf.fit_transform(vec.transform([uf.ngram_text(u) for u in fit["url"]]))
     T_val = tfidf.transform(vec.transform([uf.ngram_text(u) for u in val["url"]]))
-    lr = LogisticRegression(C=4.0, solver="liblinear", class_weight="balanced", max_iter=200)
-    lr.fit(T_fit, y_fit)
+    lr = LogisticRegression(C=4.0, solver="liblinear", max_iter=200)
+    lr.fit(T_fit, y_fit, sample_weight=class_balanced(y_fit, w_fit))
     p_lr_val = lr.predict_proba(T_val)[:, 1]
     print(f"  val AUC={roc_auc_score(y_val, p_lr_val):.4f}")
 
@@ -192,7 +204,9 @@ def main() -> None:
     Xd_fit = featurize_oof_tld(dfit, ctx, prior, host_only=True)
     Xd_val = featurize(dval["url"].tolist(), ctx, host_only=True)
     dparams = dict(LGB_PARAMS, num_leaves=31)
-    dbooster = train_lgb(Xd_fit, dfit["label"].to_numpy(), dfit["domain"], uf.HOST_FEATURE_NAMES, 600, dparams)
+    dbooster = train_lgb(
+        Xd_fit, dfit["label"].to_numpy(), dfit["domain"], uf.HOST_FEATURE_NAMES, 600, dparams, np.ones(len(dfit))
+    )
     pd_val = dbooster.predict(Xd_val)
     dcal = LogisticRegression(C=1.0).fit(logit(pd_val).reshape(-1, 1), dval["label"])
     print(f"  hosts={len(dom)} trees={dbooster.num_trees()} val AUC={roc_auc_score(dval['label'], pd_val):.4f}")

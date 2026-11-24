@@ -129,17 +129,17 @@
  },
  "stacker": {
   "coef": [
-   0.6278625544207626,
-   0.582650999882022
+   0.6487990239173639,
+   0.6762513313979915
   ],
-  "intercept": 0.6751174008786367
+  "intercept": 0.3307914174030292
  },
  "domain_calibration": {
-  "coef": 0.9080414534645004,
-  "intercept": -0.454567693265724
+  "coef": 0.9213197240050641,
+  "intercept": 0.016395313182710352
  },
- "threshold": 0.9137,
- "domain_threshold": 0.8794,
- "train_rows": 523748,
- "train_phishing_share": 0.6483
+ "threshold": 0.8735,
+ "domain_threshold": 0.9135,
+ "train_rows": 589687,
+ "train_phishing_share": 0.5761
 }

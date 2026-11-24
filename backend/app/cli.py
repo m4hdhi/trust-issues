@@ -40,6 +40,37 @@ async def _scan_file(path: Path, out: Path, deep: bool, concurrency: int, use_fe
     await close()
 
 
+async def _capture_refs(only: list[str]) -> None:
+    from io import BytesIO
+
+    from PIL import Image
+
+    from .registry import BRANDS_DIR, get_registry
+
+    out_dir = BRANDS_DIR / "refs"
+    out_dir.mkdir(exist_ok=True)
+    reg = get_registry()
+    for brand in reg.brands.values():
+        if only and brand.id not in only:
+            continue
+        domain = brand.official_domains[0]
+        cap = await sandbox.capture(f"https://{domain}/", "uae_mobile", f"ref_{brand.id}", 30)
+        if not cap.screenshot_path:
+            cap = await sandbox.capture(f"https://www.{domain}/", "uae_mobile", f"ref_{brand.id}", 30)
+        if not cap.screenshot_path:
+            print(f"{brand.id}: failed ({cap.error})")
+            continue
+        img = Image.open(cap.screenshot_path).convert("RGB")
+        img = img.crop((0, 0, img.width, min(img.height, img.width * 2)))
+        img.thumbnail((480, 960))
+        buf = BytesIO()
+        img.save(buf, format="JPEG", quality=70, optimize=True)
+        (out_dir / f"{brand.id}.jpg").write_bytes(buf.getvalue())
+        print(f"{brand.id}: {domain} ok")
+    await sandbox.close()
+    await close()
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(prog="trust-issues", description="Trust Issues | أزمة ثقة — scam link scanner")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -49,8 +80,13 @@ def main() -> None:
     sc.add_argument("--deep", action="store_true", help="re-check gray-zone URLs with the sandbox and AI judges")
     sc.add_argument("-j", "--concurrency", type=int, default=24)
     sc.add_argument("--no-feeds", action="store_true", help="ignore live phishing feeds (measures generalisation to unseen scams)")
+    rf = sub.add_parser("refs", help="capture reference screenshots of official brand websites")
+    rf.add_argument("brands", nargs="*")
     args = ap.parse_args()
-    asyncio.run(_scan_file(args.file, args.output, args.deep, args.concurrency, not args.no_feeds))
+    if args.cmd == "refs":
+        asyncio.run(_capture_refs(args.brands))
+    else:
+        asyncio.run(_scan_file(args.file, args.output, args.deep, args.concurrency, not args.no_feeds))
 
 
 if __name__ == "__main__":

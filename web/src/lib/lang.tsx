@@ -97,12 +97,13 @@ export function Tx({ k, text, as: Tag = 'p', className = '', enClassName = '', a
   if (mode === 'en') return <Tag className={`${className} ${enClassName}`}>{b.en}</Tag>
   if (mode === 'ar') return <Tag className={`${className} ${arClassName}`} lang="ar">{b.ar}</Tag>
   const grid = split === 'columns' ? 'grid gap-x-8 gap-y-1.5 md:grid-cols-2' : 'grid gap-y-1.5'
+  const Wrapper = Tag === 'span' ? 'span' : 'div'
   return (
-    <div className={grid}>
+    <Wrapper className={grid}>
       <Tag className={`${className} ${enClassName}`}>{b.en}</Tag>
       <Tag className={`${className} ${arClassName} text-right`} lang="ar" dir="rtl">
         {b.ar}
       </Tag>
-    </div>
+    </Wrapper>
   )
 }

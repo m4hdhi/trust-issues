@@ -43,6 +43,7 @@ export function Pipeline({ host, stages, order, elapsed }: { host: string; stage
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-ink-700">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-brand-deep to-brand-bright"
+              initial={{ width: '4%' }}
               animate={{ width: `${Math.max(4, progress * 100)}%` }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             />

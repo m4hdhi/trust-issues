@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { VerdictHero } from './VerdictHero'
 import { ActionsBar } from './ActionsBar'
@@ -12,12 +13,13 @@ import { CloakingPanel } from './CloakingPanel'
 import { RedirectChain } from './RedirectChain'
 import { DomainIntelPanel } from './DomainIntelPanel'
 import { Timeline } from './Timeline'
-import { CampaignGraph } from './CampaignGraph'
 import { AiJudges } from './AiJudges'
 import { CommunityPanel } from './CommunityPanel'
 import { MessageAnalysisCard } from './MessageAnalysisCard'
 import { hostOf } from '../../lib/format'
 import type { MessageAnalysis, ScanResult } from '../../lib/types'
+
+const CampaignGraph = lazy(() => import('./CampaignGraph').then((m) => ({ default: m.CampaignGraph })))
 
 interface Props {
   result: ScanResult
@@ -68,7 +70,11 @@ export function VerdictView({ result, message, animated = false, showActions = t
       {result.redirect_chain.length > 1 && <RedirectChain hops={result.redirect_chain} danger={risky} />}
       {hasIntel && <DomainIntelPanel intel={intel} />}
       {result.ai.length > 0 && <AiJudges opinions={result.ai} />}
-      {result.campaign && result.campaign.nodes.length > 1 && <CampaignGraph campaign={result.campaign} focus={result.domain} />}
+      {result.campaign && result.campaign.nodes.length > 1 && (
+        <Suspense fallback={<div className="h-[380px] animate-pulse rounded-3xl bg-ink-800/70" />}>
+          <CampaignGraph campaign={result.campaign} focus={result.domain} />
+        </Suspense>
+      )}
       {result.timeline.length > 0 && <Timeline events={result.timeline} scam={risky} />}
     </>
   )

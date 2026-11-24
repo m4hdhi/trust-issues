@@ -214,6 +214,10 @@ def uae_check(model: UrlModel) -> dict:
     flagged = [[u, round(s, 4)] for u, s in zip(urls, scores) if s >= model.threshold]
     host_scores = {d: model.score_domain(d) for d in domains}
     return {
+        "note": (
+            "sanity check, not a held-out metric: pages of these official domains are part of the legitimate "
+            "training data (about 80% of the domains; the rest fall in the test split)"
+        ),
         "official_domains_file_present": UAE_DOMAINS_FILE.exists(),
         "n_domains": len(domains),
         "n_urls_checked": len(urls),

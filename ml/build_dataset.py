@@ -6,6 +6,7 @@ Stages (run in order, each is idempotent):
     history     download dated snapshots of the OpenPhish public feed (GitHub history)
     crawl       collect legitimate deep URLs from homepages of Tranco / PhiUSIIL / UAE domains
     commoncrawl sample real pages on shared hosts, shorteners and major brands (Common Crawl index)
+    curated     harvest links from human-curated lists (legitimate pages on shared hosts)
     build       merge, normalise, deduplicate and write a time-aware, domain-disjoint split
 
 Usage (from backend/):  uv run python ../ml/build_dataset.py all
@@ -17,14 +18,11 @@ import argparse
 import asyncio
 import csv
 import datetime as dt
-import gzip
-import io
 import json
 import random
 import re
 import sys
 import zipfile
-from collections import defaultdict
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 
@@ -77,6 +75,25 @@ CC_PATTERNS = (
         "dubai.ae", "sharjah.ae", "government.ae", "adnoc.ae", "addc.ae", "eand.com",
     )]
 )
+CURATED_LISTS = [
+    "https://raw.githubusercontent.com/EbookFoundation/free-programming-books/main/books/free-programming-books-langs.md",
+    "https://raw.githubusercontent.com/EbookFoundation/free-programming-books/main/books/free-programming-books-subjects.md",
+    "https://raw.githubusercontent.com/EbookFoundation/free-programming-books/main/courses/free-courses-en.md",
+    "https://raw.githubusercontent.com/public-apis/public-apis/master/README.md",
+    "https://raw.githubusercontent.com/ripienaar/free-for-dev/master/README.md",
+    "https://raw.githubusercontent.com/vinta/awesome-python/master/README.md",
+    "https://raw.githubusercontent.com/sorrycc/awesome-javascript/master/README.md",
+    "https://raw.githubusercontent.com/enaqx/awesome-react/master/README.md",
+    "https://raw.githubusercontent.com/trimstray/the-book-of-secret-knowledge/master/README.md",
+    "https://raw.githubusercontent.com/jnv/lists/master/README.md",
+    "https://raw.githubusercontent.com/sindresorhus/awesome-nodejs/main/readme.md",
+    "https://raw.githubusercontent.com/avelino/awesome-go/main/README.md",
+    "https://raw.githubusercontent.com/rust-unofficial/awesome-rust/main/README.md",
+    "https://raw.githubusercontent.com/awesomedata/awesome-public-datasets/master/README.rst",
+    "https://raw.githubusercontent.com/josephmisiti/awesome-machine-learning/master/README.md",
+]
+CURATED_FILE = RAW / "curated_links.csv"
+_MD_LINK = re.compile(r"https?://[^\s)\]>\"'`]+")
 _STATIC_EXT = re.compile(r"\.(js|css|png|jpe?g|gif|svg|ico|woff2?|ttf|xml|json|txt|webp|mp4|pdf)(\?|$)", re.I)
 
 TEST_LEGIT_CAPS = {"phiusiil": 6000, "tranco_homepage": 3000}
@@ -344,6 +361,25 @@ def commoncrawl(per_pattern: int = 1500) -> None:
     asyncio.run(run())
 
 
+def curated() -> None:
+    """Harvest links from human-curated lists (many on shared hosts such as github.io or gitbook.io)."""
+    rows: list[tuple[str, str]] = []
+    with httpx.Client(timeout=60, follow_redirects=True, headers={"User-Agent": USER_AGENT}) as client:
+        for list_url in CURATED_LISTS:
+            try:
+                resp = client.get(list_url)
+            except httpx.HTTPError:
+                continue
+            if resp.status_code != 200:
+                continue
+            links = [u.rstrip(".,;:") for u in _MD_LINK.findall(resp.text)]
+            links = [u for u in dict.fromkeys(links) if not _STATIC_EXT.search(u) and "github.com" not in u]
+            rows += [(u, list_url) for u in links]
+            print(f"  {list_url.split('/')[4]}: {len(links)}", flush=True)
+    pd.DataFrame(rows, columns=["url", "list"]).drop_duplicates("url").to_csv(CURATED_FILE, index=False)
+    print(f"curated links: {len(rows)}")
+
+
 def _read_lines(path: Path) -> list[str]:
     if not path.exists():
         return []
@@ -412,9 +448,13 @@ def build() -> None:
         add(url, 0, "crawl_external" if src.startswith("external:") else "crawl", "any")
 
     if COMMONCRAWL_FILE.exists():
-        cc = pd.read_csv(COMMONCRAWL_FILE).dropna()
+        cc = pd.read_csv(COMMONCRAWL_FILE, on_bad_lines="skip").dropna()
         for url in cc["url"]:
             add(url, 0, "commoncrawl", "any")
+
+    if CURATED_FILE.exists():
+        for url in pd.read_csv(CURATED_FILE).dropna()["url"]:
+            add(url, 0, "curated_lists", "any")
 
     top_hp = tranco[tranco["rank"] <= 200_000].sample(40_000, random_state=SEED)["domain"]
     for dom in top_hp:
@@ -432,7 +472,7 @@ def build() -> None:
     conflict = df.groupby("norm")["label"].nunique()
     df = df[~df["norm"].isin(conflict[conflict > 1].index)]
     phish_domains = set(df.loc[df["label"] == 1, "domain"])
-    df = df[~((df["source"] == "commoncrawl") & df["domain"].isin(phish_domains))]
+    df = df[~(df["source"].isin(["commoncrawl", "curated_lists"]) & df["domain"].isin(phish_domains))]
     df = df.drop_duplicates("norm")
 
     test_phish_domains = set(df.loc[(df["hint"] == "test") & (df["label"] == 1), "domain"])
@@ -470,12 +510,12 @@ def build() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("stage", choices=["fetch", "history", "crawl", "commoncrawl", "build", "all"])
+    parser.add_argument("stage", choices=["fetch", "history", "crawl", "commoncrawl", "curated", "build", "all"])
     parser.add_argument("--crawl-focus", action="store_true", help="crawl banking / government style domains")
     parser.add_argument("--crawl-domains", type=int, default=9000, help="domains sampled per crawl run")
     parser.add_argument("--crawl-seed", type=int, default=SEED, help="sampling seed for an extra crawl run")
     args = parser.parse_args()
-    stages = ["fetch", "history", "crawl", "commoncrawl", "build"] if args.stage == "all" else [args.stage]
+    stages = ["fetch", "history", "crawl", "commoncrawl", "curated", "build"] if args.stage == "all" else [args.stage]
     for stage in stages:
         print(f"== {stage}", flush=True)
         if stage == "crawl":

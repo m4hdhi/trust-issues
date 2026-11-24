@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import secrets
+import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any, Iterator
@@ -163,3 +164,18 @@ def counter(key: str) -> int:
 def active_blocklist() -> dict[str, BlockEntry]:
     with session() as s:
         return {b.domain: b for b in s.exec(select(BlockEntry).where(BlockEntry.active == True))}  # noqa: E712
+
+
+_bl_cache: tuple[float, dict[str, BlockEntry]] = (0.0, {})
+
+
+def cached_blocklist(max_age_s: float = 10.0) -> dict[str, BlockEntry]:
+    global _bl_cache
+    if time.time() - _bl_cache[0] > max_age_s:
+        _bl_cache = (time.time(), active_blocklist())
+    return _bl_cache[1]
+
+
+def invalidate_blocklist() -> None:
+    global _bl_cache
+    _bl_cache = (0.0, {})

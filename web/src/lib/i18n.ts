@@ -382,6 +382,11 @@ export const S = {
 
   radarSub: { en: 'Live detections from every hunter', ar: 'رصد مباشر من جميع أدوات التعقّب' },
   live: { en: 'Live', ar: 'مباشر' },
+  certsWatched: { en: 'Certificates watched', ar: 'شهادات تحت المراقبة' },
+  scanningShort: { en: 'Scanning', ar: 'قيد الفحص' },
+  openMail: { en: 'Open in mail', ar: 'فتح في البريد' },
+  searchNodes: { en: 'Find a domain, IP or bot', ar: 'ابحث عن نطاق أو عنوان IP أو بوت' },
+  openScan: { en: 'Open scan', ar: 'فتح الفحص' },
   radarEmpty: { en: 'Waiting for detections…', ar: 'بانتظار عمليات الرصد…' },
   filter_pending: { en: 'Pending', ar: 'قيد المراجعة' },
   filter_confirmed: { en: 'Confirmed', ar: 'مؤكدة' },
@@ -461,6 +466,8 @@ export const S = {
   precision: { en: 'Precision', ar: 'الدقة' },
   recall: { en: 'Recall', ar: 'الاستدعاء' },
   f1: { en: 'F1 score', ar: 'مقياس F1' },
+  accuracy: { en: 'Accuracy', ar: 'الدقة الكلية' },
+  latestDay: { en: 'latest day', ar: 'آخر يوم' },
   confusion: { en: 'Confusion matrix', ar: 'مصفوفة الالتباس' },
   predicted: { en: 'Predicted', ar: 'المتوقع' },
   actual: { en: 'Actual', ar: 'الفعلي' },
@@ -493,6 +500,7 @@ export const S = {
     ar: 'مؤشرات استخبارات التهديدات لمنصات مراكز العمليات الأمنية والتبادل مع فرق الاستجابة.',
   },
 
+  metricsTitle: { en: 'Detection quality', ar: 'جودة الكشف' },
   metricsSub: { en: 'Detection quality and activity', ar: 'جودة الكشف والنشاط' },
   fpr: { en: 'False positive rate', ar: 'معدل الإنذارات الكاذبة' },
   officialFp: { en: 'Official sites wrongly flagged', ar: 'مواقع رسمية صُنّفت خطأً' },

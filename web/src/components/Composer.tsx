@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowRight, ClipboardPaste, QrCode, X } from 'lucide-react'
-import { QrScanner } from './QrScanner'
 import { Spinner } from './States'
 import { T, Tx, useLang } from '../lib/lang'
 import { S } from '../lib/i18n'
 import { useStartScan } from '../lib/useStartScan'
+
+const QrScanner = lazy(() => import('./QrScanner').then((m) => ({ default: m.QrScanner })))
 
 export function Composer({ initial = '' }: { initial?: string }) {
   const { mode, t, pick } = useLang()
@@ -14,12 +15,20 @@ export function Composer({ initial = '' }: { initial?: string }) {
   const area = useRef<HTMLTextAreaElement>(null)
   const { start, busy, failed } = useStartScan()
 
-  useLayoutEffect(() => {
+  const fit = useCallback(() => {
     const el = area.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 320)}px`
-  }, [value])
+    if (el.value) el.style.height = `${Math.min(el.scrollHeight, 320)}px`
+  }, [])
+
+  useLayoutEffect(fit, [value, fit])
+
+  useEffect(() => {
+    window.addEventListener('resize', fit)
+    void document.fonts?.ready.then(fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [fit])
 
   const submit = async (text = value, source: 'web' | 'qr' = 'web') => {
     if (!text.trim()) {
@@ -82,7 +91,7 @@ export function Composer({ initial = '' }: { initial?: string }) {
               void submit()
             }
           }}
-          className="block w-full resize-none bg-transparent px-5 pt-5 pb-2 text-[17px] leading-relaxed text-paper placeholder:text-mist-500 focus:outline-none"
+          className="block w-full resize-none bg-transparent px-5 pt-5 pb-2 text-[17px] lg:min-h-[150px] leading-relaxed text-paper placeholder:text-mist-500 focus:outline-none"
         />
         {value && (
           <button
@@ -145,15 +154,19 @@ export function Composer({ initial = '' }: { initial?: string }) {
         )}
       </div>
 
-      <QrScanner
-        open={qrOpen}
-        onClose={() => setQrOpen(false)}
-        onResult={(text) => {
-          setQrOpen(false)
-          setValue(text)
-          void submit(text, 'qr')
-        }}
-      />
+      {qrOpen && (
+        <Suspense fallback={null}>
+          <QrScanner
+            open={qrOpen}
+            onClose={() => setQrOpen(false)}
+            onResult={(text) => {
+              setQrOpen(false)
+              setValue(text)
+              void submit(text, 'qr')
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }

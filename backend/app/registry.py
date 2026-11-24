@@ -48,7 +48,7 @@ class Brand:
             official_domains=self.official_domains,
             category=self.category,
             logo_url=f"/media/brands/{self.id}.png" if self.logo_path.exists() else None,
-            reference_screenshot_url=f"/media/refs/{self.id}.png",
+            reference_screenshot_url=f"/media/refs/{self.id}.jpg" if (BRANDS_DIR / "refs" / f"{self.id}.jpg").exists() else None,
         )
 
     @property

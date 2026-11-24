@@ -22,22 +22,11 @@ log = logging.getLogger(__name__)
 
 UPSTREAM = "https://cloudflare-dns.com/dns-query"
 _cache: dict[tuple[str, int], tuple[float, bytes]] = {}
-_block_snapshot: dict[str, db.BlockEntry] = {}
-_snapshot_at = 0.0
 _queued: dict[str, float] = {}
 
 
-def _blocklist() -> dict[str, db.BlockEntry]:
-    global _block_snapshot, _snapshot_at
-    if time.time() - _snapshot_at > 15:
-        _block_snapshot = db.active_blocklist()
-        _snapshot_at = time.time()
-    return _block_snapshot
-
-
 def invalidate() -> None:
-    global _snapshot_at
-    _snapshot_at = 0.0
+    db.invalidate_blocklist()
 
 
 def policy(name: str) -> tuple[str, db.BlockEntry | None, str | None]:
@@ -48,7 +37,7 @@ def policy(name: str) -> tuple[str, db.BlockEntry | None, str | None]:
     registry = get_registry()
     if registry.is_official(reg, host):
         return "allow", None, None
-    bl = _blocklist()
+    bl = db.cached_blocklist()
     labels = host.split(".")
     for i in range(len(labels) - 1):
         cand = ".".join(labels[i:])
@@ -76,7 +65,7 @@ def _maybe_queue(host: str) -> None:
 def _blocked_response(req: DNSRecord) -> bytes:
     reply = req.reply()
     reply.header.rcode = RCODE.NXDOMAIN
-    return reply.pack()
+    return bytes(reply.pack())
 
 
 async def _forward(wire: bytes, qname: str, qtype: int) -> bytes:
@@ -86,7 +75,7 @@ async def _forward(wire: bytes, qname: str, qtype: int) -> bytes:
         req = DNSRecord.parse(wire)
         cached = DNSRecord.parse(hit[1])
         cached.header.id = req.header.id
-        return cached.pack()
+        return bytes(cached.pack())
     r = await client().post(UPSTREAM, content=wire, headers={"Content-Type": "application/dns-message", "Accept": "application/dns-message"}, timeout=4.0)
     r.raise_for_status()
     data = r.content

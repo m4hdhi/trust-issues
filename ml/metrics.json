@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-24T13:02:26",
+  "generated": "2026-11-24T13:20:48",
   "split": {
     "test_window": [
       "2026-10-25",
@@ -8,51 +8,76 @@
     "train_phish_cutoff": "2026-10-18",
     "train": [
       {
+        "source": "commoncrawl",
+        "label": 0,
+        "n": 1167
+      },
+      {
         "source": "crawl",
         "label": 0,
-        "n": 42598
+        "n": 95334
       },
       {
         "source": "crawl_external",
         "label": 0,
-        "n": 5354
+        "n": 11125
+      },
+      {
+        "source": "curated_lists",
+        "label": 0,
+        "n": 6548
       },
       {
         "source": "openphish_history",
         "label": 1,
-        "n": 126337
+        "n": 126395
       },
       {
         "source": "phishing_database",
         "label": 1,
-        "n": 127970
+        "n": 128105
       },
       {
         "source": "phiusiil",
         "label": 0,
-        "n": 107460
+        "n": 107243
       },
       {
         "source": "phiusiil",
         "label": 1,
-        "n": 85234
+        "n": 85210
       },
       {
         "source": "tranco_homepage",
         "label": 0,
-        "n": 28795
+        "n": 28436
+      },
+      {
+        "source": "uae_official",
+        "label": 0,
+        "n": 124
       }
     ],
     "test": [
       {
+        "source": "commoncrawl",
+        "label": 0,
+        "n": 154
+      },
+      {
         "source": "crawl",
         "label": 0,
-        "n": 2430
+        "n": 7903
       },
       {
         "source": "crawl_external",
         "label": 0,
-        "n": 777
+        "n": 2443
+      },
+      {
+        "source": "curated_lists",
+        "label": 0,
+        "n": 1329
       },
       {
         "source": "openphish_recent",
@@ -62,294 +87,312 @@
       {
         "source": "phiusiil",
         "label": 0,
-        "n": 17442
+        "n": 6000
       },
       {
         "source": "tranco_homepage",
         "label": 0,
-        "n": 4685
+        "n": 3000
+      },
+      {
+        "source": "uae_official",
+        "label": 0,
+        "n": 23
       }
     ]
   },
   "threshold_selection": "max F1 on the validation split subject to FPR <= 1%; test set never used for tuning",
   "validation": {
-    "n": 78556,
-    "n_phishing": 51171,
-    "n_legit": 27385,
-    "threshold": 0.9137,
-    "precision": 0.9938,
-    "recall": 0.8503,
-    "f1": 0.9164,
+    "n": 88687,
+    "n_phishing": 50736,
+    "n_legit": 37951,
+    "threshold": 0.8735,
+    "precision": 0.9912,
+    "recall": 0.841,
+    "f1": 0.91,
     "fpr": 0.01,
     "confusion_matrix": {
-      "tn": 27112,
-      "fp": 273,
-      "fn": 7661,
-      "tp": 43510
+      "tn": 37572,
+      "fp": 379,
+      "fn": 8065,
+      "tp": 42671
     },
-    "roc_auc": 0.9784,
-    "pr_auc": 0.9897
+    "roc_auc": 0.9802,
+    "pr_auc": 0.9869
   },
   "test": {
-    "n": 38001,
+    "n": 33519,
     "n_phishing": 12667,
-    "n_legit": 25334,
-    "threshold": 0.9137,
-    "precision": 0.9813,
-    "recall": 0.9214,
-    "f1": 0.9504,
-    "fpr": 0.0088,
+    "n_legit": 20852,
+    "threshold": 0.8735,
+    "precision": 0.9674,
+    "recall": 0.9081,
+    "f1": 0.9368,
+    "fpr": 0.0186,
     "confusion_matrix": {
-      "tn": 25112,
-      "fp": 222,
-      "fn": 996,
-      "tp": 11671
+      "tn": 20464,
+      "fp": 388,
+      "fn": 1164,
+      "tp": 11503
     },
-    "roc_auc": 0.9932,
-    "pr_auc": 0.9903,
-    "recall_at_fpr_0.1pct": 0.8278,
-    "recall_at_fpr_1pct": 0.9265
+    "roc_auc": 0.99,
+    "pr_auc": 0.9868,
+    "recall_at_fpr_0.1pct": 0.7628,
+    "recall_at_fpr_1pct": 0.8743
   },
   "test_threshold_0.5": {
-    "n": 38001,
+    "n": 33519,
     "n_phishing": 12667,
-    "n_legit": 25334,
+    "n_legit": 20852,
     "threshold": 0.5,
-    "precision": 0.9007,
-    "recall": 0.9751,
-    "f1": 0.9364,
-    "fpr": 0.0538,
+    "precision": 0.8889,
+    "recall": 0.9684,
+    "f1": 0.927,
+    "fpr": 0.0735,
     "confusion_matrix": {
-      "tn": 23972,
-      "fp": 1362,
-      "fn": 316,
-      "tp": 12351
+      "tn": 19319,
+      "fp": 1533,
+      "fn": 400,
+      "tp": 12267
     },
-    "roc_auc": 0.9932,
-    "pr_auc": 0.9903
+    "roc_auc": 0.99,
+    "pr_auc": 0.9868
   },
   "test_by_source": {
+    "commoncrawl": {
+      "n": 154,
+      "fpr": 0.1494
+    },
     "crawl": {
-      "n": 2430,
-      "fpr": 0.0305
+      "n": 7903,
+      "fpr": 0.0118
     },
     "crawl_external": {
-      "n": 777,
-      "fpr": 0.0824
+      "n": 2443,
+      "fpr": 0.0426
+    },
+    "curated_lists": {
+      "n": 1329,
+      "fpr": 0.0497
     },
     "openphish_recent": {
       "n": 12667,
-      "recall": 0.9214
+      "recall": 0.9081
     },
     "phiusiil": {
-      "n": 17442,
-      "fpr": 0.0014
+      "n": 6000,
+      "fpr": 0.0023
     },
     "tranco_homepage": {
-      "n": 4685,
-      "fpr": 0.0126
+      "n": 3000,
+      "fpr": 0.0293
+    },
+    "uae_official": {
+      "n": 23,
+      "fpr": 0.0
     }
   },
   "test_long_tail": {
     "description": "legit URLs restricted to domains outside the Tranco top 100k (reputation feature cannot help)",
-    "n": 32821,
+    "n": 27268,
     "n_phishing": 12667,
-    "n_legit": 20154,
-    "threshold": 0.9137,
-    "precision": 0.9831,
-    "recall": 0.9214,
-    "f1": 0.9512,
-    "fpr": 0.01,
+    "n_legit": 14601,
+    "threshold": 0.8735,
+    "precision": 0.9692,
+    "recall": 0.9081,
+    "f1": 0.9376,
+    "fpr": 0.0251,
     "confusion_matrix": {
-      "tn": 19953,
-      "fp": 201,
-      "fn": 996,
-      "tp": 11671
+      "tn": 14235,
+      "fp": 366,
+      "fn": 1164,
+      "tp": 11503
     },
-    "roc_auc": 0.992,
-    "pr_auc": 0.9908
+    "roc_auc": 0.9869,
+    "pr_auc": 0.9876
   },
   "test_domain_model": {
-    "n": 34748,
-    "n_phishing": 11158,
-    "n_legit": 23590,
-    "threshold": 0.8794,
-    "precision": 0.9684,
-    "recall": 0.8647,
-    "f1": 0.9136,
-    "fpr": 0.0134,
+    "n": 25360,
+    "n_phishing": 11162,
+    "n_legit": 14198,
+    "threshold": 0.9135,
+    "precision": 0.9633,
+    "recall": 0.8442,
+    "f1": 0.8998,
+    "fpr": 0.0253,
     "confusion_matrix": {
-      "tn": 23275,
-      "fp": 315,
-      "fn": 1510,
-      "tp": 9648
+      "tn": 13839,
+      "fp": 359,
+      "fn": 1739,
+      "tp": 9423
     },
-    "roc_auc": 0.9707,
-    "pr_auc": 0.964
+    "roc_auc": 0.9656,
+    "pr_auc": 0.9676
   },
   "uae_official": {
+    "note": "sanity check, not a held-out metric: pages of these official domains are part of the legitimate training data (about 80% of the domains; the rest fall in the test split)",
     "official_domains_file_present": true,
     "n_domains": 399,
-    "n_urls_checked": 855,
+    "n_urls_checked": 1263,
     "false_positives": 0,
     "flagged": [],
     "domain_model_false_positives": 0,
-    "max_score": 0.8198
+    "max_score": 0.8175
   },
   "illustrative_uae_lures": {
     "note": "hand-written examples for demonstration only; not part of any metric",
     "scores": {
-      "tamm-fines.com": 0.6091,
-      "https://rta-ae-pay.top/fines/pay": 0.9994,
-      "salik-uae-toll.info/pay?ref=8812": 0.9851,
-      "https://dubaipolice-gov.com/traffic-fine/login": 0.953,
+      "tamm-fines.com": 0.6154,
+      "https://rta-ae-pay.top/fines/pay": 0.9988,
+      "salik-uae-toll.info/pay?ref=8812": 0.9635,
+      "https://dubaipolice-gov.com/traffic-fine/login": 0.8365,
       "http://emiratesnbd-secure-update.xyz/verify": 1.0,
-      "https://uaepass-login.online/auth": 0.9998,
-      "aramex-redelivery.cc/track?id=AE99812": 0.9991,
-      "https://emiratespost-parcel.shop/customs-fee": 0.9997
+      "https://uaepass-login.online/auth": 0.9989,
+      "aramex-redelivery.cc/track?id=AE99812": 0.9984,
+      "https://emiratespost-parcel.shop/customs-fee": 0.9998
     }
   },
   "latency": {
-    "load_s": 0.156,
-    "score_url_ms_mean": 0.502,
-    "score_url_ms_p99": 4.661,
-    "score_urls_batch_ms_per_url": 0.3581,
-    "score_domain_ms_mean": 0.262,
-    "score_domain_ms_p99": 2.943,
-    "explain_ms_mean": 13.374
+    "load_s": 0.085,
+    "score_url_ms_mean": 0.225,
+    "score_url_ms_p99": 0.371,
+    "score_urls_batch_ms_per_url": 0.1114,
+    "score_domain_ms_mean": 0.083,
+    "score_domain_ms_p99": 0.14,
+    "explain_ms_mean": 6.992
   },
   "artifacts_mb": {
-    "domain_lgbm.txt": 2.11,
+    "domain_lgbm.txt": 2.05,
     "tld_risk.json": 0.01,
     "tranco_top.txt.gz": 0.63,
-    "url_lgbm.txt": 2.81,
+    "url_lgbm.txt": 4.62,
     "url_model_meta.json": 0.0,
-    "url_ngram.npz": 5.15
+    "url_ngram.npz": 5.2
   },
-  "artifacts_total_mb": 10.71,
+  "artifacts_total_mb": 12.51,
   "error_examples": {
     "false_positives": [
       [
-        "https://1406.sb.mywebsite-editor.online/app/cms/logout.php",
+        "https://docstruct.pages.dev",
         1.0
       ],
       [
-        "http://www.hurt-orange.pl/?ga=2.104094144.137881156.1555393363-1195887732.1543488637",
-        0.999
+        "https://hundredthrun-compute-desk.pages.dev/open-data",
+        1.0
+      ],
+      [
+        "https://github-contributions.vercel.app",
+        1.0
+      ],
+      [
+        "https://0000p.glitch.me/",
+        1.0
       ],
       [
         "https://rocs771778-efcwgbhjczbxbed8.a02.azurefd.net/",
         0.999
       ],
       [
-        "7898888.vip",
+        "https://ispxwld2-download.azureedge.net/release/uploaded/application/f9bbbb0f1fadc36435c2a01be8b4f9029dca46d5782a7597b7d42d6beff29b0a/InspixWorldLauncherSetup.exe?v=f9bbbb0f1fadc36435c2a01be8b4f9029dca46d5782a7597b7d42d6beff29b0a",
+        0.999
+      ],
+      [
+        "https://whistleblowing-portal.webnode.page/",
+        0.999
+      ],
+      [
+        "https://madrollindollsmerch.square.site/",
+        0.999
+      ],
+      [
+        "https://networkingfromscratch.vercel.app",
         0.998
       ],
       [
-        "https://validate.perfdrive.com/?ssa=0f149106-82e7-414c-896f-c2568c3354bf&ssb=45025294797&ssc=https%3A%2F%2Fepc.ae%2F&ssi=24450d37-dhyi-4605-9abf-1e97e16eba82&ssk=botmanager_support@radware.com&ssm=01311828997909155108956588414608&ssn=c0fb50c854d3ab92a5f3b6255d2fd00b8f6748546b92-34da-4a62-8845b2&sso=78fcf7a1-426d6347089300e13c9488858ff8debab203d69c27a767d3&ssp=57913275851795589187179554096201037&ssq=14356401018746183103010187903094752849574&ssr=NS4xOTUuMjI1LjE1OA==&sst=Mozilla/5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2014_0)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/130.0%20Safari/537.36&ssu=&ssv=&ssw=&ssx=eyJyZCI6ImVwYy5hZSIsInV6bXgiOiI3ZmMwMDBjNDFmMjA2ZC1hYzZhLTQwMDUtOTA0ZC1jMTM0OGFhZWE1ZTYxLTE3OTU1MTAxODc2ODIwLTAwZjllZjYxZDYzYjMxMGI5ZmUxMCIsIl9fdXptZiI6IjdmOTAwMDQ4NTQ2YjkyLTM0ZGEtNGE2Mi04N2ExLTQyNmQ2MzQ3MDg5MzEtMTc5NTUxMDE4NzY4MjAtMDA0NjIyOTBhMjFmMjYzYzY5ZDEwIn0=",
+        "https://dte-institute-list.netlify.app/",
         0.998
       ],
       [
-        "https://proudtobe-pusd.community.highbond.com/document/54552/?lastModified=639307096527870000",
+        "https://hanjinchatbot-web.azurewebsites.net/",
         0.998
       ],
       [
-        "https://swag.arcticblue.au/promo/www/viewcart/viewcart.php",
+        "https://afflat3b3.com/trk/lnk/70493105-047B-4C8F-A923-8E94EBAF3647/?o=31555&amp;c=918277&amp;a=670214&amp;k=9DEC97ED14879688E13FD9157386768E&amp;l=37101",
+        0.998
+      ],
+      [
+        "https://25cities.glitch.me/",
         0.997
       ],
       [
-        "http://angelasknights.blogspot.com/",
+        "ok36573.vip",
         0.997
       ],
       [
-        "abir.ga",
-        0.996
-      ],
-      [
-        "https://gis.railbaltica.org/portal/apps/webappviewer/index.html?id=5e16198d4016497dbfc826d3b99b1467",
-        0.996
-      ],
-      [
-        "https://www.mgmggqra.cc/40764.html",
-        0.995
-      ],
-      [
-        "https://sitesproalbp01-311734158.us-east-1.elb.amazonaws.com/solucoes-educacionais/conteudo-core/",
-        0.995
-      ],
-      [
-        "https://offers.icloud.apple/cn-offer",
-        0.994
-      ],
-      [
-        "https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/redirect?encryptedPayload=AVxigLIY0jPxyembgQ928dZORh47eDOOARORW6CjkqiQIVdZBU9lJLflr5KWaan5ZYuEEbSckOBUDC8A%2FuQ7TkPb2I3K2gVMl6Jnv71LjbVnf%2FcEyl2aGyKYHt4KGKDQ4O7aLmW08Pz0GGdtnn%2Bxn9Fxud5qzrAx51j6gfHS6CoknuzZz14fhCI4hcDQi%2FWe9Sa%2B31IGRc4nNbo%3D&amp;webInteractiveContentId=216366974848&amp;portalId=1958393",
-        0.994
-      ],
-      [
-        "filedownloadlink.xyz",
-        0.993
+        "https://inventory.rawsec.ml/index.html",
+        0.997
       ]
     ],
     "false_negatives": [
       [
         "https://eg1xbet.com/en/games/under-and-over-seven",
-        0.003
+        0.0
       ],
       [
         "https://desiaustralia.com/news/community/teej-mahotsav-brings-thousands-together-in-celebration-and-solidarity",
-        0.004
+        0.0
       ],
       [
         "http://www.motorola.com/us/en/smartphones/",
-        0.007
+        0.001
       ],
       [
         "https://pandemicrecords2020.com/products/the-weeknd-hurry-up-tomorrow-limited-edition-crystal-clear-color-vinyl-lp/",
-        0.01
+        0.003
       ],
       [
         "https://royalcollege.lk/clubs-and-societies/radio-club/",
-        0.017
+        0.004
       ],
       [
         "https://eg1xbet.com/en/live/football/2590430-mls",
-        0.025
+        0.005
       ],
       [
-        "https://petsonpoint.co.uk/",
-        0.034
+        "https://bank-of-america.ai.studio/en/saving-budgeting/",
+        0.011
+      ],
+      [
+        "https://www.awscfdns.com/customer-preferences/edit",
+        0.013
+      ],
+      [
+        "https://www.the-hole-picture.com/articles/",
+        0.014
+      ],
+      [
+        "https://toknc.org/about",
+        0.017
+      ],
+      [
+        "https://qr-codes.io/ClLXCX",
+        0.022
+      ],
+      [
+        "https://chatgpt0005.eu.org/blog/save-and-display-your-faves-add-discord-shop-marvel-rivals-items-to-your-profiles-wishlist/",
+        0.027
+      ],
+      [
+        "https://qr-codes.io/qMGrEq",
+        0.027
+      ],
+      [
+        "https://pcswap.org/liquidity/pools/",
+        0.028
       ],
       [
         "https://2h.ae/eJceI",
-        0.034
-      ],
-      [
-        "https://2h.ae/EWTrV",
-        0.036
-      ],
-      [
-        "http://www.raue-familie.de/",
-        0.046
-      ],
-      [
-        "https://jasejournals.com/",
-        0.048
-      ],
-      [
-        "http://bnbvf.org/",
-        0.049
-      ],
-      [
-        "https://tckan.org/",
-        0.05
-      ],
-      [
-        "https://2h.ae/RKrjv",
-        0.051
-      ],
-      [
-        "http://moviesplitter.com/",
-        0.051
+        0.028
       ]
     ]
   }
