@@ -185,9 +185,12 @@
       border: 1px solid; border-radius: 999px; font: 600 12px/18px ${FONT}; letter-spacing: 0; white-space: nowrap; cursor: help;
       user-select: none; -webkit-font-smoothing: antialiased; }
     .icon { flex: none; }
-    .label, .detail { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
-    .detail { font-weight: 500; overflow: hidden; padding-inline-start: 7px; margin-inline-start: 2px; border-inline-start: 1px solid rgb(0 0 0 / 0.14); }
-    .detail bdi { overflow: hidden; text-overflow: ellipsis; }
+    .label, .detail { display: inline-flex; align-items: center; gap: 4px; }
+    .label { flex: none; }
+    .detail { flex: 0 1 auto; min-width: 0; font-weight: 500; overflow: hidden; padding-inline-start: 7px; margin-inline-start: 2px;
+      border-inline-start: 1px solid rgb(0 0 0 / 0.14); }
+    .detail bdi { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .detail .sep { flex: none; }
     .sep { opacity: 0.5; }
     [lang="ar"] { font-family: ${AR_FONT}; font-size: 12.5px; }
     .official { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
@@ -440,7 +443,7 @@
     :host { all: initial; position: fixed; left: 50%; bottom: 28px; z-index: 2147483646; transform: translateX(-50%); }
     .toast { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: #0b1220;
       color: #edf2f9; border: 1px solid #22304d; box-shadow: 0 12px 32px rgb(0 0 0 / 0.35); font: 600 13px/1.3 ${FONT};
-      animation: in 0.15s ease-out; }
+      white-space: nowrap; animation: in 0.15s ease-out; }
     [lang="ar"] { font-family: ${AR_FONT}; }
     .sep { opacity: 0.5; }
     .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #22304d; border-top-color: #14b8a6; animation: spin 0.8s linear infinite; }

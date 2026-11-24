@@ -11,14 +11,18 @@ from .. import db
 from ..pipeline import site_key_for
 from ..schemas import Campaign, GraphEdge, GraphNode, ScanResult
 
+SHARED_ASNS = {"AS13335", "AS16509", "AS14618", "AS15169", "AS396982", "AS8075", "AS54113", "AS20940", "AS16625", "AS209242",
+               "AS26496", "AS46606", "AS22612", "AS19551", "AS32934", "AS8068", "AS36351", "AS24940", "AS63949", "AS14061"}
 GENERIC_NS = ("cloudflare.com", "awsdns", "azure-dns", "googledomains.com", "domaincontrol.com", "registrar-servers.com")
 
 
 def _features(r: dict[str, Any]) -> list[tuple[str, str, str]]:
     feats: list[tuple[str, str, str]] = []
     di = r.get("domain_intel") or {}
-    for ip in di.get("ips") or []:
-        feats.append(("ip", ip, "hosted_on"))
+    shared_host = any(sig["id"] == "user_content_host" for sig in r.get("signals") or [])
+    if di.get("asn") not in SHARED_ASNS and not shared_host:
+        for ip in di.get("ips") or []:
+            feats.append(("ip", ip, "hosted_on"))
     for ns in di.get("nameservers") or []:
         if not any(g in ns for g in GENERIC_NS):
             feats.append(("nameserver", ns.lower(), "uses_ns"))
@@ -71,6 +75,7 @@ def build_graph(results: list[dict[str, Any]]) -> nx.Graph:
             g.add_edge(d, n, kind=rel)
     lonely = [n for n, data in g.nodes(data=True) if data["kind"] != "domain" and g.degree(n) < 2]
     g.remove_nodes_from(lonely)
+    g.remove_nodes_from([n for n in list(g.nodes) if g.degree(n) == 0])
     return g
 
 

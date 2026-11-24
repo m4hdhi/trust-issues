@@ -104,5 +104,9 @@ def domain_diff(official: str, suspect: str) -> DomainDiff:
     return DomainDiff(official=official, suspect=suspect, segments=segments)
 
 
+def similarity(a: str, b: str) -> float:
+    return SequenceMatcher(None, a, b).ratio()
+
+
 def best_official_domain(brand: Brand, suspect: str) -> str:
     return max(brand.official_domains, key=lambda d: SequenceMatcher(None, d, suspect).ratio()) if brand.official_domains else suspect

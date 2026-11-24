@@ -33,6 +33,10 @@ init();
 async function init() {
   settings = await getSettings();
   document.body.dataset.lang = settings.lang;
+  if (settings.lang === 'ar') {
+    document.documentElement.lang = 'ar';
+    document.documentElement.dir = 'rtl';
+  }
   [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   pageUrl = tab?.url || '';
 

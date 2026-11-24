@@ -299,7 +299,8 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
             sig.add("brand_in_domain", "url", base_w / 2 if p.suffix == "ae" else base_w, f"Uses the name '{token}' ({brand.name_en}) in a domain {brand.name_en} does not own",
                     f"يستخدم اسم '{token}' ({brand.name_ar}) في نطاق لا تملكه {brand.name_ar}", brand=brand.id, token=token)
         else:
-            sig.add("lookalike_domain", "url", 3.5, f"Look-alike of the official domain {token}",
+            sensitive_brand = brand.category in {"bank", "government", "police", "payments", "telecom", "utility", "transport"}
+            sig.add("lookalike_domain", "url", 4.2 if sensitive_brand else 3.5, f"Look-alike of the official domain {token}",
                     f"نطاق مقلّد يشبه النطاق الرسمي {token}", brand=brand.id, official=token, method=method)
 
     page_capture: PageCapture | None = None
@@ -422,7 +423,9 @@ async def scan(raw: str, scan_id: str, mode: str = "deep", source: str = "web", 
     head = fusion.headline(verdict, brand, official_brand if anchored else None)
     diff = None
     if brand and not anchored and verdict != "safe":
-        diff = fusion.domain_diff(fusion.best_official_domain(brand, p.hostname), p.hostname)
+        candidates = {p0.hostname, p.hostname}
+        suspect = max(candidates, key=lambda h: fusion.similarity(fusion.best_official_domain(brand, h), h))
+        diff = fusion.domain_diff(fusion.best_official_domain(brand, suspect), suspect)
 
     result = ScanResult(
         id=scan_id,

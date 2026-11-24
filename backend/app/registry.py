@@ -11,6 +11,7 @@ from confusable_homoglyphs import confusables
 from rapidfuzz.distance import Levenshtein
 
 from .schemas import BrandRef
+from .urlutil import to_unicode
 
 BRANDS_DIR = Path(__file__).resolve().parent / "brands"
 GENERIC_TOKENS = {
@@ -19,6 +20,7 @@ GENERIC_TOKENS = {
     "dubai", "abudhabi", "sharjah", "police", "bank", "fines", "fine", "toll", "post", "mail", "net",
     "emirates", "centralbank", "amazonprime", "tax", "taxgov", "uaetax", "vat-refund", "vatrefund", "payit",
 }
+ENGLISH_COLLISIONS = ("parking", "dewan", "tammy", "lulus", "noone", "salikh")
 GENERIC_MENTIONS = {"emirates", "etihad", "noon", "tax", "lulu", "amazon", "du", "parkin", "seha", "doh", "liv"}
 
 
@@ -134,25 +136,29 @@ class Registry:
     def impersonation(self, hostname: str, registrable: str) -> tuple[Brand, str, str] | None:
         if self.is_official(registrable, hostname):
             return None
-        host_sk = skeleton(hostname)
+        host_u = to_unicode(hostname)
+        host_sk = skeleton(host_u)
         labels = re.split(r"[.\-_]", host_sk)
         joined = host_sk.replace("-", "").replace(".", "")
+        labels = [lbl for lbl in labels if not any(w in lbl for w in ENGLISH_COLLISIONS)] or labels
         for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
-            if token in labels or (len(token) >= 5 and token in joined):
-                return self.brands[bid], "keyword", token
+            if token in labels or (len(token) >= 5 and any(lbl.startswith(token) or lbl.endswith(token) for lbl in labels if len(lbl) > len(token))):
+                return self.brands[bid], "keyword" if token in host_u.lower() else "homoglyph", token
         for token, bid in sorted(self.keyword_index.items(), key=lambda kv: -len(kv[0])):
-            if len(token) == 4 and any(lbl.startswith(token) and len(lbl) <= 10 for lbl in labels if lbl != token):
+            if len(token) == 4 and any(lbl.startswith(token) and len(lbl) - len(token) <= 3 for lbl in labels if lbl != token):
                 return self.brands[bid], "prefix", token
-        reg_label = skeleton(registrable.split(".")[0])
+        reg_label = skeleton(to_unicode(registrable).split(".")[0])
         for dom, bid in self.official.items():
             off_label = dom.split(".")[0]
-            if len(off_label) >= 4 and reg_label != off_label:
+            if len(off_label) >= 5 and reg_label != off_label:
                 dist = Levenshtein.distance(reg_label, off_label)
                 if dist <= (1 if len(off_label) <= 8 else 2) and reg_label[0] == off_label[0]:
                     return self.brands[bid], "typosquat", dom
-        if hostname != host_sk:
+        if host_u != host_sk:
+            raw_labels = re.split(r"[.\-_]", host_u.lower())
             for token, bid in self.keyword_index.items():
-                if token in host_sk:
+                hit = any(lbl == token or (len(token) >= 5 and (lbl.startswith(token) or lbl.endswith(token))) for lbl in labels)
+                if hit and not any(token in lbl for lbl in raw_labels):
                     return self.brands[bid], "homoglyph", token
         return None
 

@@ -43,7 +43,7 @@ testButton.addEventListener('click', async () => {
     const hosts = Number(data.feeds?.hosts) || 0;
     setStatus(
       serverStatus,
-      `Connected · متصل — ${brands.toLocaleString('en')} protected brands, ${hosts.toLocaleString('en')} known scam hosts.`,
+      `Connected: ${brands.toLocaleString('en')} protected brands, ${hosts.toLocaleString('en')} known scam hosts · متصل`,
       'ok',
     );
   } catch (error) {

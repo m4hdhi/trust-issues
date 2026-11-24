@@ -83,7 +83,7 @@ export function scanPageUrl(base, id) {
 }
 
 export function checkUrls(urls, base) {
-  return request('/api/check', { method: 'POST', body: { urls }, base });
+  return request('/api/check', { method: 'POST', body: { urls }, base, timeout: 20000 });
 }
 
 export async function startDeepScan(url, base) {
