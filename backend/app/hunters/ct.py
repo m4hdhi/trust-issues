@@ -1,0 +1,109 @@
+"""Certificate Transparency monitor: catches look-alike UAE domains the moment their HTTPS certificate is issued."""
+from __future__ import annotations
+
+import asyncio
+import base64
+import logging
+import struct
+
+from cryptography import x509
+
+from ..http import client
+from ..pipeline import url_model_or_none
+from ..registry import get_registry
+from ..urlutil import parse
+from . import radar
+
+log = logging.getLogger(__name__)
+
+LOGS = [
+    "https://ct.cloudflare.com/logs/nimbus2026/",
+    "https://elephant2026h2.ct.sectigo.com/",
+    "https://tiger2026h2.ct.sectigo.com/",
+    "https://wyvern.ct.digicert.com/2026h2/",
+    "https://sphinx.ct.digicert.com/2026h2/",
+]
+UAE_HINTS = ("uae", "dubai", "abudhabi", "abu-dhabi", "sharjah", "emirat", "ajman", "-ae.", ".ae.", "aed")
+stats = {"certs": 0, "candidates": 0}
+
+
+def _names_from_entry(entry: dict) -> list[str]:
+    leaf = base64.b64decode(entry["leaf_input"])
+    entry_type = struct.unpack(">H", leaf[10:12])[0]
+    if entry_type == 0:
+        length = int.from_bytes(leaf[12:15], "big")
+        der = leaf[15 : 15 + length]
+    else:
+        extra = base64.b64decode(entry["extra_data"])
+        length = int.from_bytes(extra[0:3], "big")
+        der = extra[3 : 3 + length]
+    cert = x509.load_der_x509_certificate(der)
+    names: list[str] = []
+    try:
+        san = cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
+        names = san.value.get_values_for_type(x509.DNSName)
+    except x509.ExtensionNotFound:
+        cn = cert.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+        names = [cn[0].value] if cn else []
+    return [n.lstrip("*.").lower() for n in names]
+
+
+def assess(host: str) -> tuple[str | None, float] | None:
+    try:
+        p = parse(host)
+    except ValueError:
+        return None
+    reg = get_registry()
+    if reg.is_official(p.registrable, p.hostname):
+        return None
+    model = url_model_or_none()
+    if model and model.tranco_rank(p.registrable):
+        return None
+    imp = reg.impersonation(p.hostname, p.registrable)
+    if imp:
+        return imp[0].id, 1.0
+    if model and any(h in p.hostname for h in UAE_HINTS):
+        score = model.score_domain(p.hostname)
+        if score >= 0.93:
+            return None, score
+    return None
+
+
+async def _poll_log(base: str) -> None:
+    position: int | None = None
+    while True:
+        try:
+            sth = (await client().get(base + "ct/v1/get-sth", timeout=10.0)).json()
+            size = sth["tree_size"]
+            if position is None:
+                position = max(0, size - 256)
+            while position < size:
+                end = min(size - 1, position + 255)
+                r = await client().get(base + "ct/v1/get-entries", params={"start": position, "end": end}, timeout=15.0)
+                entries = r.json().get("entries", [])
+                if not entries:
+                    break
+                for e in entries:
+                    try:
+                        names = _names_from_entry(e)
+                    except Exception:
+                        continue
+                    stats["certs"] += 1
+                    for host in set(names):
+                        verdict = assess(host)
+                        if verdict:
+                            stats["candidates"] += 1
+                            brand_id, conf = verdict
+                            asyncio.create_task(radar.investigate("ct", f"https://{host}/", brand_id,
+                                                                  {"log": base.split("//")[1].split("/")[0], "confidence": conf}, delay_s=45))
+                position += len(entries)
+                if size - position > 20000:
+                    position = size - 256
+            await asyncio.sleep(4)
+        except Exception as exc:
+            log.info("ct log %s error: %s", base, exc)
+            await asyncio.sleep(20)
+
+
+async def run() -> None:
+    await asyncio.gather(*(_poll_log(b) for b in LOGS))

@@ -1,0 +1,879 @@
+version: 1
+brands:
+  # ---------------------------------------------------------------- government
+  - id: tamm
+    name_en: TAMM
+    name_ar: تم
+    category: government
+    official_domains:
+      - tamm.abudhabi
+      - tamm.ae
+      - abudhabi.ae
+      - abudhabi.gov.ae
+    keywords_en: [tamm, tammabudhabi, tamm-abudhabi, tammgov]
+    keywords_ar: [منصة تم, تم أبوظبي, خدمات تم, تطبيق تم]
+    helplines:
+      - number: "800555"
+        label: "Abu Dhabi Government Contact Centre"
+        source: "https://www.tamm.abudhabi/en/contact-us"
+    whatsapp: []
+    lures_en: ["pay traffic fine", "renew emirates id", "housing benefit approved", "government refund pending", "update your tamm account", "social support payment"]
+    lures_ar: ["دفع المخالفات", "تجديد الهوية", "استرداد رسوم حكومية", "تحديث بيانات حسابك في تم", "الدعم الاجتماعي"]
+
+  - id: uaepass
+    name_en: UAE PASS
+    name_ar: الهوية الرقمية
+    category: government
+    official_domains:
+      - uaepass.ae
+    keywords_en: [uaepass, uae-pass, uaepas, uaepassid, uaepasslogin]
+    keywords_ar: [الهوية الرقمية, يو اي اي باس, الهوية الرقمية الإماراتية]
+    helplines:
+      - number: "600561111"
+        label: "UAE PASS support"
+        source: "https://uaepass.ae/"
+    whatsapp: []
+    lures_en: ["verify your uae pass", "uae pass account suspended", "sign in with uae pass to receive refund", "uae pass otp"]
+    lures_ar: ["تحقق من الهوية الرقمية", "تم تعليق حسابك في الهوية الرقمية", "رمز التحقق"]
+
+  - id: moi
+    name_en: Ministry of Interior (MOI)
+    name_ar: وزارة الداخلية
+    category: government
+    official_domains:
+      - moi.gov.ae
+    keywords_en: [moi, moiuae, moi-uae, moigov, uaemoi, ministryofinterior]
+    keywords_ar: [وزارة الداخلية, الداخلية الإماراتية]
+    helplines:
+      - number: "8005000"
+        label: "Customer service (24/7)"
+        source: "https://moi.gov.ae/en/contactus.aspx"
+      - number: "999"
+        label: "Police emergency"
+        source: "https://moi.gov.ae/en/About.MOI/content/emergency.contact.aspx"
+    whatsapp: []
+    lures_en: ["pay traffic fine", "traffic violation unpaid", "black points", "vehicle registration expired", "fine discount 50%"]
+    lures_ar: ["دفع المخالفات", "مخالفة مرورية غير مدفوعة", "النقاط السوداء", "خصم 50% على المخالفات", "تجديد ملكية المركبة"]
+
+  - id: icp
+    name_en: ICP (Federal Authority for Identity, Citizenship, Customs & Port Security)
+    name_ar: الهيئة الاتحادية للهوية والجنسية والجمارك وأمن المنافذ
+    category: government
+    official_domains:
+      - icp.gov.ae
+      - ica.gov.ae
+    keywords_en: [icp, icpuae, icp-uae, icpgov, uaeicp, smartservicesicp, emiratesid, emirates-id, emiratesidrenew]
+    keywords_ar: [الهوية والجنسية, الهيئة الاتحادية للهوية, الهيئة الاتحادية للهوية والجنسية, الهوية الإماراتية]
+    helplines:
+      - number: "600522222"
+        label: "Call centre (inside UAE)"
+        source: "https://icp.gov.ae/en/contact-us/"
+      - number: "+971600522222"
+        label: "Call centre (outside UAE)"
+        source: "https://icp.gov.ae/en/contact-us/"
+    whatsapp: []
+    lures_en: ["renew emirates id", "emirates id expired", "visa cancellation", "residency fine", "customs fee for your parcel", "golden visa approval"]
+    lures_ar: ["تجديد الهوية", "انتهاء صلاحية الهوية", "إلغاء التأشيرة", "غرامة الإقامة", "رسوم جمركية على طردك", "الإقامة الذهبية"]
+
+  - id: gdrfa_dubai
+    name_en: GDRFA Dubai (General Directorate of Identity and Foreigners Affairs)
+    name_ar: الإدارة العامة للهوية وشؤون الأجانب دبي
+    category: government
+    official_domains:
+      - gdrfad.gov.ae
+    keywords_en: [gdrfa, gdrfad, gdrfadubai, gdrfa-dubai, dubaivisa, amerdubai]
+    keywords_ar: [الإقامة وشؤون الأجانب, الهوية وشؤون الأجانب, إقامة دبي, مراكز آمر]
+    helplines: []
+    whatsapp: []
+    lures_en: ["visa overstay fine", "visa status check", "entry permit approved pay fee", "golden visa application"]
+    lures_ar: ["غرامة تجاوز مدة التأشيرة", "الاستعلام عن التأشيرة", "تصريح دخول", "الإقامة الذهبية"]
+
+  - id: mohre
+    name_en: MOHRE (Ministry of Human Resources & Emiratisation)
+    name_ar: وزارة الموارد البشرية والتوطين
+    category: government
+    official_domains:
+      - mohre.gov.ae
+    keywords_en: [mohre, mohreuae, mohre-uae, mohregov, tasheel, tawjeeh]
+    keywords_ar: [وزارة الموارد البشرية والتوطين, الموارد البشرية والتوطين, تسهيل, توجيه]
+    helplines:
+      - number: "600590000"
+        label: "Call centre (24/7)"
+        source: "https://www.mohre.gov.ae/en/contact-us.aspx"
+      - number: "80084"
+        label: "Labour Claims and Advisory Center"
+        source: "https://www.mohre.gov.ae/en/contact-us.aspx"
+    whatsapp: []
+    lures_en: ["work permit cancellation", "labour fine", "job offer visa fee", "wps salary hold", "unemployment insurance claim"]
+    lures_ar: ["إلغاء تصريح العمل", "غرامة العمل", "رسوم تأشيرة عمل", "تأمين التعطل عن العمل"]
+
+  - id: fta
+    name_en: Federal Tax Authority (FTA)
+    name_ar: الهيئة الاتحادية للضرائب
+    category: government
+    official_domains:
+      - tax.gov.ae
+    keywords_en: [fta, ftauae, fta-uae, taxgov, uaetax, vatrefund, vat-refund, emaratax]
+    keywords_ar: [الهيئة الاتحادية للضرائب, استرداد الضريبة, ضريبة القيمة المضافة, إمارات تاكس]
+    helplines:
+      - number: "80082923"
+        label: "Toll-free"
+        source: "https://tax.gov.ae/en/contact.us.aspx"
+    whatsapp: []
+    lures_en: ["vat refund", "tax refund pending", "tourist vat refund", "corporate tax penalty"]
+    lures_ar: ["استرداد ضريبة القيمة المضافة", "استرداد الضريبة", "غرامة ضريبة الشركات"]
+
+  - id: dubai_customs
+    name_en: Dubai Customs
+    name_ar: جمارك دبي
+    category: government
+    official_domains:
+      - dubaicustoms.gov.ae
+      - dubaicustoms.ae
+    keywords_en: [dubaicustoms, dubai-customs, dxbcustoms]
+    keywords_ar: [جمارك دبي]
+    helplines:
+      - number: "8001886"
+        label: "Call centre"
+        source: "https://www.dubaicustoms.gov.ae/en/Pages/default.aspx"
+    whatsapp: []
+    lures_en: ["customs duty for your parcel", "shipment held at customs", "pay customs clearance fee"]
+    lures_ar: ["رسوم جمركية على الشحنة", "شحنتك محتجزة في الجمارك", "دفع رسوم التخليص الجمركي"]
+
+  - id: dubai_municipality
+    name_en: Dubai Municipality
+    name_ar: بلدية دبي
+    category: government
+    official_domains:
+      - dm.gov.ae
+    keywords_en: [dubaimunicipality, dubai-municipality, dmgov, dm-gov]
+    keywords_ar: [بلدية دبي]
+    helplines:
+      - number: "800900"
+        label: "Toll-free"
+        source: "https://www.dm.gov.ae/contact-us/"
+      - number: "+97142215555"
+        label: "Telephone"
+        source: "https://www.dm.gov.ae/contact-us/"
+    whatsapp: []
+    lures_en: ["municipality fine", "housing fee refund", "building permit fee", "pest control fine"]
+    lures_ar: ["مخالفة البلدية", "استرداد رسوم السكن", "رسوم ترخيص البناء"]
+
+  - id: adjd
+    name_en: Abu Dhabi Judicial Department
+    name_ar: دائرة القضاء في أبوظبي
+    category: government
+    official_domains:
+      - adjd.gov.ae
+    keywords_en: [adjd, adjudicial, adjd-gov, abudhabijudicial]
+    keywords_ar: [دائرة القضاء, دائرة القضاء أبوظبي, محاكم أبوظبي]
+    helplines:
+      - number: "600599799"
+        label: "Contact centre"
+        source: "https://www.adjd.gov.ae/en/"
+      - number: "+97126512222"
+        label: "Telephone"
+        source: "https://www.adjd.gov.ae/en/"
+    whatsapp: []
+    lures_en: ["court summons", "case filed against you", "pay court fee", "travel ban notice"]
+    lures_ar: ["استدعاء للمحكمة", "قضية مرفوعة ضدك", "دفع رسوم المحكمة", "حظر سفر"]
+
+  - id: dubai_courts
+    name_en: Dubai Courts
+    name_ar: محاكم دبي
+    category: government
+    official_domains:
+      - dc.gov.ae
+    keywords_en: [dubaicourts, dubai-courts, dcgov, dc-gov]
+    keywords_ar: [محاكم دبي]
+    helplines:
+      - number: "+97143347777"
+        label: "Call centre"
+        source: "https://www.dc.gov.ae/PublicServices/ContactUs.aspx?lang=en"
+    whatsapp: ["+97143347777"]
+    lures_en: ["court summons", "case filed against you", "pay court fee", "travel ban notice", "rental dispute judgment"]
+    lures_ar: ["استدعاء للمحكمة", "قضية مرفوعة ضدك", "دفع رسوم المحكمة", "حظر سفر"]
+
+  # ------------------------------------------------------------------- police
+  - id: adpolice
+    name_en: Abu Dhabi Police
+    name_ar: شرطة أبوظبي
+    category: police
+    official_domains:
+      - adpolice.gov.ae
+    keywords_en: [adpolice, ad-police, abudhabipolice, abudhabi-police, adpolicegov]
+    keywords_ar: [شرطة أبوظبي, شرطة ابوظبي]
+    helplines:
+      - number: "8003333"
+        label: "Service call centre"
+        source: "https://www.adpolice.gov.ae/en/contact-us"
+      - number: "999"
+        label: "Emergency"
+        source: "https://www.adpolice.gov.ae/en/contact-us"
+      - number: "8002626"
+        label: "Aman service"
+        source: "https://www.adpolice.gov.ae/en/contact-us"
+      - number: "+97124461461"
+        label: "Abu Dhabi Police operator"
+        source: "https://www.adpolice.gov.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["pay traffic fine", "traffic fine discount", "vehicle impounded", "your bank account is frozen by police", "verify your identity with police"]
+    lures_ar: ["دفع المخالفات", "خصم على المخالفات المرورية", "حجز المركبة", "تجميد حسابك البنكي", "تحديث بياناتك لدى الشرطة"]
+
+  - id: dubaipolice
+    name_en: Dubai Police
+    name_ar: شرطة دبي
+    category: police
+    official_domains:
+      - dubaipolice.gov.ae
+    keywords_en: [dubaipolice, dubai-police, dxbpolice, dpolice]
+    keywords_ar: [شرطة دبي]
+    helplines:
+      - number: "901"
+        label: "Call centre (non-emergency)"
+        source: "https://www.dubaipolice.gov.ae/app/home/contactus"
+      - number: "999"
+        label: "Emergency"
+        source: "https://www.dubaipolice.gov.ae/app/home/contactus"
+    whatsapp: []
+    lures_en: ["pay traffic fine", "traffic fine discount", "vehicle impounded", "ecrime report fee", "your account is under investigation"]
+    lures_ar: ["دفع المخالفات", "خصم على المخالفات المرورية", "حجز المركبة", "حسابك قيد التحقيق"]
+
+  # ---------------------------------------------------------------- transport
+  - id: rta
+    name_en: RTA Dubai (Roads and Transport Authority)
+    name_ar: هيئة الطرق والمواصلات
+    category: transport
+    official_domains:
+      - rta.ae
+    keywords_en: [rta, rtadubai, rta-dubai, dubairta, nolcard, nol-card, nolpay, rtafines]
+    keywords_ar: [هيئة الطرق والمواصلات, طرق دبي, بطاقة نول, نول باي]
+    helplines:
+      - number: "8009090"
+        label: "Call centre"
+        source: "https://www.rta.ae/wps/portal/rta/ae/home/contact-us"
+      - number: "+97146051414"
+        label: "Overseas callers"
+        source: "https://www.rta.ae/wps/portal/rta/ae/home/contact-us"
+    whatsapp: ["+971588009090"]
+    lures_en: ["pay traffic fine", "parking fine", "nol card top up bonus", "renew vehicle registration", "driving licence suspended"]
+    lures_ar: ["دفع المخالفات", "مخالفة مواقف", "شحن بطاقة نول", "تجديد ملكية المركبة", "إيقاف رخصة القيادة"]
+
+  - id: salik
+    name_en: Salik
+    name_ar: سالك
+    category: transport
+    official_domains:
+      - salik.ae
+    keywords_en: [salik, salikae, salik-uae, saliktag, salik-tag]
+    keywords_ar: [سالك, رسوم سالك, حساب سالك, بطاقة سالك]
+    helplines:
+      - number: "80072545"
+        label: "800 SALIK customer care (24/7)"
+        source: "https://www.salik.ae/en"
+    whatsapp: []
+    lures_en: ["unpaid toll", "salik balance low", "salik violation", "top up salik account", "salik refund"]
+    lures_ar: ["رسوم عبور غير مدفوعة", "رصيد سالك منخفض", "مخالفة سالك", "شحن رصيد سالك"]
+
+  - id: darb_itc
+    name_en: Darb / Mawaqif (Abu Dhabi Mobility, formerly ITC)
+    name_ar: درب / مواقف (أبوظبي للتنقل)
+    category: transport
+    official_domains:
+      - itc.gov.ae
+      - admobility.gov.ae
+      - darb.ae
+      - mawaqif.ae
+      - qmobility.ae
+      - dmt.gov.ae
+    keywords_en: [darb, darbtoll, darb-toll, mawaqif, mawaqifae, itcabudhabi, itc-abudhabi, admobility, qmobility, hafilat]
+    keywords_ar: [بوابات درب, نظام درب, مواقف أبوظبي, مركز النقل المتكامل, أبوظبي للتنقل, كيو موبيليتي]
+    helplines:
+      - number: "800555"
+        label: "Abu Dhabi Mobility contact centre"
+        source: "https://admobility.gov.ae/en/contact-us"
+      - number: "8003009"
+        label: "Q Mobility (Darb / Mawaqif operator) contact centre"
+        source: "https://www.qmobility.ae/"
+      - number: "600535353"
+        label: "Abu Dhabi Taxi call centre"
+        source: "https://admobility.gov.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["unpaid toll", "darb toll fine", "parking fine abu dhabi", "mawaqif permit renewal", "top up darb account"]
+    lures_ar: ["رسوم درب غير مدفوعة", "مخالفة بوابات درب", "مخالفة مواقف", "تجديد تصريح مواقف"]
+
+  - id: parkin
+    name_en: Parkin (Dubai public parking)
+    name_ar: باركن
+    category: transport
+    official_domains:
+      - parkin.ae
+    keywords_en: [parkin, parkindubai, parkin-dubai, parkinae]
+    keywords_ar: [باركن, مواقف دبي]
+    helplines: []
+    whatsapp: []
+    lures_en: ["parking fine", "parking violation unpaid", "seasonal parking permit", "parking refund"]
+    lures_ar: ["مخالفة مواقف", "مخالفة وقوف غير مدفوعة", "تصريح مواقف موسمي"]
+
+  - id: careem
+    name_en: Careem
+    name_ar: كريم
+    category: transport
+    official_domains:
+      - careem.com
+    keywords_en: [careem, careempay, careem-pay, careemplus]
+    keywords_ar: [تطبيق كريم, كريم باي, كابتن كريم]
+    helplines: []
+    whatsapp: []
+    lures_en: ["careem refund", "careem pay wallet bonus", "free rides voucher", "captain registration fee"]
+    lures_ar: ["استرداد كريم", "رصيد مجاني في كريم باي", "قسيمة رحلات مجانية"]
+
+  # -------------------------------------------------------------------- banks
+  - id: cbuae
+    name_en: Central Bank of the UAE (CBUAE)
+    name_ar: مصرف الإمارات العربية المتحدة المركزي
+    category: bank
+    official_domains:
+      - centralbank.ae
+    keywords_en: [cbuae, centralbank, centralbankuae, central-bank-uae, uaecentralbank]
+    keywords_ar: [المصرف المركزي, مصرف الإمارات المركزي, البنك المركزي الإماراتي]
+    helplines:
+      - number: "80022823"
+        label: "800 CBUAE toll-free / consumer protection"
+        source: "https://centralbank.ae/en/contact-us/"
+    whatsapp: []
+    lures_en: ["account frozen by central bank", "update your kyc", "unclaimed funds", "aani transfer verification", "central bank compensation"]
+    lures_ar: ["تجميد الحساب من المصرف المركزي", "تحديث بياناتك البنكية", "أموال غير مطالب بها", "تعويض المصرف المركزي"]
+
+  - id: emiratesnbd
+    name_en: Emirates NBD
+    name_ar: بنك الإمارات دبي الوطني
+    category: bank
+    official_domains:
+      - emiratesnbd.com
+      - liv.me
+    keywords_en: [emiratesnbd, emirates-nbd, enbd, emiratesnbdbank, livbank]
+    keywords_ar: [الإمارات دبي الوطني, بنك الإمارات دبي الوطني, ليف]
+    helplines:
+      - number: "600540000"
+        label: "Call centre"
+        source: "https://www.emiratesnbd.com/en/contact-us"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "reward points expiring", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "نقاط المكافآت ستنتهي", "عملية مشبوهة"]
+
+  - id: adcb
+    name_en: ADCB (Abu Dhabi Commercial Bank)
+    name_ar: بنك أبوظبي التجاري
+    category: bank
+    official_domains:
+      - adcb.com
+    keywords_en: [adcb, adcbbank, adcb-bank, adcbonline, adcbuae]
+    keywords_ar: [بنك أبوظبي التجاري, أبوظبي التجاري]
+    helplines:
+      - number: "600502030"
+        label: "Call centre"
+        source: "https://www.adcb.com/en/personal/"
+    whatsapp: []
+    lures_en: ["card blocked", "touchpoints expiring", "update your account", "verify otp", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "نقاط تتش بوينتس ستنتهي", "تحديث بيانات الحساب", "رمز التحقق"]
+
+  - id: fab
+    name_en: FAB (First Abu Dhabi Bank)
+    name_ar: بنك أبوظبي الأول
+    category: bank
+    official_domains:
+      - bankfab.com
+      - payit.ae
+    keywords_en: [bankfab, fabbank, fab-bank, firstabudhabibank, fabuae, fab-uae, payit]
+    keywords_ar: [بنك أبوظبي الأول, أبوظبي الأول]
+    helplines:
+      - number: "600525500"
+        label: "Customers within the UAE"
+        source: "https://www.bankfab.com/en-ae/personal"
+      - number: "+97126811511"
+        label: "Customers outside the UAE"
+        source: "https://www.bankfab.com/en-ae/personal"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "fab rewards expiring", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  - id: mashreq
+    name_en: Mashreq
+    name_ar: بنك المشرق
+    category: bank
+    official_domains:
+      - mashreq.com
+      - mashreqbank.com
+      - mashreqneo.com
+    keywords_en: [mashreq, mashreqbank, mashreqneo, mashreq-neo, mashreqonline]
+    keywords_ar: [المشرق, بنك المشرق, مشرق نيو]
+    helplines:
+      - number: "+97144244444"
+        label: "Contact centre (24/7)"
+        source: "https://www.mashreq.com/en/uae/customer-care/contact-us/"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "salaam points expiring", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  - id: adib
+    name_en: ADIB (Abu Dhabi Islamic Bank)
+    name_ar: مصرف أبوظبي الإسلامي
+    category: bank
+    official_domains:
+      - adib.ae
+      - adib.com
+    keywords_en: [adib, adibbank, adib-bank, adibonline, adibuae]
+    keywords_ar: [مصرف أبوظبي الإسلامي, أبوظبي الإسلامي]
+    helplines:
+      - number: "600543216"
+        label: "24/7 phone banking"
+        source: "https://www.adib.com/en/Pages/contact_us.aspx"
+      - number: "+97126100600"
+        label: "Calling from outside the UAE"
+        source: "https://adib.com/en/pages/personal_services_telephone_banking.aspx"
+    whatsapp: ["+971600543216"]
+    lures_en: ["card blocked", "update your account", "verify otp", "suspicious transaction", "profit payout"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  - id: dib
+    name_en: Dubai Islamic Bank
+    name_ar: بنك دبي الإسلامي
+    category: bank
+    official_domains:
+      - dib.ae
+    keywords_en: [dib, dibuae, dib-uae, dubaiislamic, dubaiislamicbank, dubai-islamic, dibalt]
+    keywords_ar: [بنك دبي الإسلامي, دبي الإسلامي]
+    helplines:
+      - number: "+97146092222"
+        label: "Phone banking (24/7)"
+        source: "https://www.dib.ae/alt/banking-on-the-go/phone-banking"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  - id: rakbank
+    name_en: RAKBANK
+    name_ar: بنك رأس الخيمة الوطني
+    category: bank
+    official_domains:
+      - rakbank.ae
+    keywords_en: [rakbank, rak-bank, rakbankonline, rakbankuae]
+    keywords_ar: [راك بنك, بنك رأس الخيمة الوطني, بنك رأس الخيمة]
+    helplines:
+      - number: "600544049"
+        label: "RAKBANK customers"
+        source: "https://www.rakbank.ae/en/contact-us"
+      - number: "600540044"
+        label: "RAKBANK Islamic customers"
+        source: "https://www.rakbank.ae/en/contact-us"
+      - number: "+971600544049"
+        label: "International callers"
+        source: "https://www.rakbank.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  - id: emiratesislamic
+    name_en: Emirates Islamic
+    name_ar: الإمارات الإسلامي
+    category: bank
+    official_domains:
+      - emiratesislamic.ae
+    keywords_en: [emiratesislamic, emirates-islamic, emiratesislamicbank, eiplus]
+    keywords_ar: [الإمارات الإسلامي, مصرف الإمارات الإسلامي]
+    helplines:
+      - number: "600599995"
+        label: "Call centre"
+        source: "https://www.emiratesislamic.ae/en/contact-us"
+      - number: "+971600599995"
+        label: "International callers"
+        source: "https://www.emiratesislamic.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["card blocked", "update your account", "verify otp", "suspicious transaction"]
+    lures_ar: ["تم إيقاف بطاقتك", "تحديث بيانات الحساب", "رمز التحقق", "عملية مشبوهة"]
+
+  # ----------------------------------------------------------------- payments
+  - id: alansari
+    name_en: Al Ansari Exchange
+    name_ar: الأنصاري للصرافة
+    category: payments
+    official_domains:
+      - alansariexchange.com
+    keywords_en: [alansari, al-ansari, alansariexchange, ansariexchange]
+    keywords_ar: [الأنصاري للصرافة, الأنصاري]
+    helplines:
+      - number: "600546000"
+        label: "Customer service hotline"
+        source: "https://alansariexchange.com/contact-us/"
+    whatsapp: []
+    lures_en: ["transfer on hold", "update kyc", "verify remittance", "cashback offer"]
+    lures_ar: ["الحوالة معلقة", "تحديث البيانات", "تأكيد الحوالة"]
+
+  # ---------------------------------------------------------------- telecom
+  - id: etisalat
+    name_en: e& (etisalat)
+    name_ar: اتصالات
+    category: telecom
+    official_domains:
+      - etisalat.ae
+      - etisalat.com
+      - eand.ae
+      - eand.com
+      - eandmoney.com
+    keywords_en: [etisalat, etisalatuae, etisalat-uae, eand, eanduae, eandmoney, etisalatsmiles, mysmiles]
+    keywords_ar: [اتصالات من إي آند, إي آند, اتصالات الإمارات, سمايلز اتصالات]
+    helplines:
+      - number: "800101"
+        label: "Customer care"
+        source: "https://www.eand.ae/en/contact-us.html"
+    whatsapp: []
+    lures_en: ["smiles points expiring", "bill overdue", "line suspension", "you won a prize", "sim card update", "free data offer"]
+    lures_ar: ["نقاط سمايلز ستنتهي", "فاتورة متأخرة", "إيقاف الخط", "ربحت جائزة", "تحديث بيانات الشريحة"]
+
+  - id: du
+    name_en: du
+    name_ar: دو
+    category: telecom
+    official_domains:
+      - du.ae
+    keywords_en: [dutelecom, du-telecom, mydu, duuae, du-uae, dupay]
+    keywords_ar: [شركة دو, دو للاتصالات, الإمارات للاتصالات المتكاملة]
+    helplines:
+      - number: "155"
+        label: "Customer care (in UAE)"
+        source: "https://www.du.ae/personal/helpandsupport/contact-us"
+      - number: "+971555678155"
+        label: "Customer care (overseas)"
+        source: "https://www.du.ae/personal/helpandsupport/contact-us"
+    whatsapp: []
+    lures_en: ["bill overdue", "line suspension", "you won a prize", "loyalty points expiring", "sim card update"]
+    lures_ar: ["فاتورة متأخرة", "إيقاف الخط", "ربحت جائزة", "تحديث بيانات الشريحة"]
+
+  # ---------------------------------------------------------------- utilities
+  - id: dewa
+    name_en: DEWA (Dubai Electricity & Water Authority)
+    name_ar: هيئة كهرباء ومياه دبي
+    category: utility
+    official_domains:
+      - dewa.gov.ae
+      - dewa.ae
+    keywords_en: [dewa, dewagov, dewa-gov, dewabill, dewadubai]
+    keywords_ar: [ديوا, هيئة كهرباء ومياه دبي, كهرباء دبي]
+    helplines:
+      - number: "+97146019999"
+        label: "Customer service (24/7)"
+        source: "https://www.dewa.gov.ae/en/contact-us"
+      - number: "991"
+        label: "Emergency"
+        source: "https://www.dewa.gov.ae/en/contact-us"
+    whatsapp: ["+97146019999"]
+    lures_en: ["electricity disconnection", "bill overdue", "dewa refund", "security deposit refund", "meter update"]
+    lures_ar: ["قطع الكهرباء", "فاتورة متأخرة", "استرداد مبلغ التأمين", "استرداد ديوا"]
+
+  - id: taqa_distribution
+    name_en: TAQA Distribution (formerly ADDC / AADC)
+    name_ar: طاقة للتوزيع
+    category: utility
+    official_domains:
+      - taqa.com
+      - taqadistribution.com
+      - addc.ae
+      - aadc.ae
+    keywords_en: [taqa, taqadistribution, taqa-distribution, addc, aadc]
+    keywords_ar: [طاقة للتوزيع, أبوظبي للتوزيع, العين للتوزيع, شركة طاقة]
+    helplines:
+      - number: "8002332"
+        label: "Customer care"
+        source: "https://taqadistribution.com/aadc/en-us/business/help-and-support/customer-care"
+    whatsapp: []
+    lures_en: ["electricity disconnection", "water bill overdue", "refund of deposit", "meter replacement fee"]
+    lures_ar: ["قطع الكهرباء", "فاتورة مياه متأخرة", "استرداد مبلغ التأمين"]
+
+  - id: sewa
+    name_en: SEWA (Sharjah Electricity, Water & Gas Authority)
+    name_ar: هيئة كهرباء ومياه وغاز الشارقة
+    category: utility
+    official_domains:
+      - sewa.gov.ae
+    keywords_en: [sewa, sewagov, sewa-gov, sewasharjah]
+    keywords_ar: [سيوا, هيئة كهرباء ومياه وغاز الشارقة, كهرباء الشارقة]
+    helplines:
+      - number: "600566665"
+        label: "Inquiries"
+        source: "https://www.sewa.gov.ae/"
+      - number: "991"
+        label: "Emergency"
+        source: "https://www.sewa.gov.ae/"
+    whatsapp: []
+    lures_en: ["electricity disconnection", "bill overdue", "deposit refund"]
+    lures_ar: ["قطع الكهرباء", "فاتورة متأخرة", "استرداد مبلغ التأمين"]
+
+  - id: etihadwe
+    name_en: Etihad Water & Electricity (formerly FEWA)
+    name_ar: الاتحاد للماء والكهرباء
+    category: utility
+    official_domains:
+      - etihadwe.ae
+    keywords_en: [etihadwe, etihad-we, etihadwater, fewa]
+    keywords_ar: [الاتحاد للماء والكهرباء, فيوا]
+    helplines:
+      - number: "8003392"
+        label: "Customer service"
+        source: "https://www.etihadwe.ae/en/Pages/default.aspx"
+    whatsapp: ["+9718003392"]
+    lures_en: ["electricity disconnection", "bill overdue", "deposit refund"]
+    lures_ar: ["قطع الكهرباء", "فاتورة متأخرة", "استرداد مبلغ التأمين"]
+
+  - id: adnoc_distribution
+    name_en: ADNOC Distribution
+    name_ar: أدنوك للتوزيع
+    category: retail
+    official_domains:
+      - adnocdistribution.ae
+      - adnoc.ae
+    keywords_en: [adnoc, adnocdistribution, adnoc-distribution, adnocrewards, adnocoasis]
+    keywords_ar: [أدنوك, أدنوك للتوزيع, ادنوك]
+    helplines:
+      - number: "800300"
+        label: "Customer care (UAE)"
+        source: "https://www.adnocdistribution.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["free fuel voucher", "adnoc rewards points", "fuel card bonus", "anniversary giveaway"]
+    lures_ar: ["قسيمة وقود مجانية", "نقاط مكافآت أدنوك", "هدية الذكرى السنوية"]
+
+  - id: enoc
+    name_en: ENOC
+    name_ar: إينوك
+    category: retail
+    official_domains:
+      - enoc.com
+    keywords_en: [enoc, enocuae, enoc-uae, enocgroup, enocvip]
+    keywords_ar: [إينوك, اينوك, بترول الإمارات الوطنية]
+    helplines:
+      - number: "8003662"
+        label: "800 ENOC customer care"
+        source: "https://www.enoc.com/en/contact-us/customer-care"
+    whatsapp: []
+    lures_en: ["free fuel voucher", "station franchise offer", "anniversary giveaway"]
+    lures_ar: ["قسيمة وقود مجانية", "هدية الذكرى السنوية"]
+
+  # ----------------------------------------------------------------- delivery
+  - id: emiratespost
+    name_en: Emirates Post
+    name_ar: بريد الإمارات
+    category: delivery
+    official_domains:
+      - emiratespost.ae
+      - 7x.ae
+      - epg.ae
+    keywords_en: [emiratespost, emirates-post, emiratespostae, empost]
+    keywords_ar: [بريد الإمارات, مجموعة بريد الإمارات]
+    helplines:
+      - number: "600599999"
+        label: "Customer service"
+        source: "https://www.emiratespost.ae/contact-us"
+      - number: "+97142303000"
+        label: "Head office"
+        source: "https://www.emiratespost.ae/contact-us"
+    whatsapp: ["+971600599999"]
+    lures_en: ["parcel on hold", "incomplete address", "pay delivery fee", "customs fee for your parcel", "redelivery"]
+    lures_ar: ["الشحنة معلقة", "العنوان غير مكتمل", "دفع رسوم التوصيل", "إعادة التوصيل"]
+
+  - id: aramex
+    name_en: Aramex
+    name_ar: أرامكس
+    category: delivery
+    official_domains:
+      - aramex.com
+      - aramex.ae
+    keywords_en: [aramex, aramexuae, aramex-uae, aramexdelivery]
+    keywords_ar: [أرامكس, ارامكس]
+    helplines:
+      - number: "600544000"
+        label: "UAE offices"
+        source: "https://www.aramex.com/ae/en/find-aramex-office"
+    whatsapp: []
+    lures_en: ["parcel on hold", "incomplete address", "pay delivery fee", "customs fee for your parcel", "redelivery"]
+    lures_ar: ["الشحنة معلقة", "العنوان غير مكتمل", "دفع رسوم التوصيل", "إعادة التوصيل"]
+
+  - id: talabat
+    name_en: talabat
+    name_ar: طلبات
+    category: delivery
+    official_domains:
+      - talabat.com
+    keywords_en: [talabat, talabatuae, talabat-uae, talabatpro, talabatmart]
+    keywords_ar: [تطبيق طلبات, طلبات مارت, طلبات برو]
+    helplines: []
+    whatsapp: []
+    lures_en: ["free meal voucher", "talabat pro free", "refund for cancelled order", "rider registration fee"]
+    lures_ar: ["قسيمة وجبة مجانية", "اشتراك طلبات برو مجاناً", "استرداد طلب ملغي"]
+
+  # ------------------------------------------------------------------ airline
+  - id: emirates
+    name_en: Emirates (airline)
+    name_ar: طيران الإمارات
+    category: airline
+    official_domains:
+      - emirates.com
+      - emiratesskywards.com
+      - skywards.com
+      - emiratesholidays.com
+      - emiratesgroupcareers.com
+    keywords_en: [emiratesairline, emirates-airline, emiratesair, flyemirates, fly-emirates, emiratesskywards, skywards, emiratescareers]
+    keywords_ar: [طيران الإمارات, سكاي واردز]
+    helplines:
+      - number: "600555555"
+        label: "Contact centre"
+        source: "https://www.emirates.com/ae/english/help/"
+    whatsapp: []
+    lures_en: ["free tickets giveaway", "skywards miles expiring", "flight refund", "cabin crew job offer", "anniversary free flight"]
+    lures_ar: ["تذاكر مجانية", "أميال سكاي واردز ستنتهي", "استرداد قيمة التذكرة", "وظيفة مضيف طيران"]
+
+  - id: etihad
+    name_en: Etihad Airways
+    name_ar: الاتحاد للطيران
+    category: airline
+    official_domains:
+      - etihad.com
+      - etihadguest.com
+      - etihadholidays.com
+    keywords_en: [etihadairways, etihad-airways, etihadair, flyetihad, etihadguest, etihadholidays]
+    keywords_ar: [الاتحاد للطيران, طيران الاتحاد, ضيف الاتحاد]
+    helplines:
+      - number: "600555666"
+        label: "UAE contact centre"
+        source: "https://www.etihad.com/en/news/etihad-airways-opens-bookings-for-travel-from-india-pakistan-sri-lanka-and-bangladesh"
+    whatsapp: []
+    lures_en: ["free tickets giveaway", "guest miles expiring", "flight refund", "cabin crew job offer"]
+    lures_ar: ["تذاكر مجانية", "أميال ضيف الاتحاد ستنتهي", "استرداد قيمة التذكرة", "وظيفة مضيف طيران"]
+
+  # ------------------------------------------------------------------- retail
+  - id: noon
+    name_en: noon
+    name_ar: نون
+    category: retail
+    official_domains:
+      - noon.com
+    keywords_en: [noon, noonuae, noon-uae, nooncom, noonshop, noonminutes]
+    keywords_ar: [نون دوت كوم, موقع نون, تطبيق نون, نون مينتس]
+    helplines: []
+    whatsapp: []
+    lures_en: ["you won a gift", "order on hold", "refund pending", "lucky draw winner", "survey reward"]
+    lures_ar: ["ربحت هدية", "طلبك معلق", "استرداد المبلغ", "فائز في السحب"]
+
+  - id: amazon_ae
+    name_en: Amazon.ae
+    name_ar: أمازون الإمارات
+    category: retail
+    official_domains:
+      - amazon.ae
+      - amazon.com
+      - amazon.sa
+      - amazon.eg
+      - amzn.to
+    keywords_en: [amazon, amazonae, amazon-ae, amazonuae, amazon-uae, amzn, amazonprime]
+    keywords_ar: [أمازون, امازون, أمازون الإمارات]
+    helplines: []
+    whatsapp: []
+    lures_en: ["prime membership expired", "order on hold", "refund pending", "account locked", "work from home task job"]
+    lures_ar: ["انتهاء اشتراك برايم", "طلبك معلق", "استرداد المبلغ", "تم قفل حسابك", "وظيفة من المنزل"]
+
+  - id: lulu
+    name_en: LuLu Hypermarket
+    name_ar: لولو هايبرماركت
+    category: retail
+    official_domains:
+      - luluhypermarket.com
+      - luluretail.com
+      - lulugroupinternational.com
+      - luluexchange.com
+    keywords_en: [lulu, luluhypermarket, lulu-hypermarket, luluuae, luluoffers, luluexchange]
+    keywords_ar: [لولو, لولو هايبرماركت, هايبرماركت لولو]
+    helplines: []
+    whatsapp: []
+    lures_en: ["anniversary gift voucher", "free shopping voucher", "lucky draw winner", "survey reward"]
+    lures_ar: ["قسيمة هدية الذكرى السنوية", "قسيمة تسوق مجانية", "فائز في السحب"]
+
+  - id: dubizzle
+    name_en: dubizzle
+    name_ar: دوبيزل
+    category: retail
+    official_domains:
+      - dubizzle.com
+    keywords_en: [dubizzle, dubizle, dubizzleuae, dubizzle-uae, dubizzlepay]
+    keywords_ar: [دوبيزل]
+    helplines: []
+    whatsapp: []
+    lures_en: ["buyer has paid, confirm to receive money", "dubizzle delivery payment", "receive payment for your item"]
+    lures_ar: ["المشتري دفع المبلغ", "تأكيد استلام الدفعة", "دفع رسوم التوصيل"]
+
+  # ------------------------------------------------------------------- health
+  - id: mohap
+    name_en: Ministry of Health & Prevention (MOHAP)
+    name_ar: وزارة الصحة ووقاية المجتمع
+    category: health
+    official_domains:
+      - mohap.gov.ae
+      - ehs.gov.ae
+    keywords_en: [mohap, mohapuae, mohap-uae, mohapgov]
+    keywords_ar: [وزارة الصحة, وزارة الصحة ووقاية المجتمع]
+    helplines:
+      - number: "80011111"
+        label: "Call centre (24/7)"
+        source: "https://mohap.gov.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["medical fitness result", "health card renewal", "vaccine certificate fee", "medical license fee"]
+    lures_ar: ["نتيجة الفحص الطبي", "تجديد البطاقة الصحية", "شهادة التطعيم"]
+
+  - id: seha
+    name_en: SEHA (Abu Dhabi Health Services)
+    name_ar: صحة
+    category: health
+    official_domains:
+      - seha.ae
+    keywords_en: [seha, sehauae, seha-uae, sehaabudhabi]
+    keywords_ar: [شركة صحة, صحة أبوظبي, شركة أبوظبي للخدمات الصحية]
+    helplines:
+      - number: "80050"
+        label: "Contact centre"
+        source: "https://www.seha.ae/"
+    whatsapp: []
+    lures_en: ["appointment confirmation fee", "medical report ready", "health card renewal"]
+    lures_ar: ["رسوم تأكيد الموعد", "التقرير الطبي جاهز", "تجديد البطاقة الصحية"]
+
+  - id: dha
+    name_en: Dubai Health Authority (DHA)
+    name_ar: هيئة الصحة بدبي
+    category: health
+    official_domains:
+      - dha.gov.ae
+    keywords_en: [dha, dhadubai, dha-dubai, dhagov, dubaihealthauthority]
+    keywords_ar: [هيئة الصحة بدبي, هيئة الصحة في دبي]
+    helplines:
+      - number: "800342"
+        label: "800 DHA (24/7)"
+        source: "https://www.dha.gov.ae/en/contactus"
+    whatsapp: []
+    lures_en: ["medical fitness result", "health insurance fine", "license renewal fee", "appointment confirmation fee"]
+    lures_ar: ["نتيجة الفحص الطبي", "غرامة التأمين الصحي", "تجديد الترخيص"]
+
+  - id: doh_abudhabi
+    name_en: Department of Health Abu Dhabi (DoH)
+    name_ar: دائرة الصحة أبوظبي
+    category: health
+    official_domains:
+      - doh.gov.ae
+    keywords_en: [dohabudhabi, doh-abudhabi, dohgov, doh-gov]
+    keywords_ar: [دائرة الصحة, دائرة الصحة أبوظبي]
+    helplines:
+      - number: "800555"
+        label: "Abu Dhabi Government Contact Centre"
+        source: "https://www.doh.gov.ae/en/contact-us"
+      - number: "+97124493333"
+        label: "Head office"
+        source: "https://www.doh.gov.ae/en/contact-us"
+    whatsapp: []
+    lures_en: ["health insurance fine", "license renewal fee", "medical report ready"]
+    lures_ar: ["غرامة التأمين الصحي", "تجديد الترخيص", "التقرير الطبي جاهز"]

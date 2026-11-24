@@ -1,0 +1,356 @@
+{
+  "generated": "2026-11-24T13:02:26",
+  "split": {
+    "test_window": [
+      "2026-10-25",
+      "2026-11-24"
+    ],
+    "train_phish_cutoff": "2026-10-18",
+    "train": [
+      {
+        "source": "crawl",
+        "label": 0,
+        "n": 42598
+      },
+      {
+        "source": "crawl_external",
+        "label": 0,
+        "n": 5354
+      },
+      {
+        "source": "openphish_history",
+        "label": 1,
+        "n": 126337
+      },
+      {
+        "source": "phishing_database",
+        "label": 1,
+        "n": 127970
+      },
+      {
+        "source": "phiusiil",
+        "label": 0,
+        "n": 107460
+      },
+      {
+        "source": "phiusiil",
+        "label": 1,
+        "n": 85234
+      },
+      {
+        "source": "tranco_homepage",
+        "label": 0,
+        "n": 28795
+      }
+    ],
+    "test": [
+      {
+        "source": "crawl",
+        "label": 0,
+        "n": 2430
+      },
+      {
+        "source": "crawl_external",
+        "label": 0,
+        "n": 777
+      },
+      {
+        "source": "openphish_recent",
+        "label": 1,
+        "n": 12667
+      },
+      {
+        "source": "phiusiil",
+        "label": 0,
+        "n": 17442
+      },
+      {
+        "source": "tranco_homepage",
+        "label": 0,
+        "n": 4685
+      }
+    ]
+  },
+  "threshold_selection": "max F1 on the validation split subject to FPR <= 1%; test set never used for tuning",
+  "validation": {
+    "n": 78556,
+    "n_phishing": 51171,
+    "n_legit": 27385,
+    "threshold": 0.9137,
+    "precision": 0.9938,
+    "recall": 0.8503,
+    "f1": 0.9164,
+    "fpr": 0.01,
+    "confusion_matrix": {
+      "tn": 27112,
+      "fp": 273,
+      "fn": 7661,
+      "tp": 43510
+    },
+    "roc_auc": 0.9784,
+    "pr_auc": 0.9897
+  },
+  "test": {
+    "n": 38001,
+    "n_phishing": 12667,
+    "n_legit": 25334,
+    "threshold": 0.9137,
+    "precision": 0.9813,
+    "recall": 0.9214,
+    "f1": 0.9504,
+    "fpr": 0.0088,
+    "confusion_matrix": {
+      "tn": 25112,
+      "fp": 222,
+      "fn": 996,
+      "tp": 11671
+    },
+    "roc_auc": 0.9932,
+    "pr_auc": 0.9903,
+    "recall_at_fpr_0.1pct": 0.8278,
+    "recall_at_fpr_1pct": 0.9265
+  },
+  "test_threshold_0.5": {
+    "n": 38001,
+    "n_phishing": 12667,
+    "n_legit": 25334,
+    "threshold": 0.5,
+    "precision": 0.9007,
+    "recall": 0.9751,
+    "f1": 0.9364,
+    "fpr": 0.0538,
+    "confusion_matrix": {
+      "tn": 23972,
+      "fp": 1362,
+      "fn": 316,
+      "tp": 12351
+    },
+    "roc_auc": 0.9932,
+    "pr_auc": 0.9903
+  },
+  "test_by_source": {
+    "crawl": {
+      "n": 2430,
+      "fpr": 0.0305
+    },
+    "crawl_external": {
+      "n": 777,
+      "fpr": 0.0824
+    },
+    "openphish_recent": {
+      "n": 12667,
+      "recall": 0.9214
+    },
+    "phiusiil": {
+      "n": 17442,
+      "fpr": 0.0014
+    },
+    "tranco_homepage": {
+      "n": 4685,
+      "fpr": 0.0126
+    }
+  },
+  "test_long_tail": {
+    "description": "legit URLs restricted to domains outside the Tranco top 100k (reputation feature cannot help)",
+    "n": 32821,
+    "n_phishing": 12667,
+    "n_legit": 20154,
+    "threshold": 0.9137,
+    "precision": 0.9831,
+    "recall": 0.9214,
+    "f1": 0.9512,
+    "fpr": 0.01,
+    "confusion_matrix": {
+      "tn": 19953,
+      "fp": 201,
+      "fn": 996,
+      "tp": 11671
+    },
+    "roc_auc": 0.992,
+    "pr_auc": 0.9908
+  },
+  "test_domain_model": {
+    "n": 34748,
+    "n_phishing": 11158,
+    "n_legit": 23590,
+    "threshold": 0.8794,
+    "precision": 0.9684,
+    "recall": 0.8647,
+    "f1": 0.9136,
+    "fpr": 0.0134,
+    "confusion_matrix": {
+      "tn": 23275,
+      "fp": 315,
+      "fn": 1510,
+      "tp": 9648
+    },
+    "roc_auc": 0.9707,
+    "pr_auc": 0.964
+  },
+  "uae_official": {
+    "official_domains_file_present": true,
+    "n_domains": 399,
+    "n_urls_checked": 855,
+    "false_positives": 0,
+    "flagged": [],
+    "domain_model_false_positives": 0,
+    "max_score": 0.8198
+  },
+  "illustrative_uae_lures": {
+    "note": "hand-written examples for demonstration only; not part of any metric",
+    "scores": {
+      "tamm-fines.com": 0.6091,
+      "https://rta-ae-pay.top/fines/pay": 0.9994,
+      "salik-uae-toll.info/pay?ref=8812": 0.9851,
+      "https://dubaipolice-gov.com/traffic-fine/login": 0.953,
+      "http://emiratesnbd-secure-update.xyz/verify": 1.0,
+      "https://uaepass-login.online/auth": 0.9998,
+      "aramex-redelivery.cc/track?id=AE99812": 0.9991,
+      "https://emiratespost-parcel.shop/customs-fee": 0.9997
+    }
+  },
+  "latency": {
+    "load_s": 0.156,
+    "score_url_ms_mean": 0.502,
+    "score_url_ms_p99": 4.661,
+    "score_urls_batch_ms_per_url": 0.3581,
+    "score_domain_ms_mean": 0.262,
+    "score_domain_ms_p99": 2.943,
+    "explain_ms_mean": 13.374
+  },
+  "artifacts_mb": {
+    "domain_lgbm.txt": 2.11,
+    "tld_risk.json": 0.01,
+    "tranco_top.txt.gz": 0.63,
+    "url_lgbm.txt": 2.81,
+    "url_model_meta.json": 0.0,
+    "url_ngram.npz": 5.15
+  },
+  "artifacts_total_mb": 10.71,
+  "error_examples": {
+    "false_positives": [
+      [
+        "https://1406.sb.mywebsite-editor.online/app/cms/logout.php",
+        1.0
+      ],
+      [
+        "http://www.hurt-orange.pl/?ga=2.104094144.137881156.1555393363-1195887732.1543488637",
+        0.999
+      ],
+      [
+        "https://rocs771778-efcwgbhjczbxbed8.a02.azurefd.net/",
+        0.999
+      ],
+      [
+        "7898888.vip",
+        0.998
+      ],
+      [
+        "https://validate.perfdrive.com/?ssa=0f149106-82e7-414c-896f-c2568c3354bf&ssb=45025294797&ssc=https%3A%2F%2Fepc.ae%2F&ssi=24450d37-dhyi-4605-9abf-1e97e16eba82&ssk=botmanager_support@radware.com&ssm=01311828997909155108956588414608&ssn=c0fb50c854d3ab92a5f3b6255d2fd00b8f6748546b92-34da-4a62-8845b2&sso=78fcf7a1-426d6347089300e13c9488858ff8debab203d69c27a767d3&ssp=57913275851795589187179554096201037&ssq=14356401018746183103010187903094752849574&ssr=NS4xOTUuMjI1LjE1OA==&sst=Mozilla/5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2014_0)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/130.0%20Safari/537.36&ssu=&ssv=&ssw=&ssx=eyJyZCI6ImVwYy5hZSIsInV6bXgiOiI3ZmMwMDBjNDFmMjA2ZC1hYzZhLTQwMDUtOTA0ZC1jMTM0OGFhZWE1ZTYxLTE3OTU1MTAxODc2ODIwLTAwZjllZjYxZDYzYjMxMGI5ZmUxMCIsIl9fdXptZiI6IjdmOTAwMDQ4NTQ2YjkyLTM0ZGEtNGE2Mi04N2ExLTQyNmQ2MzQ3MDg5MzEtMTc5NTUxMDE4NzY4MjAtMDA0NjIyOTBhMjFmMjYzYzY5ZDEwIn0=",
+        0.998
+      ],
+      [
+        "https://proudtobe-pusd.community.highbond.com/document/54552/?lastModified=639307096527870000",
+        0.998
+      ],
+      [
+        "https://swag.arcticblue.au/promo/www/viewcart/viewcart.php",
+        0.997
+      ],
+      [
+        "http://angelasknights.blogspot.com/",
+        0.997
+      ],
+      [
+        "abir.ga",
+        0.996
+      ],
+      [
+        "https://gis.railbaltica.org/portal/apps/webappviewer/index.html?id=5e16198d4016497dbfc826d3b99b1467",
+        0.996
+      ],
+      [
+        "https://www.mgmggqra.cc/40764.html",
+        0.995
+      ],
+      [
+        "https://sitesproalbp01-311734158.us-east-1.elb.amazonaws.com/solucoes-educacionais/conteudo-core/",
+        0.995
+      ],
+      [
+        "https://offers.icloud.apple/cn-offer",
+        0.994
+      ],
+      [
+        "https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/redirect?encryptedPayload=AVxigLIY0jPxyembgQ928dZORh47eDOOARORW6CjkqiQIVdZBU9lJLflr5KWaan5ZYuEEbSckOBUDC8A%2FuQ7TkPb2I3K2gVMl6Jnv71LjbVnf%2FcEyl2aGyKYHt4KGKDQ4O7aLmW08Pz0GGdtnn%2Bxn9Fxud5qzrAx51j6gfHS6CoknuzZz14fhCI4hcDQi%2FWe9Sa%2B31IGRc4nNbo%3D&amp;webInteractiveContentId=216366974848&amp;portalId=1958393",
+        0.994
+      ],
+      [
+        "filedownloadlink.xyz",
+        0.993
+      ]
+    ],
+    "false_negatives": [
+      [
+        "https://eg1xbet.com/en/games/under-and-over-seven",
+        0.003
+      ],
+      [
+        "https://desiaustralia.com/news/community/teej-mahotsav-brings-thousands-together-in-celebration-and-solidarity",
+        0.004
+      ],
+      [
+        "http://www.motorola.com/us/en/smartphones/",
+        0.007
+      ],
+      [
+        "https://pandemicrecords2020.com/products/the-weeknd-hurry-up-tomorrow-limited-edition-crystal-clear-color-vinyl-lp/",
+        0.01
+      ],
+      [
+        "https://royalcollege.lk/clubs-and-societies/radio-club/",
+        0.017
+      ],
+      [
+        "https://eg1xbet.com/en/live/football/2590430-mls",
+        0.025
+      ],
+      [
+        "https://petsonpoint.co.uk/",
+        0.034
+      ],
+      [
+        "https://2h.ae/eJceI",
+        0.034
+      ],
+      [
+        "https://2h.ae/EWTrV",
+        0.036
+      ],
+      [
+        "http://www.raue-familie.de/",
+        0.046
+      ],
+      [
+        "https://jasejournals.com/",
+        0.048
+      ],
+      [
+        "http://bnbvf.org/",
+        0.049
+      ],
+      [
+        "https://tckan.org/",
+        0.05
+      ],
+      [
+        "https://2h.ae/RKrjv",
+        0.051
+      ],
+      [
+        "http://moviesplitter.com/",
+        0.051
+      ]
+    ]
+  }
+}

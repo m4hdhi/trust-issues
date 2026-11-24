@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800" font-family="Arial, Helvetica, sans-serif">
+  <rect width="1280" height="800" fill="#FFFFFF"/>
+  <circle cx="640" cy="320" r="70" fill="none" stroke="#CBD5E1" stroke-width="18" stroke-dasharray="28 16"/>
+  <circle cx="640" cy="320" r="28" fill="#CBD5E1"/>
+  <text x="640" y="470" fill="#334155" font-size="44" font-weight="700" text-anchor="middle">Site under construction</text>
+  <text x="640" y="520" fill="#94A3B8" font-size="24" text-anchor="middle">We'll be back soon.</text>
+</svg>
