@@ -1,12 +1,14 @@
 import type {
   BatchStatus,
   BlockItem,
+  BrandRef,
   CaseItem,
   CaseStatus,
   CreateScanRequest,
   CreateScanResponse,
   DeviceRegistration,
   GraphResponse,
+  LiveFeed,
   MapsHit,
   MetricsResponse,
   Platform,
@@ -22,7 +24,6 @@ import type {
   TrendingItem,
 } from './types'
 import { readItem, readJson, removeItem, writeItem, writeJson } from './storage'
-
 
 export class ApiError extends Error {
   status: number
@@ -147,6 +148,33 @@ export const api = {
 
   async stats(): Promise<Stats> {
     return request<Stats>('/api/stats')
+  },
+
+  async brands(): Promise<BrandRef[]> {
+    return request<BrandRef[]>('/api/brands')
+  },
+
+  async live(): Promise<LiveFeed> {
+    try {
+      return await request<LiveFeed>('/api/live')
+    } catch (e) {
+      if (!(e instanceof ApiError) || e.status !== 404) throw e
+      const [stats, trending] = await Promise.all([api.stats(), api.trending().catch(() => [] as TrendingItem[])])
+      return {
+        certs_checked: stats.ct_certs_watched ?? 0,
+        scams_today: stats.last_24h.scams ?? 0,
+        blocked_queries: stats.blocked_queries,
+        brands_protected: 0,
+        recent: trending.slice(0, 12).map((t) => ({
+          domain: t.domain.replace(/\.([^.]+)$/, '[.]$1'),
+          brand: t.brand,
+          source: 'report',
+          score: t.score,
+          ts: t.last_seen,
+          scan_id: t.scan_id,
+        })),
+      }
+    }
   },
 
   async registerDevice(platform: Platform, lang: 'en' | 'ar'): Promise<DeviceRegistration> {

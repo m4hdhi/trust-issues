@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { T } from '../lib/lang'
 import type { Bilingual } from '../lib/types'
 
@@ -34,16 +33,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           {items.map((i) => (
             <motion.div
               key={i.id}
-              initial={{ opacity: 0, y: 16, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8 }}
-              className="pointer-events-auto flex max-w-md items-center gap-2.5 rounded-2xl border border-ink-500 bg-ink-700 px-4 py-3 text-sm font-medium text-paper shadow-xl"
+              layout
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              className="pointer-events-auto flex max-w-md items-center gap-3 rounded-lg border border-line bg-ink-800 px-4 py-3 text-sm font-medium text-paper"
             >
-              {i.tone === 'ok' ? (
-                <CheckCircle2 className="size-5 shrink-0 text-safe" />
-              ) : (
-                <AlertTriangle className="size-5 shrink-0 text-warn" />
-              )}
+              <span className={`size-2 shrink-0 rounded-full ${i.tone === 'ok' ? 'bg-safe' : 'bg-warn'}`} aria-hidden="true" />
               <T text={i.text} />
             </motion.div>
           ))}

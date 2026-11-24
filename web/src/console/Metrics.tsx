@@ -120,16 +120,16 @@ function SeriesCard({ series, def }: { series: SeriesPoint[]; def: (typeof SERIE
           <span className="size-2 rounded-full" style={{ background: def.color }} />
           <T k={def.k} />
         </p>
-        <p className="num text-xs text-mist-400">
+        <p className="num text-xs text-paper-3">
           <span className="font-semibold text-paper">{num(latest)}</span> <T k="latestDay" />
         </p>
       </div>
-      <p className="num mt-1 text-3xl font-extrabold tracking-tight text-paper">{compact(total)}</p>
+      <p className="num mt-1 text-3xl font-semibold display text-paper">{compact(total)}</p>
       <div className="mt-3">
         <AreaChart points={values} color={def.color} />
       </div>
       {series.length > 0 && (
-        <div className="num mt-1 flex justify-between font-mono text-[10px] text-mist-500" dir="ltr">
+        <div className="num mt-1 flex justify-between font-mono text-xs text-paper-3" dir="ltr">
           <span>{series[0].date.slice(5)}</span>
           <span>{series[series.length - 1].date.slice(5)}</span>
         </div>
@@ -142,11 +142,11 @@ function Kpi({ k, value, tone = 'neutral', hint }: { k: StringKey; value: string
   const color = tone === 'good' ? 'text-safe' : tone === 'warn' ? 'text-warn' : 'text-paper'
   return (
     <Panel className="p-4">
-      <p className="text-xs font-medium leading-snug text-mist-400">
+      <p className="text-xs font-medium leading-snug text-paper-3">
         <T k={k} />
       </p>
-      <p className={`num mt-1.5 text-3xl font-extrabold tracking-tight ${color}`}>{value}</p>
-      {hint && <p className="num mt-0.5 font-mono text-[11px] text-mist-500">{hint}</p>}
+      <p className={`num mt-2 text-3xl font-semibold display ${color}`}>{value}</p>
+      {hint && <p className="num mt-1 font-mono text-xs text-paper-3">{hint}</p>}
     </Panel>
   )
 }
@@ -162,13 +162,13 @@ function EvalSection({ ev }: { ev: EvalView }) {
         <Kpi k="fpr" value={pct(ev.fpr, 2)} tone={g(ev.fpr, (v) => v <= 0.02)} />
         <Kpi
           k="officialFp"
-          value={ev.officialFp != null ? num(ev.officialFp) : '—'}
+          value={ev.officialFp != null ? num(ev.officialFp) : 'n/a'}
           tone={g(ev.officialFp, (v) => v === 0)}
           hint={ev.officialChecked != null ? `/ ${num(ev.officialChecked)} URLs` : undefined}
         />
-        <Kpi k="evaluated" value={ev.n != null ? compact(ev.n) : '—'} hint={ev.threshold != null ? `threshold ${ev.threshold}` : undefined} />
-        <Kpi k="rocAuc" value={ev.rocAuc != null ? ev.rocAuc.toFixed(3) : '—'} />
-        <Kpi k="latencyPerUrl" value={ev.latencyMs != null ? `${ev.latencyMs.toFixed(2)} ms` : '—'} hint={ev.recallAt1 != null ? `recall@1%FPR ${pct(ev.recallAt1)}` : undefined} />
+        <Kpi k="evaluated" value={ev.n != null ? compact(ev.n) : 'n/a'} hint={ev.threshold != null ? `threshold ${ev.threshold}` : undefined} />
+        <Kpi k="rocAuc" value={ev.rocAuc != null ? ev.rocAuc.toFixed(3) : 'n/a'} />
+        <Kpi k="latencyPerUrl" value={ev.latencyMs != null ? `${ev.latencyMs.toFixed(2)} ms` : 'n/a'} hint={ev.recallAt1 != null ? `recall@1%FPR ${pct(ev.recallAt1)}` : undefined} />
       </div>
       <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
         {ev.confusion && (
@@ -184,11 +184,11 @@ function EvalSection({ ev }: { ev: EvalView }) {
             <ul className="space-y-2" dir="ltr">
               {ev.lures.map((l) => (
                 <li key={l.url} className="grid grid-cols-[minmax(0,1fr)_120px_48px] items-center gap-3 text-xs">
-                  <span className="truncate font-mono text-mist-200">{l.url}</span>
+                  <span className="truncate font-mono text-paper">{l.url}</span>
                   <span className="h-1.5 overflow-hidden rounded-full bg-ink-700">
                     <span className="block h-full rounded-full bg-scam" style={{ width: `${l.score * 100}%` }} />
                   </span>
-                  <span className="num text-end font-mono text-mist-300">{l.score.toFixed(2)}</span>
+                  <span className="num text-end font-mono text-paper-2">{l.score.toFixed(2)}</span>
                 </li>
               ))}
             </ul>
@@ -197,26 +197,26 @@ function EvalSection({ ev }: { ev: EvalView }) {
       </div>
       {ev.bySource.length > 0 && (
         <Panel className="overflow-hidden">
-          <p className="border-b border-ink-700 px-5 py-3 text-sm font-semibold text-paper">
+          <p className="border-b border-line px-5 py-3 text-sm font-semibold text-paper">
             <T k="bySource" />
           </p>
           <div className="scrollbar-thin overflow-x-auto">
             <table className="w-full min-w-[480px] text-sm" dir="ltr">
-              <thead className="text-xs text-mist-400">
+              <thead className="text-xs text-paper-3">
                 <tr>
-                  <th className="px-5 py-2.5 text-left font-mono font-medium">source</th>
-                  <th className="px-5 py-2.5 text-right font-mono font-medium">n</th>
-                  <th className="px-5 py-2.5 text-right font-mono font-medium">fpr</th>
-                  <th className="px-5 py-2.5 text-right font-mono font-medium">recall</th>
+                  <th className="px-5 py-3 text-left font-mono font-medium">source</th>
+                  <th className="px-5 py-3 text-right font-mono font-medium">n</th>
+                  <th className="px-5 py-3 text-right font-mono font-medium">fpr</th>
+                  <th className="px-5 py-3 text-right font-mono font-medium">recall</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-ink-700">
+              <tbody className="divide-y divide-line">
                 {ev.bySource.map((r) => (
                   <tr key={r.source}>
-                    <td className="px-5 py-2.5 font-mono text-mist-200">{r.source}</td>
-                    <td className="num px-5 py-2.5 text-right text-mist-300">{num(r.n)}</td>
-                    <td className="num px-5 py-2.5 text-right text-mist-300">{r.fpr != null ? pct(r.fpr, 2) : '—'}</td>
-                    <td className="num px-5 py-2.5 text-right text-mist-300">{r.recall != null ? pct(r.recall) : '—'}</td>
+                    <td className="px-5 py-3 font-mono text-paper">{r.source}</td>
+                    <td className="num px-5 py-3 text-right text-paper-2">{num(r.n)}</td>
+                    <td className="num px-5 py-3 text-right text-paper-2">{r.fpr != null ? pct(r.fpr, 2) : 'n/a'}</td>
+                    <td className="num px-5 py-3 text-right text-paper-2">{r.recall != null ? pct(r.recall) : 'n/a'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -225,7 +225,7 @@ function EvalSection({ ev }: { ev: EvalView }) {
         </Panel>
       )}
       {ev.note && (
-        <p className="font-mono text-xs text-mist-500" dir="ltr">
+        <p className="font-mono text-xs text-paper-3" dir="ltr">
           {ev.note}
         </p>
       )}
@@ -246,14 +246,14 @@ export function Metrics() {
       ) : (
         <div className="space-y-8">
           <section>
-            <h2 className="mb-3 text-base font-bold text-paper">
-              <T k="metricsTitle" arClassName="font-semibold text-mist-300" />
+            <h2 className="mb-3 text-base font-semibold text-paper">
+              <T k="metricsTitle" arClassName="font-semibold text-paper-2" />
             </h2>
-            {ev ? <EvalSection ev={ev} /> : <Tx k="noEval" className="rounded-2xl border border-dashed border-ink-600 p-5 text-sm text-mist-400" split="stack" />}
+            {ev ? <EvalSection ev={ev} /> : <Tx k="noEval" className="rounded-xl border border-dashed border-line p-5 text-sm text-paper-3" split="stack" />}
           </section>
           <section>
-            <h2 className="mb-3 text-base font-bold text-paper">
-              <T k="activity" arClassName="font-semibold text-mist-300" />
+            <h2 className="mb-3 text-base font-semibold text-paper">
+              <T k="activity" arClassName="font-semibold text-paper-2" />
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {SERIES.map((def) => (

@@ -28,13 +28,17 @@ Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes 
 
 ### Screenshots
 
-| Verdict (English + Arabic) | Spot the difference and real vs fake |
+![Home: check a link, a message or a QR code, with the live scam radar](docs/screens/home.png)
+
+| Verdict as a case file | Spot the difference and real vs fake |
 |---|---|
 | ![Verdict](docs/screens/verdict.png) | ![Spot the difference](docs/screens/verdict2.png) |
 | **Police console: live radar** | **Police console: cases** |
 | ![Radar](docs/screens/radar.png) | ![Cases](docs/screens/cases.png) |
 
-<p align="center"><img src="docs/screens/mobile_verdict.png" width="230" alt="Mobile verdict"> <img src="docs/screens/mobile_protect.png" width="230" alt="Protect my phone"> <img src="docs/screens/mobile_trending.png" width="230" alt="Trending scams"></p>
+<p align="center"><img src="docs/screens/mobile_home.png" width="200" alt="Mobile home"> <img src="docs/screens/mobile_verdict.png" width="200" alt="Mobile verdict"> <img src="docs/screens/mobile_protect.png" width="200" alt="Protect my phone"> <img src="docs/screens/mobile_trending.png" width="200" alt="Trending scams"></p>
+
+**Pitch deck:** [`docs/Trust-Issues-ScamShield.pptx`](docs/Trust-Issues-ScamShield.pptx) and [PDF](docs/Trust-Issues-ScamShield.pdf). The animated version is [`docs/deck/index.html`](docs/deck/index.html): open it in a browser and use the arrow keys.
 
 ## 3. How detection works
 

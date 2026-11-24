@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, NavLink, Navigate, Route, Routes } from 'react-router'
-import { BarChart3, Crosshair, FileSpreadsheet, FolderKanban, LogOut, Radar as RadarIcon, Rss, Smartphone, Waypoints, type LucideIcon } from 'lucide-react'
-import { Logo } from '../components/Logo'
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router'
+import { motion } from 'motion/react'
+import { BarChart3, Crosshair, FileSpreadsheet, FolderKanban, LogOut, Radar as RadarIcon, Rss, Waypoints, type LucideIcon } from 'lucide-react'
+import { Wordmark } from '../components/Logo'
 import { LangToggle } from '../components/LangToggle'
-import { T, useLang } from '../lib/lang'
+import { T } from '../lib/lang'
 import { clearConsoleToken, consoleToken, UNAUTHORIZED_EVENT } from '../lib/api'
+import { T_LAYOUT } from '../lib/motion'
 import type { StringKey } from '../lib/i18n'
 import { Login } from './Login'
 import { Radar } from './Radar'
@@ -26,8 +28,8 @@ const NAV: { to: string; k: StringKey; icon: LucideIcon }[] = [
 ]
 
 export default function ConsoleApp() {
-  const { mode } = useLang()
   const [authed, setAuthed] = useState(() => !!consoleToken())
+  const { pathname } = useLocation()
 
   useEffect(() => {
     const onUnauthorized = () => setAuthed(false)
@@ -42,53 +44,57 @@ export default function ConsoleApp() {
 
   if (!authed) return <Login onSuccess={() => setAuthed(true)} />
 
-  const link = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-      isActive ? 'bg-ink-700 text-paper' : 'text-mist-400 hover:bg-ink-800 hover:text-paper'
-    }`
-
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
-      <aside className="sticky top-0 z-30 border-b border-ink-700 bg-ink-950/95 backdrop-blur lg:h-dvh lg:border-e lg:border-b-0">
+      <aside className="sticky top-0 z-30 border-b border-line bg-ink-950 lg:h-dvh lg:border-e lg:border-b-0">
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between gap-3 px-4 py-3 lg:block lg:px-5 lg:pt-6 lg:pb-5">
+          <div className="flex items-center justify-between gap-4 px-4 py-4 lg:block lg:px-6 lg:pt-8 lg:pb-8">
             <Link to="/console/radar" className="block">
-              <Logo />
+              <Wordmark />
             </Link>
-            <p className="hidden text-xs font-semibold text-seal lg:mt-3 lg:block">
+            <p className="hidden text-sm text-gold lg:mt-2 lg:block">
               <T k="consoleTitle" />
             </p>
             <div className="flex items-center gap-2 lg:hidden">
-              <LangToggle compact />
-              <button type="button" onClick={signOut} aria-label="Sign out" className="grid size-9 place-items-center rounded-full text-mist-400 hover:bg-ink-800">
+              <LangToggle />
+              <button type="button" onClick={signOut} aria-label="Sign out" className="press grid size-10 place-items-center rounded-lg text-paper-3 hover:bg-ink-800">
                 <LogOut className="size-4" />
               </button>
             </div>
           </div>
-          <nav className="scrollbar-thin flex gap-1 overflow-x-auto px-3 pb-2 lg:flex-1 lg:flex-col lg:overflow-visible lg:pb-0" aria-label="Console">
-            {NAV.map(({ to, k, icon: Icon }) => (
-              <NavLink key={to} to={`/console/${to}`} className={link}>
-                <Icon className="size-[18px] shrink-0" aria-hidden="true" />
-                <span className="whitespace-nowrap">
-                  <T k={k} stacked={false} arClassName={mode === 'both' ? 'text-xs font-medium text-mist-500' : undefined} />
-                </span>
-              </NavLink>
-            ))}
+          <nav className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-2 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-4 lg:pb-0" aria-label="Console">
+            {NAV.map(({ to, k, icon: Icon }) => {
+              const active = pathname.startsWith(`/console/${to}`)
+              return (
+                <NavLink
+                  key={to}
+                  to={`/console/${to}`}
+                  className={`press relative flex h-10 shrink-0 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors ${
+                    active ? 'text-paper' : 'text-paper-3 hover:text-paper'
+                  }`}
+                >
+                  {active && <motion.span layoutId="console-nav" transition={T_LAYOUT} className="absolute inset-0 rounded-lg bg-ink-800" />}
+                  <Icon className={`relative size-4 shrink-0 ${active ? 'text-gold' : ''}`} aria-hidden="true" />
+                  <span className="relative whitespace-nowrap">
+                    <T k={k} />
+                  </span>
+                </NavLink>
+              )
+            })}
           </nav>
-          <div className="hidden space-y-3 border-t border-ink-700 p-4 lg:block">
-            <LangToggle compact />
-            <Link to="/" className="flex items-center gap-2 rounded-lg px-1 py-1 text-sm text-mist-400 hover:text-paper">
-              <Smartphone className="size-4" aria-hidden="true" />
+          <div className="hidden space-y-4 border-t border-line p-6 lg:block">
+            <LangToggle />
+            <Link to="/" className="block text-sm text-paper-3 hover:text-paper">
               <T k="citizenApp" />
             </Link>
-            <button type="button" onClick={signOut} className="flex items-center gap-2 rounded-lg px-1 py-1 text-sm text-mist-400 hover:text-paper">
+            <button type="button" onClick={signOut} className="inline-flex items-center gap-2 text-sm text-paper-3 hover:text-paper">
               <LogOut className="size-4" aria-hidden="true" />
               <T k="signOut" />
             </button>
           </div>
         </div>
       </aside>
-      <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <main className="min-w-0 px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
         <Routes>
           <Route index element={<Navigate to="radar" replace />} />
           <Route path="radar" element={<Radar />} />

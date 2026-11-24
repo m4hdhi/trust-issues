@@ -131,7 +131,7 @@ export function Scan() {
 
   useEffect(() => {
     if (phase === 'done' && result) {
-      document.title = `${pick(S[VERDICT_LABEL[result.verdict]])} — ${result.domain} | Trust Issues`
+      document.title = `${pick(S[VERDICT_LABEL[result.verdict]])} · ${result.domain} | Trust Issues`
     }
     return () => {
       document.title = 'Trust Issues | أزمة ثقة'
@@ -145,11 +145,11 @@ export function Scan() {
     : (stages.trust?.detail ?? (nav?.url ? hostOf(nav.url) : ''))
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+    <div className="shell pt-8 pb-16 lg:pt-12 lg:pb-24">
       <AnimatePresence mode="wait">
         {phase === 'running' || (phase === 'done' && !result) ? (
-          <motion.div key="pipeline" exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.25 }}>
-            <Pipeline host={host} stages={stages} order={order} elapsed={elapsed} />
+          <motion.div key="pipeline" exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}>
+            <Pipeline id={id} host={host} stages={stages} order={order} elapsed={elapsed} />
             {reconnecting && <Tx k="reconnecting" className="mt-4 text-center text-sm text-warn" split="stack" />}
           </motion.div>
         ) : phase === 'done' && result ? (
@@ -164,13 +164,13 @@ export function Scan() {
             />
           </motion.div>
         ) : (
-          <motion.div key="problem" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-lg py-10">
+          <motion.div key="problem" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto max-w-lg py-12">
             <ErrorState
               message={phase === 'notfound' ? 'scanNotFound' : 'loadFailed'}
               onRetry={phase === 'error' ? () => setAttempt((a) => a + 1) : undefined}
             />
-            <div className="mt-6 text-center">
-              <Link to="/" className="text-sm font-semibold text-brand-bright hover:underline">
+            <div className="mt-8">
+              <Link to="/" className="text-sm font-medium text-gold hover:underline">
                 <T k="scanAnother" />
               </Link>
             </div>

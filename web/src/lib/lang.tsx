@@ -38,7 +38,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
   }, [mode])
 
   const value = useMemo<LangState>(() => {
-    const pick = (b: Bilingual | null | undefined) => (b ? (mode === 'ar' ? b.ar : b.en) : '')
+    const pick = (b: Bilingual | null | undefined) => (b ? undash(mode === 'ar' ? b.ar : b.en) : '')
     return { mode, setMode, pick, t: (k) => pick(S[k]) }
   }, [mode, setMode])
 
@@ -51,8 +51,14 @@ export function useLang(): LangState {
   return ctx
 }
 
+const DASH = /\s+[\u2013\u2014]\s+/g
+
+export function undash(s: string): string {
+  return s.replace(DASH, ': ')
+}
+
 function resolve(k?: StringKey, text?: Bilingual | null): Bilingual {
-  if (text) return text
+  if (text) return { en: undash(text.en), ar: undash(text.ar) }
   if (k) return S[k]
   return { en: '', ar: '' }
 }
@@ -74,7 +80,7 @@ export function T({ k, text, className, arClassName, stacked }: InlineProps) {
   return (
     <span className={`${stacked ? 'inline-flex flex-col items-center leading-tight' : 'inline-flex flex-wrap items-baseline gap-x-2'} ${className ?? ''}`}>
       <span>{b.en}</span>
-      <span lang="ar" dir="rtl" className={arClassName ?? 'opacity-75'}>
+      <span lang="ar" dir="rtl" className={arClassName ?? 'opacity-70'}>
         {b.ar}
       </span>
     </span>
@@ -91,17 +97,28 @@ interface BlockProps {
   split?: 'columns' | 'stack'
 }
 
+const SIZE_RE = /(?:^|\s)(?:[\w-]+:)*text-(?:xs|sm|base|lg|xl|[2-9]xl)(?=\s|$)/g
+const COLOR_RE = /(?:^|\s)(?:[\w-]+:)*text-(?!(?:xs|sm|base|lg|xl|[2-9]xl|left|right|center|start|end|balance|pretty|wrap|nowrap|ellipsis|clip)(?:\s|$))[a-z][\w/-]*(?=\s|$)/g
+
+function arClasses(base: string, ar: string): string {
+  if (!ar) return base
+  let out = base
+  if (new RegExp(SIZE_RE.source).test(ar)) out = out.replace(SIZE_RE, ' ')
+  if (new RegExp(COLOR_RE.source).test(ar)) out = out.replace(COLOR_RE, ' ')
+  return `${out} ${ar}`.replace(/\s+/g, ' ').trim()
+}
+
 export function Tx({ k, text, as: Tag = 'p', className = '', enClassName = '', arClassName = '', split = 'columns' }: BlockProps) {
   const { mode } = useLang()
   const b = resolve(k, text)
   if (mode === 'en') return <Tag className={`${className} ${enClassName}`}>{b.en}</Tag>
-  if (mode === 'ar') return <Tag className={`${className} ${arClassName}`} lang="ar">{b.ar}</Tag>
-  const grid = split === 'columns' ? 'grid gap-x-8 gap-y-1.5 md:grid-cols-2' : 'grid gap-y-1.5'
+  if (mode === 'ar') return <Tag className={className} lang="ar">{b.ar}</Tag>
+  const grid = split === 'columns' ? 'grid gap-x-8 gap-y-2 md:grid-cols-2' : 'grid gap-y-1'
   const Wrapper = Tag === 'span' ? 'span' : 'div'
   return (
     <Wrapper className={grid}>
       <Tag className={`${className} ${enClassName}`}>{b.en}</Tag>
-      <Tag className={`${className} ${arClassName} text-right`} lang="ar" dir="rtl">
+      <Tag className={`${arClasses(className, arClassName)} text-right`} lang="ar" dir="rtl">
         {b.ar}
       </Tag>
     </Wrapper>

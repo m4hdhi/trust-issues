@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { KeyRound, Siren } from 'lucide-react'
-import { Logo } from '../components/Logo'
+import { motion } from 'motion/react'
+import { LogoMark, Wordmark } from '../components/Logo'
 import { LangToggle } from '../components/LangToggle'
 import { Spinner } from '../components/States'
+import { btn } from '../components/ui'
 import { T, Tx, useLang } from '../lib/lang'
 import { consoleApi, ApiError } from '../lib/api'
+import { EASE_OUT } from '../lib/motion'
 
 export function Login({ onSuccess }: { onSuccess: () => void }) {
   const { t } = useLang()
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<'wrongPasscode' | 'loadFailed' | null>(null)
+  const [shake, setShake] = useState(0)
 
   const submit = async () => {
     if (!password) return
@@ -22,62 +25,61 @@ export function Login({ onSuccess }: { onSuccess: () => void }) {
       onSuccess()
     } catch (e) {
       setError(e instanceof ApiError && e.status === 401 ? 'wrongPasscode' : 'loadFailed')
+      setShake((s) => s + 1)
     } finally {
       setBusy(false)
     }
   }
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-12">
-      <div className="guilloche pointer-events-none absolute inset-0 [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]" aria-hidden="true" />
-      <div className="absolute end-4 top-4">
-        <LangToggle compact />
-      </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          void submit()
-        }}
-        className="relative w-full max-w-sm rounded-[28px] border border-ink-600 bg-ink-850/95 p-7 shadow-2xl backdrop-blur"
-      >
-        <Logo size="lg" />
-        <div className="mt-8 flex items-center gap-2 text-seal">
-          <Siren className="size-5" aria-hidden="true" />
-          <h1 className="text-lg font-bold">
-            <T k="consoleTitle" />
+    <div className="flex min-h-dvh flex-col bg-ink-950">
+      <header className="flex items-center justify-between px-6 py-4">
+        <Wordmark />
+        <LangToggle />
+      </header>
+      <div className="flex flex-1 items-center justify-center px-4 pb-24">
+        <motion.form
+          onSubmit={(e) => {
+            e.preventDefault()
+            void submit()
+          }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: EASE_OUT }}
+          className="w-full max-w-sm"
+        >
+          <LogoMark className="size-12" />
+          <h1 className="display mt-8 text-3xl text-paper">
+            <T k="consoleTitle" arClassName="text-2xl text-paper-2" />
           </h1>
-        </div>
-        <Tx k="consoleSub" className="mt-1 text-sm text-mist-400" split="stack" />
-        <label className="mt-6 block">
-          <span className="text-sm font-medium text-mist-300">
-            <T k="passcode" />
-          </span>
-          <span className="mt-2 flex items-center gap-2 rounded-2xl border border-ink-600 bg-ink-900 px-4 focus-within:border-brand">
-            <KeyRound className="size-4 shrink-0 text-mist-500" aria-hidden="true" />
-            <input
+          <Tx k="consoleSub" className="mt-2 text-base text-paper-3" split="stack" />
+          <label className="mt-8 block">
+            <span className="text-sm text-paper-2">
+              <T k="passcode" />
+            </span>
+            <motion.input
+              key={shake}
+              animate={shake ? { x: [0, -6, 6, -4, 4, 0] } : undefined}
+              transition={{ duration: 0.35 }}
               type="password"
               autoComplete="current-password"
               autoFocus
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               aria-label={t('passcode')}
-              className="h-12 w-full bg-transparent text-base text-paper focus:outline-none"
+              className="mt-2 block h-12 w-full rounded-lg border border-line bg-ink-900 px-4 text-base text-paper focus:border-gold focus:outline-none"
             />
-          </span>
-        </label>
-        {error && <Tx k={error} className="mt-3 text-sm text-scam" split="stack" />}
-        <button
-          type="submit"
-          disabled={busy || !password}
-          className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand text-base font-bold text-ink-950 hover:bg-brand-bright disabled:opacity-50"
-        >
-          {busy && <Spinner />}
-          <T k="signIn" arClassName="opacity-80" />
-        </button>
-        <Link to="/" className="mt-5 block text-center text-sm text-mist-400 hover:text-paper">
-          <T k="citizenApp" />
-        </Link>
-      </form>
+          </label>
+          {error && <Tx k={error} className="mt-4 text-sm text-scam" split="stack" />}
+          <button type="submit" disabled={busy || !password} className={`${btn.primary} mt-6 w-full`}>
+            {busy && <Spinner />}
+            <T k="signIn" />
+          </button>
+          <Link to="/" className="mt-6 block text-sm text-paper-3 hover:text-paper">
+            <T k="citizenApp" />
+          </Link>
+        </motion.form>
+      </div>
     </div>
   )
 }

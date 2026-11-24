@@ -1,8 +1,11 @@
-import { Link, NavLink, Outlet } from 'react-router'
-import { Flame, Phone, ScanSearch, ShieldCheck, Siren } from 'lucide-react'
-import { Logo } from './Logo'
+import { useLayoutEffect } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router'
+import { motion } from 'motion/react'
+import { Flame, ScanSearch, ShieldCheck } from 'lucide-react'
+import { Wordmark } from './Logo'
 import { LangToggle } from './LangToggle'
 import { T, Tx } from '../lib/lang'
+import { T_LAYOUT } from '../lib/motion'
 import type { StringKey } from '../lib/i18n'
 
 const NAV: { to: string; k: StringKey; icon: typeof Flame; end?: boolean }[] = [
@@ -11,78 +14,83 @@ const NAV: { to: string; k: StringKey; icon: typeof Flame; end?: boolean }[] = [
   { to: '/protect', k: 'navProtect', icon: ShieldCheck },
 ]
 
+function isActive(pathname: string, to: string, end?: boolean) {
+  if (end) return pathname === to || pathname.startsWith('/scan') || pathname.startsWith('/check')
+  return pathname.startsWith(to)
+}
+
 export function CitizenLayout() {
+  const { pathname } = useLocation()
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-ink-700/70 bg-ink-900/85 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link to="/" className="rounded-lg" aria-label="Trust Issues — أزمة ثقة">
-            <Logo />
+      <header className="sticky top-0 z-40 border-b border-line bg-ink-900 pt-[env(safe-area-inset-top)]">
+        <div className="shell flex h-16 items-center justify-between gap-6">
+          <Link to="/" className="rounded-md" aria-label="Trust Issues, أزمة ثقة">
+            <Wordmark />
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
-            {NAV.map(({ to, k, icon: Icon, end }) => (
+          <nav className="hidden h-full items-stretch gap-1 md:flex" aria-label="Main">
+            {NAV.map(({ to, k, end }) => {
+              const active = isActive(pathname, to, end)
+              return (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  className={`relative inline-flex items-center px-4 text-sm font-medium transition-colors ${active ? 'text-paper' : 'text-paper-3 hover:text-paper'}`}
+                >
+                  <T k={k} />
+                  {active && <motion.span layoutId="nav-underline" transition={T_LAYOUT} className="absolute inset-x-4 -bottom-px h-0.5 bg-gold" />}
+                </NavLink>
+              )
+            })}
+          </nav>
+          <LangToggle />
+        </div>
+      </header>
+
+      <main className="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
+        <Outlet />
+      </main>
+
+      <footer className="border-t border-line pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
+        <div className="shell grid-12 gap-y-8 py-12">
+          <div className="col-span-4 sm:col-span-8 lg:col-span-6">
+            <Wordmark size="lg" />
+            <Tx k="footerNote" className="mt-4 max-w-[52ch] text-sm text-paper-3" split="stack" />
+          </div>
+          <div className="col-span-4 sm:col-span-8 lg:col-span-6 lg:justify-self-end">
+            <a href="tel:8002626" className="group block">
+              <Tx k="amanLine" className="text-base text-paper-2 transition-colors group-hover:text-paper" split="stack" />
+            </a>
+            <Link to="/console" className="mt-6 inline-flex text-sm font-medium text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold">
+              <T k="navConsole" />
+            </Link>
+          </div>
+        </div>
+      </footer>
+
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink-900 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
+        <div className="grid grid-cols-3">
+          {NAV.map(({ to, k, icon: Icon, end }) => {
+            const active = isActive(pathname, to, end)
+            return (
               <NavLink
                 key={to}
                 to={to}
                 end={end}
-                className={({ isActive }) =>
-                  `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    isActive ? 'bg-ink-700 text-paper' : 'text-mist-400 hover:text-paper'
-                  }`
-                }
+                className={`press relative flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${active ? 'text-paper' : 'text-paper-3'}`}
               >
-                <Icon className="size-4" aria-hidden="true" />
+                {active && <motion.span layoutId="tab-indicator" transition={T_LAYOUT} className="absolute inset-x-8 top-0 h-0.5 bg-gold" />}
+                <Icon className={`size-5 ${active ? 'text-gold' : ''}`} aria-hidden="true" />
                 <T k={k} />
               </NavLink>
-            ))}
-          </nav>
-          <LangToggle compact />
-        </div>
-      </header>
-
-      <main className="flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <Outlet />
-      </main>
-
-      <footer className="border-t border-ink-700/70 bg-ink-950/60 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:px-6 md:grid-cols-[1fr_auto] md:items-end">
-          <div className="space-y-3">
-            <a href="tel:8002626" className="inline-flex items-start gap-2.5 text-paper hover:text-brand-bright">
-              <Phone className="mt-0.5 size-4 shrink-0 text-seal" aria-hidden="true" />
-              <Tx k="amanLine" as="span" className="font-medium" split="stack" />
-            </a>
-            <Tx k="footerNote" className="text-mist-500" split="stack" />
-          </div>
-          <Link
-            to="/console"
-            className="inline-flex items-center gap-2 self-start rounded-full border border-ink-600 px-4 py-2 text-xs font-semibold text-mist-300 hover:border-seal hover:text-paper"
-          >
-            <Siren className="size-3.5 text-seal" aria-hidden="true" />
-            <T k="navConsole" />
-          </Link>
-        </div>
-      </footer>
-
-      <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-900/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
-        aria-label="Main"
-      >
-        <div className="grid grid-cols-3">
-          {NAV.map(({ to, k, icon: Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition-colors ${
-                  isActive ? 'text-brand-bright' : 'text-mist-500'
-                }`
-              }
-            >
-              <Icon className="size-5" aria-hidden="true" />
-              <T k={k} stacked arClassName="opacity-90" />
-            </NavLink>
-          ))}
+            )
+          })}
         </div>
       </nav>
     </div>

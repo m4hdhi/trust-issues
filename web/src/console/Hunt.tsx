@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { BadgeCheck, Crosshair, ExternalLink, Globe, MapPin, PanelRightOpen, Phone, Search, Star } from 'lucide-react'
+import { BadgeCheck, Crosshair, ExternalLink, Globe, PanelRightOpen, Phone, Star } from 'lucide-react'
 import { PageHeader, Panel } from './ui'
+import { btn } from '../components/ui'
 import { ScanDrawer } from './ScanDrawer'
 import { brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
@@ -18,14 +19,14 @@ const SEARCH_SUGGESTIONS = ['pay traffic fines Abu Dhabi', 'دفع مخالفا�
 const MAPS_SUGGESTIONS = ['Emirates NBD customer service Dubai', 'خدمة عملاء بنك الإمارات دبي الوطني', 'Etisalat customer care Abu Dhabi', 'Aramex customer service Dubai']
 
 function HuntForm({
-  icon,
+  index,
   title,
   sub,
   suggestions,
   busy,
   onRun,
 }: {
-  icon: ReactNode
+  index: number
   title: StringKey
   sub: StringKey
   suggestions: string[]
@@ -41,52 +42,37 @@ function HuntForm({
     onRun(v)
   }
   return (
-    <div className="p-4 sm:p-5">
-      <div className="flex items-start gap-3">
-        {icon}
-        <div className="min-w-0">
-          <h2 className="text-lg font-bold text-paper">
-            <T k={title} arClassName="font-semibold text-mist-300" />
-          </h2>
-          <Tx k={sub} className="text-sm text-mist-400" split="stack" />
-        </div>
-      </div>
+    <div className="p-6">
+      <span className="evidence text-sm text-gold">{String(index).padStart(2, '0')}</span>
+      <h2 className="display mt-2 text-xl text-paper">
+        <T k={title} arClassName="text-lg text-paper-2" />
+      </h2>
+      <Tx k={sub} className="mt-1 text-base text-paper-2" split="stack" />
       <form
         onSubmit={(e) => {
           e.preventDefault()
           run(q)
         }}
-        className="mt-4 flex gap-2"
+        className="mt-6 flex flex-col gap-2 sm:flex-row"
       >
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           dir="auto"
           aria-label={t(title)}
-          className="h-11 min-w-0 flex-1 rounded-xl border border-ink-600 bg-ink-900 px-4 text-[15px] text-paper focus:border-brand focus:outline-none"
+          className="h-12 min-w-0 flex-1 rounded-lg border border-line bg-ink-900 px-4 text-base text-paper focus:border-gold focus:outline-none"
         />
-        <button
-          type="submit"
-          disabled={busy || !q.trim()}
-          className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold text-ink-950 hover:bg-brand-bright disabled:opacity-50"
-        >
-          {busy ? <Spinner className="size-4" /> : <Crosshair className="size-4" aria-hidden="true" />}
+        <button type="submit" disabled={busy || !q.trim()} className={btn.primary}>
+          {busy ? <Spinner /> : <Crosshair className="size-4" aria-hidden="true" />}
           <T k={busy ? 'hunting' : 'runHunt'} />
         </button>
       </form>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-mist-500">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="text-sm text-paper-3">
           <T k="tryQuery" />
         </span>
         {suggestions.map((s) => (
-          <button
-            key={s}
-            type="button"
-            disabled={busy}
-            onClick={() => run(s)}
-            dir="auto"
-            className="rounded-full border border-ink-600 px-3 py-1 text-xs text-mist-200 hover:border-brand hover:text-paper disabled:opacity-50"
-          >
+          <button key={s} type="button" disabled={busy} onClick={() => run(s)} dir="auto" className={btn.small}>
             {s}
           </button>
         ))}
@@ -115,11 +101,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
   return (
     <Panel>
       <HuntForm
-        icon={
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-warn/15 text-warn">
-            <Search className="size-5" aria-hidden="true" />
-          </span>
-        }
+        index={1}
         title="searchHunter"
         sub="searchHunterSub"
         suggestions={SEARCH_SUGGESTIONS}
@@ -132,7 +114,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
         </div>
       )}
       {items && !failed && (
-        <div className="border-t border-ink-700">
+        <div className="border-t border-line">
           {items.length === 0 ? (
             <div className="p-4">
               <EmptyState message="noResults" />
@@ -140,36 +122,36 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
           ) : (
             <div className="scrollbar-thin overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
-                <thead className="text-xs text-mist-400">
+                <thead className="text-xs text-paper-3">
                   <tr>
-                    <th className="w-16 px-4 py-2.5 text-start font-medium">
+                    <th className="w-16 px-4 py-3 text-start font-medium">
                       <T k="position" />
                     </th>
-                    <th className="px-4 py-2.5 text-start font-medium">
+                    <th className="px-4 py-3 text-start font-medium">
                       <T k="col_title" />
                     </th>
-                    <th className="px-4 py-2.5 text-start font-medium">
+                    <th className="px-4 py-3 text-start font-medium">
                       <T k="col_verdict" />
                     </th>
-                    <th className="px-4 py-2.5" />
+                    <th className="px-4 py-3" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-ink-700">
+                <tbody className="divide-y divide-line">
                   {items.map((h) => (
                     <tr key={`${h.position}-${h.url}`} className={h.verdict === 'scam' ? 'bg-scam/[0.05]' : ''}>
                       <td className="px-4 py-3">
-                        <span className="num font-mono text-mist-300">#{h.position}</span>
+                        <span className="num font-mono text-paper-2">#{h.position}</span>
                       </td>
                       <td className="max-w-[420px] px-4 py-3">
                         <div className="flex items-center gap-2">
                           {h.official && (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-seal/15 px-1.5 py-0.5 text-[11px] font-bold text-seal">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gold/15 px-2 py-1 text-xs font-semibold text-gold">
                               <BadgeCheck className="size-3" aria-hidden="true" />
                               <T k="official" />
                             </span>
                           )}
                           {h.is_ad && (
-                            <span className="shrink-0 rounded-md bg-warn/20 px-1.5 py-0.5 text-[11px] font-bold text-warn">
+                            <span className="shrink-0 rounded-md bg-warn/20 px-2 py-1 text-xs font-semibold text-warn">
                               <T k="ad" />
                             </span>
                           )}
@@ -177,7 +159,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
                             {h.title}
                           </p>
                         </div>
-                        <p className="mt-0.5 truncate font-mono text-xs text-mist-500" dir="ltr">
+                        <p className="mt-1 truncate font-mono text-xs text-paper-3" dir="ltr">
                           {h.domain || hostOf(h.url)}
                         </p>
                       </td>
@@ -189,7 +171,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
                           <button
                             type="button"
                             onClick={() => h.scan_id && onOpen(h.scan_id, h.domain)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-ink-500 px-2.5 py-1.5 text-xs font-semibold text-paper hover:border-brand"
+                            className="inline-flex items-center gap-1 rounded-lg border border-line-strong px-3 py-1 text-xs font-semibold text-paper hover:border-gold"
                           >
                             <PanelRightOpen className="size-3.5" aria-hidden="true" />
                             <T k="open" />
@@ -253,11 +235,7 @@ function MapsHunter() {
   return (
     <Panel>
       <HuntForm
-        icon={
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-safe/15 text-safe">
-            <MapPin className="size-5" aria-hidden="true" />
-          </span>
-        }
+        index={2}
         title="mapsHunter"
         sub="mapsHunterSub"
         suggestions={MAPS_SUGGESTIONS}
@@ -269,8 +247,8 @@ function MapsHunter() {
           <ErrorState message="huntFailed" />
         </div>
       )}
-      <div className="grid border-t border-ink-700 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="scrollbar-thin max-h-[560px] divide-y divide-ink-700 overflow-y-auto">
+      <div className="grid border-t border-line xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <div className="scrollbar-thin max-h-[560px] divide-y divide-line overflow-y-auto">
           {items && items.length === 0 && (
             <div className="p-4">
               <EmptyState message="noResults" />
@@ -283,7 +261,7 @@ function MapsHunter() {
                 key={`${h.title}-${i}`}
                 type="button"
                 onClick={() => h.lat != null && h.lng != null && setFocus([h.lat, h.lng])}
-                className="block w-full px-4 py-3.5 text-start hover:bg-ink-800"
+                className="block w-full px-4 py-4 text-start hover:bg-ink-800"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -291,14 +269,14 @@ function MapsHunter() {
                       {h.title}
                     </p>
                     {brand && (
-                      <p className="text-xs text-mist-500">
+                      <p className="text-xs text-paper-3">
                         <T text={brand} />
                       </p>
                     )}
                   </div>
                   <VerdictChip verdict={h.verdict} score={h.score} />
                 </div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-mist-300">
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-paper-2">
                   {h.phone && (
                     <span className="inline-flex items-center gap-1 font-mono" dir="ltr">
                       <Phone className="size-3.5" aria-hidden="true" />
@@ -315,14 +293,14 @@ function MapsHunter() {
                     <span className="num inline-flex items-center gap-1">
                       <Star className="size-3.5 text-warn" aria-hidden="true" />
                       {h.rating.toFixed(1)}
-                      {h.reviews != null && <span className="text-mist-500">({h.reviews})</span>}
+                      {h.reviews != null && <span className="text-paper-3">({h.reviews})</span>}
                     </span>
                   )}
                 </div>
                 {h.flags.length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {h.flags.map((f, j) => (
-                      <li key={j} className="rounded-lg bg-scam/10 px-2.5 py-1.5 text-xs text-[#fca5a5]">
+                      <li key={j} className="rounded-lg bg-scam/10 px-3 py-1 text-xs text-[#fca5a5]">
                         <T text={f} />
                       </li>
                     ))}
@@ -332,7 +310,7 @@ function MapsHunter() {
             )
           })}
         </div>
-        <div className="relative h-[420px] border-t border-ink-700 xl:h-auto xl:min-h-[480px] xl:border-t-0 xl:border-s">
+        <div className="relative h-[420px] border-t border-line xl:h-auto xl:min-h-[480px] xl:border-t-0 xl:border-s">
           <MapContainer center={[24.9, 55.0]} zoom={8} scrollWheelZoom className="absolute inset-0 z-0">
             <TileLayer
               attribution="Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors"

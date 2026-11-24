@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ShieldQuestion } from 'lucide-react'
-import { PageHeader, Panel, SOURCE_META, SourceIcon, SourceLabel, sourceMeta } from './ui'
+import { PageHeader, SOURCE_META, SourceTag } from './ui'
 import { ScanDrawer } from './ScanDrawer'
-import { brandName } from '../components/BrandMark'
+import { BrandMark, brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
+import { Counter } from '../components/motion'
 import { Spinner, ErrorState, EmptyState } from '../components/States'
 import { T } from '../lib/lang'
 import { consoleApi } from '../lib/api'
-import { num, shortAgo } from '../lib/format'
+import { defang, shortAgo } from '../lib/format'
+import { EASE_OUT, T_LAYOUT } from '../lib/motion'
 import type { Bilingual, CaseSource, RadarItem } from '../lib/types'
 
 const SOURCES: CaseSource[] = ['ct', 'typosquat', 'nrd', 'search', 'maps', 'report']
@@ -41,10 +42,9 @@ function scanIdOf(r: RadarItem): string | null {
 export function Radar() {
   const [items, setItems] = useState<RadarItem[]>([])
   const [certs, setCerts] = useState<number | null>(null)
-  const [live, setLive] = useState(false)
+  const [live, setLive] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
-  const [fresh, setFresh] = useState<Set<string>>(new Set())
   const [, setNow] = useState(Date.now())
   const [open, setOpen] = useState<{ id: string; title: string } | null>(null)
 
@@ -64,28 +64,19 @@ export function Radar() {
       }
     }
     void load(true)
-    const refresh = setInterval(() => void load(false), 15000)
-    const stop = consoleApi.radarStream(
-      (item) => {
-        const key = itemKey(item)
-        setItems((prev) => {
-          const idx = prev.findIndex((p) => itemKey(p) === key)
-          if (idx >= 0) {
-            const next = [...prev]
-            next[idx] = item
-            return next
-          }
-          return [item, ...prev].slice(0, MAX_ITEMS)
-        })
-        setFresh((prev) => new Set(prev).add(key))
-        setTimeout(() => setFresh((prev) => {
-          const next = new Set(prev)
-          next.delete(key)
+    const refresh = setInterval(() => void load(false), 10000)
+    const stop = consoleApi.radarStream((item) => {
+      const key = itemKey(item)
+      setItems((prev) => {
+        const idx = prev.findIndex((p) => itemKey(p) === key)
+        if (idx >= 0) {
+          const next = [...prev]
+          next[idx] = item
           return next
-        }), 2500)
-      },
-      setLive,
-    )
+        }
+        return [item, ...prev].slice(0, MAX_ITEMS)
+      })
+    }, setLive)
     const clock = setInterval(() => setNow(Date.now()), 10000)
     return () => {
       alive = false
@@ -107,47 +98,37 @@ export function Radar() {
         title="nav_radar"
         sub="radarSub"
         right={
-          <span
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${
-              live ? 'border-safe/40 text-safe' : 'border-warn/40 text-warn'
-            }`}
-          >
+          <span className={`inline-flex items-center gap-2 text-sm font-medium ${live ? 'text-safe' : live === false ? 'text-warn' : 'text-paper-3'}`}>
             <span className="relative flex size-2">
-              {live && <span className="absolute inset-0 animate-ping rounded-full bg-safe opacity-70" />}
-              <span className={`relative size-2 rounded-full ${live ? 'bg-safe' : 'bg-warn'}`} />
+              {live && <span className="absolute inset-0 animate-ping-soft rounded-full bg-safe" />}
+              <span className={`relative size-2 rounded-full ${live ? 'bg-safe' : live === false ? 'bg-warn' : 'bg-paper-3'}`} />
             </span>
-            <T k={live ? 'live' : 'reconnecting'} />
+            <T k={live ? 'live' : live === false ? 'reconnecting' : 'connecting'} />
           </span>
         }
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-        <Panel className="col-span-2 flex flex-col justify-between p-4 sm:col-span-4 xl:col-span-1">
-          <p className="text-xs font-medium text-mist-400">
+      <dl className="mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-line sm:grid-cols-4 xl:grid-cols-7">
+        <div className="col-span-2 flex flex-col-reverse gap-1 bg-ink-850 p-6 sm:col-span-4 xl:col-span-1">
+          <dt className="text-sm text-paper-3">
             <T k="certsWatched" />
-          </p>
-          <p className="num mt-2 text-2xl font-bold text-paper">{certs != null ? num(certs) : '—'}</p>
-        </Panel>
-        {SOURCES.map((s) => {
-          const meta = SOURCE_META[s]
-          return (
-            <Panel key={s} className="p-4">
-              <div className="flex items-center gap-2">
-                <SourceIcon source={s} className="size-7" />
-                <p className="truncate text-xs font-medium text-mist-400">
-                  <T k={meta.k} />
-                </p>
-              </div>
-              <motion.p key={counts[s] ?? 0} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }} className="num mt-2 text-2xl font-bold" style={{ color: meta.color }}>
-                {counts[s] ?? 0}
-              </motion.p>
-            </Panel>
-          )
-        })}
-      </div>
+          </dt>
+          <dd className="evidence text-2xl text-paper">{certs != null ? <Counter value={certs} /> : 'n/a'}</dd>
+        </div>
+        {SOURCES.map((s) => (
+          <div key={s} className="flex flex-col-reverse gap-1 bg-ink-850 p-6">
+            <dt>
+              <SourceTag source={s} />
+            </dt>
+            <dd className="evidence text-2xl" style={{ color: SOURCE_META[s].color }}>
+              <Counter value={counts[s] ?? 0} duration={0.4} />
+            </dd>
+          </div>
+        ))}
+      </dl>
 
       {loading ? (
-        <div className="flex justify-center py-16 text-mist-400">
+        <div className="flex justify-center py-16 text-paper-3">
           <Spinner />
         </div>
       ) : failed && !items.length ? (
@@ -155,66 +136,59 @@ export function Radar() {
       ) : !items.length ? (
         <EmptyState message="radarEmpty" />
       ) : (
-        <Panel className="overflow-hidden">
-          <ul className="divide-y divide-ink-700">
-            <AnimatePresence initial={false}>
-              {items.map((r) => {
-                const key = itemKey(r)
-                const det = detailText(r.detail)
-                const brand = brandName(r.brand)
-                const scanId = scanIdOf(r)
-                const isFresh = fresh.has(key)
-                return (
-                  <motion.li
-                    key={key}
-                    layout="position"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
+        <ul className="border-t border-line">
+          <AnimatePresence initial={false}>
+            {items.map((r) => {
+              const key = itemKey(r)
+              const det = detailText(r.detail)
+              const brand = brandName(r.brand)
+              const scanId = scanIdOf(r)
+              const risky = r.verdict === 'scam' || r.verdict === 'suspicious'
+              return (
+                <motion.li
+                  key={key}
+                  layout="position"
+                  initial={{ opacity: 0, y: -12, backgroundColor: 'rgba(201,163,91,0.12)' }}
+                  animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(201,163,91,0)' }}
+                  exit={{ opacity: 0 }}
+                  transition={{ ...T_LAYOUT, backgroundColor: { duration: 2, ease: EASE_OUT } }}
+                  className="border-b border-line"
+                >
+                  <button
+                    type="button"
+                    disabled={!scanId}
+                    onClick={() => scanId && setOpen({ id: scanId, title: r.domain })}
+                    className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-6 gap-y-2 py-4 text-start sm:grid-cols-[48px_160px_1fr_auto] ${scanId ? 'cursor-pointer hover:bg-ink-850' : 'cursor-default'}`}
                   >
-                    <button
-                      type="button"
-                      disabled={!scanId}
-                      onClick={() => scanId && setOpen({ id: scanId, title: r.domain })}
-                      className={`flex w-full items-center gap-3 px-4 py-3 text-start transition-colors duration-700 sm:gap-4 ${
-                        isFresh ? 'bg-brand/10' : 'hover:bg-ink-800'
-                      } ${scanId ? 'cursor-pointer' : 'cursor-default'}`}
-                    >
-                      <SourceIcon source={r.source} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-mono text-sm font-semibold text-paper" dir="ltr">
-                          {r.domain}
-                        </p>
-                        <p className="mt-0.5 truncate text-xs text-mist-400">
-                          <span style={{ color: sourceMeta(r.source).color }}>
-                            <SourceLabel source={r.source} />
-                          </span>
-                          {brand && (
-                            <span className="ms-2 text-mist-300">
-                              <T text={brand} />
-                            </span>
-                          )}
-                          {det && <span className="ms-2">{typeof det === 'string' ? det : <T text={det} />}</span>}
-                        </p>
-                      </div>
-                      {r.verdict === 'pending' || r.verdict === 'unknown' ? (
-                        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-ink-600 px-2 py-0.5 text-xs text-mist-400">
-                          {r.verdict === 'pending' ? <Spinner className="size-3" /> : <ShieldQuestion className="size-3" />}
-                          <T k={r.verdict === 'pending' ? 'scanningShort' : 'v_unknown'} />
+                    <span className="evidence num hidden text-xs text-paper-3 sm:block">{shortAgo(r.ts)}</span>
+                    <span className="hidden sm:block">
+                      <SourceTag source={r.source} />
+                    </span>
+                    <span className="flex min-w-0 items-center gap-4">
+                      <BrandMark brand={r.brand} className="size-8" />
+                      <span className="min-w-0">
+                        <span className={`evidence block truncate text-base ${risky ? 'text-paper' : 'text-paper-2'}`}>{risky ? defang(r.domain) : r.domain}</span>
+                        <span className="block truncate text-sm text-paper-3">
+                          {brand && <T text={brand} />}
+                          {brand && det ? ' · ' : ''}
+                          {det && (typeof det === 'string' ? det : <T text={det} />)}
                         </span>
-                      ) : (
-                        <VerdictChip verdict={r.verdict} score={r.score} />
-                      )}
-                      <span className="num w-9 shrink-0 text-end font-mono text-xs text-mist-500">{shortAgo(r.ts)}</span>
-                    </button>
-                  </motion.li>
-                )
-              })}
-            </AnimatePresence>
-          </ul>
-        </Panel>
+                      </span>
+                    </span>
+                    {r.verdict === 'pending' ? (
+                      <span className="inline-flex items-center gap-2 text-sm text-paper-3">
+                        <Spinner className="size-3" />
+                        <T k="scanningShort" />
+                      </span>
+                    ) : (
+                      <VerdictChip verdict={r.verdict} score={r.score} />
+                    )}
+                  </button>
+                </motion.li>
+              )
+            })}
+          </AnimatePresence>
+        </ul>
       )}
       <ScanDrawer scanId={open?.id ?? null} title={open?.title} onClose={() => setOpen(null)} />
     </div>

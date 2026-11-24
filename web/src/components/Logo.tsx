@@ -1,55 +1,51 @@
-import { useId } from 'react'
 import { useLang } from '../lib/lang'
 
-export function LogoMark({ className = 'size-8' }: { className?: string }) {
-  const id = `lg${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+function Quote() {
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#2DD4BF" />
-          <stop offset="1" stopColor="#0F8F82" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M32 3.5 55 11.6v18.2c0 14.6-9.6 25.4-23 30.7C18.6 55.2 9 44.4 9 29.8V11.6Z"
-        fill={`url(#${id})`}
-        stroke="#C8A96A"
-        strokeOpacity=".45"
-        strokeWidth="1.2"
-      />
-      <path d="M13 33c6.5-12.5 31.5-12.5 38 0-6.5 12.5-31.5 12.5-38 0Z" fill="#0B1220" />
-      <path
-        d="M28 30.4a4.2 4.2 0 1 1 6.3 3.6c-1.4.8-2.2 1.5-2.2 2.8"
-        fill="none"
-        stroke="#2DD4BF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <circle cx="32.1" cy="40" r="1.35" fill="#2DD4BF" />
+    <>
+      <circle cx="6" cy="13" r="5" />
+      <path d="M1.4 13.4C1.2 7.6 3.6 3.2 8.6 1.2" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+      <circle cx="19" cy="13" r="5" />
+      <path d="M14.4 13.4C14.2 7.6 16.6 3.2 21.6 1.2" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+    </>
+  )
+}
+
+export function LogoMark({ className = 'size-8' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={`${className} text-gold`} aria-hidden="true">
+      <rect width="64" height="64" rx="14" className="fill-ink-800" />
+      <g fill="currentColor">
+        <g transform="translate(10 9)">
+          <Quote />
+        </g>
+        <g transform="translate(54 55) rotate(180)">
+          <Quote />
+        </g>
+      </g>
     </svg>
   )
 }
 
-export function Logo({ size = 'md' }: { size?: 'md' | 'lg' }) {
+export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   const { mode } = useLang()
-  const big = size === 'lg'
+  const lg = size === 'lg'
   return (
-    <span className="inline-flex items-center gap-2.5">
-      <LogoMark className={big ? 'size-12' : 'size-9'} />
-      <span className="flex flex-col leading-none">
-        {mode !== 'ar' && (
-          <span className={`font-extrabold tracking-[-0.02em] text-paper ${big ? 'text-2xl' : 'text-[17px]'}`}>Trust Issues</span>
-        )}
-        {mode !== 'en' && (
-          <span
-            lang="ar"
-            className={`font-semibold text-seal ${mode === 'ar' ? (big ? 'text-2xl text-paper' : 'text-lg text-paper') : big ? 'mt-1.5 text-base' : 'mt-1 text-[13px]'}`}
-          >
-            أزمة ثقة
-          </span>
-        )}
-      </span>
+    <span className="inline-flex items-baseline gap-3 whitespace-nowrap" dir="ltr">
+      {mode !== 'ar' && (
+        <span className={`display leading-none text-paper ${lg ? 'text-2xl' : 'text-lg'}`}>
+          <span className="text-gold">“</span>Trust<span className="text-gold">”</span> Issues
+        </span>
+      )}
+      {mode !== 'en' && (
+        <span
+          lang="ar"
+          dir="rtl"
+          className={`display leading-none ${mode === 'ar' ? 'text-paper' : `text-paper-2 ${lg ? '' : 'hidden sm:inline'}`} ${lg ? 'text-xl' : 'text-base'}`}
+        >
+          <span className="text-gold">«</span>أزمة ثقة<span className="text-gold">»</span>
+        </span>
+      )}
     </span>
   )
 }

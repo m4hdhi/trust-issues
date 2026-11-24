@@ -19,18 +19,18 @@ function sampleHref(): string {
 
 function MetricTile({ k, value }: { k: StringKey; value: number | undefined }) {
   return (
-    <div className="rounded-2xl border border-ink-700 bg-ink-900 p-4">
-      <p className="text-xs font-medium text-mist-400">
+    <div className="rounded-xl border border-line bg-ink-900 p-4">
+      <p className="text-xs font-medium text-paper-3">
         <T k={k} />
       </p>
-      <p className="num mt-1 text-3xl font-extrabold tracking-tight text-paper">{pct(value, 1)}</p>
+      <p className="num mt-1 text-3xl font-semibold display text-paper">{pct(value, 1)}</p>
     </div>
   )
 }
 
 function cellValue(v: unknown) {
   if (typeof v === 'string' && (VERDICTS as string[]).includes(v)) return <VerdictChip verdict={v as Verdict} />
-  if (v == null || v === '') return <span className="text-mist-500">—</span>
+  if (v == null || v === '') return <span className="text-paper-3">n/a</span>
   return String(v)
 }
 
@@ -99,8 +99,8 @@ export function Batch() {
       <PageHeader title="nav_batch" />
       {!jobId && !uploading ? (
         <Panel className="p-5 sm:p-8">
-          <Tx k="batchTitle" as="h2" className="text-2xl font-extrabold tracking-tight text-paper sm:text-3xl" split="stack" />
-          <Tx k="batchSub" className="mt-2 max-w-3xl text-[15px] leading-relaxed text-mist-300" split="stack" />
+          <Tx k="batchTitle" as="h2" className="text-2xl font-semibold display text-paper sm:text-3xl" split="stack" />
+          <Tx k="batchSub" className="mt-2 max-w-3xl text-[15px] leading-relaxed text-paper-2" split="stack" />
           <label
             onDragOver={(e) => {
               e.preventDefault()
@@ -112,29 +112,29 @@ export function Batch() {
               setDrag(false)
               void upload(e.dataTransfer.files[0])
             }}
-            className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed px-6 py-14 text-center transition-colors ${
-              drag ? 'border-brand bg-brand/10' : 'border-ink-500 bg-ink-900 hover:border-brand/60'
+            className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-14 text-center transition-colors ${
+              drag ? 'border-gold bg-gold/10' : 'border-line-strong bg-ink-900 hover:border-gold/60'
             }`}
           >
-            <FileUp className={`size-12 ${drag ? 'text-brand-bright' : 'text-mist-400'}`} aria-hidden="true" />
-            <span className="mt-4 text-lg font-bold text-paper">
+            <FileUp className={`size-12 ${drag ? 'text-gold' : 'text-paper-3'}`} aria-hidden="true" />
+            <span className="mt-4 text-lg font-semibold text-paper">
               <T k="dropHere" />
             </span>
-            <span className="mt-1 text-sm font-semibold text-brand-bright underline underline-offset-4">
+            <span className="mt-1 text-sm font-semibold text-gold underline underline-offset-4">
               <T k="orChoose" />
             </span>
-            <span className="mt-3 font-mono text-xs text-mist-500">.csv  .txt</span>
+            <span className="mt-3 font-mono text-xs text-paper-3">.csv  .txt</span>
             <input ref={input} type="file" accept=".csv,.txt,text/csv,text/plain" className="sr-only" onChange={(e) => void upload(e.target.files?.[0])} />
           </label>
           {failed && <Tx k="batchFailed" className="mt-4 text-sm text-scam" split="stack" />}
           <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-            <pre className="overflow-x-auto rounded-2xl bg-ink-950 p-4 font-mono text-xs leading-relaxed text-mist-300" dir="ltr">
+            <pre className="overflow-x-auto rounded-xl bg-ink-950 p-4 font-mono text-xs leading-relaxed text-paper-2" dir="ltr">
               {SAMPLE}
             </pre>
             <a
               href={sampleHref()}
               download="trust-issues-sample.csv"
-              className="inline-flex items-center gap-2 self-start rounded-xl border border-ink-500 px-4 py-2.5 text-sm font-semibold text-paper hover:border-brand md:self-end"
+              className="inline-flex items-center gap-2 self-start rounded-xl border border-line-strong px-4 py-3 text-sm font-semibold text-paper hover:border-gold md:self-end"
             >
               <FileSpreadsheet className="size-4" aria-hidden="true" />
               sample.csv
@@ -146,18 +146,18 @@ export function Batch() {
           <Panel className="p-5 sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-ink-700 text-mist-200">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-ink-700 text-paper">
                   {done ? (
                     <CheckCircle2 className="size-6 text-safe" aria-hidden="true" />
                   ) : status?.status === 'error' ? (
                     <XCircle className="size-6 text-scam" aria-hidden="true" />
                   ) : (
-                    <Spinner className="size-5 text-brand-bright" />
+                    <Spinner className="size-5 text-gold" />
                   )}
                 </span>
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-paper">{file?.name}</p>
-                  <p className="num text-sm text-mist-400">
+                  <p className="num text-sm text-paper-3">
                     {uploading ? (
                       <T k="uploading" />
                     ) : (
@@ -173,7 +173,7 @@ export function Batch() {
                   <button
                     type="button"
                     onClick={() => void consoleApi.batchDownload(jobId)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-ink-950 hover:bg-brand-bright"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-3 text-sm font-semibold text-ink-950 hover:bg-[#d4ae66]"
                   >
                     <Download className="size-4" aria-hidden="true" />
                     <T k="downloadCsv" />
@@ -182,7 +182,7 @@ export function Batch() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex items-center gap-2 rounded-xl border border-ink-500 px-4 py-2.5 text-sm font-semibold text-paper hover:border-brand"
+                  className="inline-flex items-center gap-2 rounded-xl border border-line-strong px-4 py-3 text-sm font-semibold text-paper hover:border-gold"
                 >
                   <RotateCcw className="size-4" aria-hidden="true" />
                   <T k="newBatch" />
@@ -191,7 +191,7 @@ export function Batch() {
             </div>
             <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-ink-700">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-brand-deep to-brand-bright transition-[width] duration-500"
+                className="h-full rounded-full from-gold-deep to-gold transition-[width] duration-500"
                 style={{ width: `${Math.max(2, progress * 100)}%` }}
               />
             </div>
@@ -210,33 +210,33 @@ export function Batch() {
                   <Confusion m={status.metrics} />
                 </div>
               ) : (
-                <Tx k="noLabels" className="text-sm text-mist-400" split="stack" />
+                <Tx k="noLabels" className="text-sm text-paper-3" split="stack" />
               )}
             </Panel>
           )}
 
           {rows.length > 0 && (
             <Panel className="overflow-hidden">
-              <p className="border-b border-ink-700 px-5 py-3 text-sm font-semibold text-paper">
+              <p className="border-b border-line px-5 py-3 text-sm font-semibold text-paper">
                 <T k="preview" />
-                <span className="num ms-2 text-xs font-medium text-mist-500">{rows.length}</span>
+                <span className="num ms-2 text-xs font-medium text-paper-3">{rows.length}</span>
               </p>
               <div className="scrollbar-thin max-h-[520px] overflow-auto">
                 <table className="w-full min-w-[720px] text-sm" dir="ltr">
-                  <thead className="sticky top-0 bg-ink-850 text-xs text-mist-400">
+                  <thead className="sticky top-0 bg-ink-850 text-xs text-paper-3">
                     <tr>
                       {columns.map((c) => (
-                        <th key={c} className="px-4 py-2.5 text-left font-mono font-medium">
+                        <th key={c} className="px-4 py-3 text-left font-mono font-medium">
                           {c}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-ink-700">
+                  <tbody className="divide-y divide-line">
                     {rows.map((r, i) => (
                       <tr key={i}>
                         {columns.map((c) => (
-                          <td key={c} className={`max-w-[360px] truncate px-4 py-2.5 ${c === 'url' ? 'font-mono text-xs text-paper' : 'text-mist-200'}`}>
+                          <td key={c} className={`max-w-[360px] truncate px-4 py-3 ${c === 'url' ? 'font-mono text-xs text-paper' : 'text-paper'}`}>
                             {cellValue(r[c])}
                           </td>
                         ))}

@@ -1,7 +1,6 @@
 import { motion } from 'motion/react'
-import { BadgeCheck, Link2, SearchCode } from 'lucide-react'
-import { Section } from './Section'
 import { T } from '../../lib/lang'
+import { EASE_OUT } from '../../lib/motion'
 import type { DiffSegment, DomainDiff as Diff } from '../../lib/types'
 
 function officialText(s: DiffSegment): string {
@@ -16,33 +15,31 @@ function suspectText(s: DiffSegment): string {
 function Row({ segments, side }: { segments: DiffSegment[]; side: 'official' | 'suspect' }) {
   let changeIndex = 0
   return (
-    <p className="break-all font-mono text-[19px] leading-relaxed tracking-tight sm:text-2xl" dir="ltr">
+    <p className="evidence break-all text-xl leading-snug sm:text-3xl" dir="ltr">
       {segments.map((s, i) => {
         const text = side === 'official' ? officialText(s) : suspectText(s)
         if (!text) return null
         if (s.op === 'equal') {
           return (
-            <span key={i} className="text-mist-200">
+            <span key={i} className="text-paper-2">
               {text}
             </span>
           )
         }
-        const delay = 0.15 + changeIndex++ * 0.18
-        const tone = side === 'official' ? 'text-safe' : 'text-scam'
-        const bg = side === 'official' ? 'bg-safe/20' : 'bg-scam/25'
+        const delay = 0.2 + changeIndex++ * 0.15
+        const color = side === 'official' ? 'var(--color-safe)' : 'var(--color-scam)'
         return (
-          <span key={i} className={`relative font-semibold ${tone}`}>
+          <span key={i} className="relative" style={{ color }}>
             <motion.span
-              className={`absolute inset-y-0 -inset-x-0.5 origin-left rounded ${bg}`}
+              className="absolute inset-x-0 bottom-[0.08em] h-[0.42em] origin-left"
+              style={{ background: `color-mix(in oklab, ${color} 30%, transparent)` }}
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
               viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.35, delay, ease: 'easeOut' }}
+              transition={{ duration: 0.5, delay, ease: EASE_OUT }}
               aria-hidden="true"
             />
-            <span className={`relative ${side === 'suspect' ? 'underline decoration-wavy decoration-scam/70 underline-offset-4' : ''}`}>
-              {text}
-            </span>
+            <span className={`relative ${side === 'suspect' ? 'underline decoration-wavy decoration-1 underline-offset-[6px]' : ''}`}>{text}</span>
           </span>
         )
       })}
@@ -51,29 +48,21 @@ function Row({ segments, side }: { segments: DiffSegment[]; side: 'official' | '
 }
 
 export function DomainDiff({ diff }: { diff: Diff }) {
-  const segments = diff.segments.length
-    ? diff.segments
-    : [
-        { op: 'replace' as const, official: diff.official, text: diff.suspect },
-      ]
+  const segments: DiffSegment[] = diff.segments.length ? diff.segments : [{ op: 'replace', official: diff.official, text: diff.suspect }]
   return (
-    <Section icon={SearchCode} title="spotDifference" sub="spotDifferenceSub">
-      <div className="space-y-3">
-        <div className="rounded-2xl border border-seal/30 bg-seal/[0.06] px-4 py-3.5">
-          <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-seal">
-            <BadgeCheck className="size-3.5" aria-hidden="true" />
-            <T k="realAddress" />
-          </p>
-          <Row segments={segments} side="official" />
-        </div>
-        <div className="rounded-2xl border border-scam/35 bg-scam/[0.06] px-4 py-3.5">
-          <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-scam">
-            <Link2 className="size-3.5" aria-hidden="true" />
-            <T k="thisLink" />
-          </p>
-          <Row segments={segments} side="suspect" />
-        </div>
+    <div className="divide-y divide-line border-y border-line">
+      <div className="py-6">
+        <p className="mb-2 text-sm text-safe">
+          <T k="realAddress" />
+        </p>
+        <Row segments={segments} side="official" />
       </div>
-    </Section>
+      <div className="py-6">
+        <p className="mb-2 text-sm text-scam">
+          <T k="thisLink" />
+        </p>
+        <Row segments={segments} side="suspect" />
+      </div>
+    </div>
   )
 }

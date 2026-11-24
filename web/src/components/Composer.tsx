@@ -1,8 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { ArrowRight, ClipboardPaste, QrCode, X } from 'lucide-react'
 import { Spinner } from './States'
+import { btn } from './ui'
 import { T, Tx, useLang } from '../lib/lang'
 import { S } from '../lib/i18n'
+import { T_ENTER, T_LAYOUT } from '../lib/motion'
 import { useStartScan } from '../lib/useStartScan'
 
 const QrScanner = lazy(() => import('./QrScanner').then((m) => ({ default: m.QrScanner })))
@@ -54,104 +57,112 @@ export function Composer({ initial = '' }: { initial?: string }) {
     }
   }
 
-  const placeholder =
-    mode === 'both' ? `${S.inputPlaceholder.en}\n${S.inputPlaceholder.ar}` : t('inputPlaceholder')
+  const placeholder = mode === 'both' ? `${S.inputPlaceholder.en}\n${S.inputPlaceholder.ar}` : t('inputPlaceholder')
+  const message = hint ?? failed
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          void submit()
-        }}
-        className="relative rounded-[28px] border border-ink-600 bg-ink-800/90 shadow-[0_30px_80px_-30px_rgba(20,184,166,0.35)] backdrop-blur transition-colors focus-within:border-brand/70"
-      >
-        <label htmlFor="scan-input" className="sr-only">
-          {t('inputLabel')}
-        </label>
-        <textarea
-          id="scan-input"
-          ref={area}
-          rows={3}
-          value={value}
-          dir="auto"
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          placeholder={placeholder}
-          onChange={(e) => {
-            setValue(e.target.value)
-            if (hint === 'emptyInput') setHint(null)
+      <motion.div layoutId="case-file" transition={T_LAYOUT} className="relative">
+        <div className="inline-flex h-9 items-center gap-2 rounded-t-lg bg-ink-800 px-4 text-sm text-paper-2">
+          <span className="size-1.5 rounded-full bg-gold" aria-hidden="true" />
+          <T k="newCase" />
+        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            void submit()
           }}
-          onKeyDown={(e) => {
-            if (e.key !== 'Enter' || e.shiftKey) return
-            if (e.metaKey || e.ctrlKey || !/\s/.test(value.trim())) {
-              e.preventDefault()
-              void submit()
-            }
-          }}
-          className="block w-full resize-none bg-transparent px-5 pt-5 pb-2 text-[17px] lg:min-h-[150px] leading-relaxed text-paper placeholder:text-mist-500 focus:outline-none"
-        />
-        {value && (
-          <button
-            type="button"
-            onClick={() => {
-              setValue('')
-              area.current?.focus()
+          className="relative rounded-b-xl rounded-se-xl bg-ink-800 transition-shadow focus-within:shadow-[inset_0_0_0_1px_var(--color-gold)]"
+        >
+          <label htmlFor="scan-input" className="sr-only">
+            {t('inputLabel')}
+          </label>
+          <textarea
+            id="scan-input"
+            ref={area}
+            rows={3}
+            value={value}
+            dir="auto"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            placeholder={placeholder}
+            onChange={(e) => {
+              setValue(e.target.value)
+              if (hint === 'emptyInput') setHint(null)
             }}
-            aria-label={t('clear')}
-            className="absolute end-3 top-3 grid size-8 place-items-center rounded-full text-mist-500 hover:bg-ink-700 hover:text-paper"
-          >
-            <X className="size-4" />
-          </button>
-        )}
-        <div className="flex flex-col gap-3 px-3 pb-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => void paste()}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-ink-600 px-3.5 py-2.5 text-sm font-medium text-mist-200 hover:border-ink-500 hover:bg-ink-700 sm:flex-none"
-            >
-              <ClipboardPaste className="size-4 shrink-0" aria-hidden="true" />
-              <T k="paste" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setQrOpen(true)}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-ink-600 px-3.5 py-2.5 text-sm font-medium text-mist-200 hover:border-ink-500 hover:bg-ink-700 sm:flex-none"
-            >
-              <QrCode className="size-4 shrink-0" aria-hidden="true" />
-              <T k="scanQr" />
+            onKeyDown={(e) => {
+              if (e.key !== 'Enter' || e.shiftKey) return
+              if (e.metaKey || e.ctrlKey || !/\s/.test(value.trim())) {
+                e.preventDefault()
+                void submit()
+              }
+            }}
+            className="block w-full resize-none bg-transparent px-6 pt-6 pb-4 text-lg text-paper placeholder:text-paper-3 focus:outline-none lg:min-h-[152px]"
+          />
+          <AnimatePresence>
+            {value && (
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+                onClick={() => {
+                  setValue('')
+                  area.current?.focus()
+                }}
+                aria-label={t('clear')}
+                className="press absolute end-4 top-4 grid size-8 place-items-center rounded-md text-paper-3 hover:bg-ink-700 hover:text-paper"
+              >
+                <X className="size-4" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+          <div className="flex flex-col gap-2 border-t border-line p-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <button type="button" onClick={() => void paste()} className={btn.quiet}>
+                <ClipboardPaste className="size-4 shrink-0" aria-hidden="true" />
+                <T k="paste" />
+              </button>
+              <button type="button" onClick={() => setQrOpen(true)} className={btn.quiet}>
+                <QrCode className="size-4 shrink-0" aria-hidden="true" />
+                <T k="scanQr" />
+              </button>
+            </div>
+            <button type="submit" disabled={busy} className={`${btn.primary} group w-full sm:w-auto`}>
+              {busy && <Spinner />}
+              <T k={busy ? 'checking' : 'check'} />
+              {!busy && <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden="true" />}
             </button>
           </div>
-          <button
-            type="submit"
-            disabled={busy}
-            className="group inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-brand px-7 text-[17px] font-bold text-ink-950 shadow-[0_10px_30px_-10px_rgba(20,184,166,0.8)] transition-[transform,background-color] hover:bg-brand-bright active:scale-[0.98] disabled:opacity-70 sm:h-12"
-          >
-            {busy ? <Spinner /> : null}
-            <T k={busy ? 'checking' : 'check'} arClassName="opacity-80" />
-            {!busy && <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden="true" />}
-          </button>
-        </div>
-      </form>
+        </form>
+      </motion.div>
 
-      <div className="mt-3 min-h-6 px-1 text-sm">
-        {hint && <Tx k={hint} className="text-warn" split="stack" />}
-        {!hint && failed && <Tx k={failed} className="text-scam" split="stack" />}
-        {!hint && !failed && (
-          <button
-            type="button"
-            onClick={() => {
-              setValue(pick(S.exampleSms))
-              area.current?.focus()
-            }}
-            className="text-mist-400 underline decoration-ink-500 underline-offset-4 hover:text-paper hover:decoration-brand"
-          >
-            <T k="tryExample" />
-          </button>
-        )}
+      <div className="mt-4 min-h-6 text-sm">
+        <AnimatePresence mode="wait" initial={false}>
+          {message ? (
+            <motion.div key={message} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={T_ENTER}>
+              <Tx k={message} className={hint ? 'text-warn' : 'text-scam'} split="stack" />
+            </motion.div>
+          ) : (
+            <motion.button
+              key="example"
+              type="button"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setValue(pick(S.exampleSms))
+                area.current?.focus()
+              }}
+              className="text-paper-3 underline decoration-line-strong underline-offset-4 transition-colors hover:text-paper hover:decoration-gold"
+            >
+              <T k="tryExample" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       {qrOpen && (

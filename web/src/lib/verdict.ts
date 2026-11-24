@@ -2,10 +2,10 @@ import type { Severity, Verdict } from './types'
 import type { StringKey } from './i18n'
 
 export const VERDICT_COLOR: Record<Verdict, string> = {
-  safe: '#10b981',
-  suspicious: '#f59e0b',
-  scam: '#ef4444',
-  unknown: '#94a3b8',
+  safe: '#4bb37f',
+  suspicious: '#e3a13a',
+  scam: '#e5534b',
+  unknown: '#8c867c',
 }
 
 export const VERDICT_LABEL: Record<Verdict, StringKey> = {
@@ -24,11 +24,11 @@ export const SEVERITY_LABEL: Record<Severity, StringKey> = {
 }
 
 export const SEVERITY_COLOR: Record<Severity, string> = {
-  critical: '#ef4444',
-  high: '#f97316',
-  medium: '#f59e0b',
-  low: '#94a3b8',
-  info: '#10b981',
+  critical: '#e5534b',
+  high: '#e07b3c',
+  medium: '#e3a13a',
+  low: '#8c867c',
+  info: '#4bb37f',
 }
 
 export function verdictFromScore(score: number): Verdict {

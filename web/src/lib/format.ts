@@ -8,7 +8,7 @@ export function toMs(iso: string): number {
 }
 
 export function num(n: number | null | undefined): string {
-  return n == null ? '—' : nf.format(n)
+  return n == null ? 'n/a' : nf.format(n)
 }
 
 export function compact(n: number): string {
@@ -18,7 +18,7 @@ export function compact(n: number): string {
 }
 
 export function pct(v: number | null | undefined, digits = 1): string {
-  if (v == null || Number.isNaN(v)) return '—'
+  if (v == null || Number.isNaN(v)) return 'n/a'
   return `${(v * 100).toFixed(digits)}%`
 }
 
@@ -55,7 +55,7 @@ const AR_DURATION = {
 } satisfies Record<string, ArForms>
 
 export function timeAgo(iso: string | null | undefined, now = Date.now()): Bilingual {
-  if (!iso) return { en: '—', ar: '—' }
+  if (!iso) return { en: 'n/a', ar: 'غير متاح' }
   const diff = Math.max(0, now - toMs(iso))
   const min = Math.floor(diff / 60_000)
   if (min < 1) return { en: 'just now', ar: 'الآن' }
@@ -71,7 +71,7 @@ export function timeAgo(iso: string | null | undefined, now = Date.now()): Bilin
 }
 
 export function shortAgo(iso: string | null | undefined, now = Date.now()): string {
-  if (!iso) return '—'
+  if (!iso) return 'n/a'
   const s = Math.max(0, Math.floor((now - toMs(iso)) / 1000))
   if (s < 60) return `${s}s`
   if (s < 3600) return `${Math.floor(s / 60)}m`
@@ -91,13 +91,6 @@ export function reportsCount(n: number): Bilingual {
   return {
     en: `Reported ${enCount(n, 'time', 'times')}`,
     ar: `أُبلغ عنه ${arCount(n, { one: 'مرة واحدة', two: 'مرتين', few: 'مرات', many: 'مرة' })}`,
-  }
-}
-
-export function reportsShort(n: number): Bilingual {
-  return {
-    en: enCount(n, 'report', 'reports'),
-    ar: arCount(n, { one: 'بلاغ واحد', two: 'بلاغان', few: 'بلاغات', many: 'بلاغًا' }),
   }
 }
 
@@ -131,4 +124,13 @@ export function hostOf(url: string): string {
 export function dateTime(iso: string): string {
   const d = new Date(toMs(iso))
   return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+}
+
+export function defang(domain: string): string {
+  const i = domain.lastIndexOf('.')
+  return i > 0 ? `${domain.slice(0, i)}[.]${domain.slice(i + 1)}` : domain
+}
+
+export function caseNumber(id: string): string {
+  return `TI-${id.replace(/^scan_/, '').slice(0, 6).toUpperCase()}`
 }

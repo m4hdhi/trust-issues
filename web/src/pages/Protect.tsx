@@ -1,13 +1,18 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { BellRing, ChevronRight, Download, EyeOff, RefreshCw, Settings, ShieldBan, ShieldCheck, Smartphone, Store } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { BellRing, ChevronRight, Download, RefreshCw, Settings, ShieldCheck } from 'lucide-react'
+import { siGoogleplay } from 'simple-icons'
 import { ProtectIllustration } from '../components/ProtectIllustration'
 import { CopyButton } from '../components/CopyButton'
 import { BrandMark } from '../components/BrandMark'
 import { Spinner, ErrorState } from '../components/States'
+import { Reveal, Stagger, StaggerItem } from '../components/motion'
+import { SectionHead, btn } from '../components/ui'
 import { T, Tx, useLang } from '../lib/lang'
 import { api } from '../lib/api'
-import { timeAgo } from '../lib/format'
+import { defang, timeAgo } from '../lib/format'
+import { EASE_OUT, T_LAYOUT } from '../lib/motion'
 import { alertsState, enableAlerts, isAndroid, isIOS, type AlertsState } from '../lib/push'
 import { useAsync } from '../lib/useAsync'
 import type { StringKey } from '../lib/i18n'
@@ -15,12 +20,12 @@ import type { DeviceRegistration } from '../lib/types'
 
 function Step({ n, title, body, art }: { n: number; title: StringKey; body: StringKey; art?: ReactNode }) {
   return (
-    <li className="flex gap-4">
-      <span className="num grid size-8 shrink-0 place-items-center rounded-full bg-brand/15 text-sm font-bold text-brand-bright">{n}</span>
-      <div className="min-w-0 flex-1 pb-1">
-        <Tx k={title} as="h3" className="text-base font-bold text-paper" split="stack" />
-        <Tx k={body} className="mt-1 text-sm leading-relaxed text-mist-300" split="stack" />
-        {art && <div className="mt-3">{art}</div>}
+    <li className="grid grid-cols-[32px_1fr] gap-x-4 border-t border-line py-6">
+      <span className="evidence num pt-1 text-sm text-gold">{n}</span>
+      <div className="min-w-0">
+        <Tx k={title} as="h3" className="display text-lg text-paper" split="stack" />
+        <Tx k={body} className="mt-1 text-base text-paper-2" split="stack" />
+        {art && <div className="mt-4">{art}</div>}
       </div>
     </li>
   )
@@ -28,7 +33,7 @@ function Step({ n, title, body, art }: { n: number; title: StringKey; body: Stri
 
 function IosRow({ children, accent }: { children: ReactNode; accent?: boolean }) {
   return (
-    <div className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${accent ? 'bg-white text-ink-900 ring-2 ring-brand' : 'bg-white/90 text-ink-900'}`} dir="ltr">
+    <div className={`flex items-center gap-3 rounded-lg bg-white px-3 py-2 text-sm text-ink-900 ${accent ? 'ring-2 ring-gold' : ''}`} dir="ltr">
       {children}
     </div>
   )
@@ -36,39 +41,39 @@ function IosRow({ children, accent }: { children: ReactNode; accent?: boolean })
 
 const IOS_ART = {
   settings: (
-    <div className="inline-flex items-center gap-3 rounded-2xl bg-ink-700 p-3" dir="ltr" aria-hidden="true">
-      <span className="grid size-12 place-items-center rounded-[14px] bg-gradient-to-b from-[#9aa1ab] to-[#6b717b] text-white shadow">
+    <div className="inline-flex items-center gap-3 rounded-xl bg-ink-850 p-3" dir="ltr" aria-hidden="true">
+      <span className="grid size-12 place-items-center rounded-xl bg-[#8e8e93] text-white">
         <Settings className="size-7" />
       </span>
-      <span className="text-sm font-medium text-mist-200">Settings</span>
+      <span className="text-sm text-paper-2">Settings</span>
     </div>
   ),
   downloaded: (
-    <div className="max-w-xs space-y-1.5 rounded-2xl bg-[#f2f2f7] p-2.5" aria-hidden="true">
+    <div className="max-w-xs space-y-1 rounded-xl bg-[#f2f2f7] p-2" aria-hidden="true">
       <IosRow>
         <span className="size-7 rounded-full bg-[#c7c7cc]" />
         <span className="flex-1 font-medium">Apple Account</span>
         <ChevronRight className="size-4 text-[#c7c7cc]" />
       </IosRow>
       <IosRow accent>
-        <span className="flex-1 font-semibold">Profile Downloaded</span>
+        <span className="flex-1 font-medium">Profile Downloaded</span>
         <ChevronRight className="size-4 text-[#8e8e93]" />
       </IosRow>
     </div>
   ),
   install: (
-    <div className="max-w-xs rounded-2xl bg-[#f2f2f7] p-3" dir="ltr" aria-hidden="true">
+    <div className="max-w-xs rounded-xl bg-[#f2f2f7] p-3" dir="ltr" aria-hidden="true">
       <div className="flex items-center justify-between text-sm">
         <span className="text-[#007aff]">Cancel</span>
-        <span className="font-semibold text-ink-900">Install Profile</span>
-        <span className="rounded-md px-1.5 font-bold text-[#007aff] ring-2 ring-brand">Install</span>
+        <span className="font-medium text-ink-900">Install Profile</span>
+        <span className="rounded-md px-1 font-medium text-[#007aff] ring-2 ring-gold">Install</span>
       </div>
-      <div className="mt-3 flex items-center gap-3 rounded-xl bg-white p-3">
-        <span className="grid size-10 place-items-center rounded-xl bg-ink-900">
-          <ShieldCheck className="size-6 text-brand-bright" />
+      <div className="mt-3 flex items-center gap-3 rounded-lg bg-white p-3">
+        <span className="grid size-10 place-items-center rounded-lg bg-ink-900">
+          <ShieldCheck className="size-6 text-gold" />
         </span>
         <div className="text-xs text-ink-900">
-          <p className="font-semibold">Trust Issues Scam Shield</p>
+          <p className="font-medium">Trust Issues Scam Shield</p>
           <p className="text-[#8e8e93]">DNS Settings</p>
         </div>
       </div>
@@ -78,16 +83,12 @@ const IOS_ART = {
 
 function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
   return (
-    <div className="space-y-6">
-      <a
-        href={reg.ios_profile_url}
-        download
-        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-brand px-6 py-4 text-[17px] font-bold text-ink-950 shadow-[0_10px_30px_-10px_rgba(20,184,166,0.8)] hover:bg-brand-bright active:scale-[0.99]"
-      >
-        <Download className="size-5" aria-hidden="true" />
-        <T k="downloadProfile" arClassName="opacity-80" />
+    <div>
+      <a href={reg.ios_profile_url} download className={`${btn.primary} w-full`}>
+        <Download className="size-4" aria-hidden="true" />
+        <T k="downloadProfile" />
       </a>
-      <ol className="space-y-6">
+      <ol className="mt-8">
         <Step n={1} title="iosStep1" body="iosStep1d" art={IOS_ART.settings} />
         <Step n={2} title="iosStep2" body="iosStep2d" art={IOS_ART.downloaded} />
         <Step n={3} title="iosStep3" body="iosStep3d" art={IOS_ART.install} />
@@ -99,7 +100,7 @@ function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
 function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
   const hostname = reg.android_hostname_hint && !reg.android_hostname_hint.includes('://') ? reg.android_hostname_hint : null
   return (
-    <ol className="space-y-6">
+    <ol>
       <Step
         n={1}
         title="androidStep1"
@@ -110,14 +111,10 @@ function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
               { href: 'https://play.google.com/store/apps/details?id=app.intra', k: 'getIntra' as const },
               { href: 'https://play.google.com/store/apps/details?id=com.celzero.bravedns', k: 'getRethink' as const },
             ].map((a) => (
-              <a
-                key={a.k}
-                href={a.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-ink-500 bg-ink-700 px-4 py-2.5 text-sm font-semibold text-paper hover:border-brand"
-              >
-                <Store className="size-4" aria-hidden="true" />
+              <a key={a.k} href={a.href} target="_blank" rel="noreferrer" className={btn.secondary}>
+                <svg viewBox="0 0 24 24" className="size-4" fill="currentColor" aria-hidden="true">
+                  <path d={siGoogleplay.path} />
+                </svg>
                 <T k={a.k} />
               </a>
             ))}
@@ -130,23 +127,19 @@ function AndroidSetup({ reg }: { reg: DeviceRegistration }) {
         title="androidStep3"
         body="androidStep3d"
         art={
-          <div className="rounded-2xl border border-brand/40 bg-ink-900 p-4">
-            <p className="text-xs font-semibold text-brand-bright">
+          <div className="rounded-lg bg-ink-900 p-4">
+            <p className="text-sm text-gold">
               <T k="yourDohUrl" />
             </p>
             <div className="mt-2 flex items-center gap-2">
-              <code className="min-w-0 flex-1 break-all font-mono text-[13px] text-paper" dir="ltr">
-                {reg.doh_url}
-              </code>
+              <code className="evidence min-w-0 flex-1 break-all text-sm text-paper">{reg.doh_url}</code>
               <CopyButton value={reg.doh_url} />
             </div>
             {hostname && (
-              <div className="mt-4 border-t border-ink-700 pt-3">
-                <Tx k="privateDns" className="text-xs leading-relaxed text-mist-400" split="stack" />
+              <div className="mt-4 border-t border-line pt-4">
+                <Tx k="privateDns" className="text-sm text-paper-3" split="stack" />
                 <div className="mt-2 flex items-center gap-2">
-                  <code className="min-w-0 flex-1 break-all font-mono text-[13px] text-paper" dir="ltr">
-                    {hostname}
-                  </code>
+                  <code className="evidence min-w-0 flex-1 break-all text-sm text-paper">{hostname}</code>
                   <CopyButton value={hostname} />
                 </div>
               </div>
@@ -176,40 +169,28 @@ function Alerts({ deviceId }: { deviceId: string }) {
   }
 
   return (
-    <section className="rounded-3xl border border-ink-700 bg-ink-800/70 p-5 sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-warn/15 text-warn">
-          <BellRing className="size-5" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <Tx k="alertsTitle" as="h2" className="text-lg font-bold text-paper" split="stack" />
-          <Tx k="alertsBody" className="mt-1 text-sm leading-relaxed text-mist-300" split="stack" />
-        </div>
-      </div>
-      <div className="mt-5">
+    <section className="border-t border-line pt-6">
+      <Tx k="alertsTitle" as="h2" className="display text-xl text-paper" split="stack" />
+      <Tx k="alertsBody" className="mt-2 text-base text-paper-2" split="stack" />
+      <div className="mt-6">
         {state === 'on' ? (
-          <p className="inline-flex items-center gap-2 rounded-full bg-safe/15 px-4 py-2 text-sm font-semibold text-safe">
+          <p className="inline-flex items-center gap-2 text-base text-safe">
             <ShieldCheck className="size-4" aria-hidden="true" />
             <T k="alertsOn" />
           </p>
         ) : state === 'needs-install' ? (
-          <Tx k="alertsNeedsInstall" className="rounded-2xl bg-ink-900 p-4 text-sm leading-relaxed text-mist-200" split="stack" />
+          <Tx k="alertsNeedsInstall" className="rounded-lg bg-ink-850 p-4 text-base text-paper-2" split="stack" />
         ) : state === 'unsupported' ? (
-          <Tx k="alertsUnsupported" className="text-sm text-mist-400" split="stack" />
+          <Tx k="alertsUnsupported" className="text-base text-paper-3" split="stack" />
         ) : state === 'denied' ? (
-          <Tx k="alertsDenied" className="text-sm text-warn" split="stack" />
+          <Tx k="alertsDenied" className="text-base text-warn" split="stack" />
         ) : (
-          <button
-            type="button"
-            onClick={() => void turnOn()}
-            disabled={busy}
-            className="inline-flex items-center gap-2 rounded-2xl bg-paper px-5 py-3 text-[15px] font-bold text-ink-900 hover:bg-white disabled:opacity-60"
-          >
-            {busy ? <Spinner className="size-4" /> : <BellRing className="size-4" aria-hidden="true" />}
-            <T k="turnOnAlerts" arClassName="opacity-75" />
+          <button type="button" onClick={() => void turnOn()} disabled={busy} className={btn.secondary}>
+            {busy ? <Spinner /> : <BellRing className="size-4" aria-hidden="true" />}
+            <T k="turnOnAlerts" />
           </button>
         )}
-        {failed && <Tx k="alertsFailed" className="mt-3 text-sm text-warn" split="stack" />}
+        {failed && <Tx k="alertsFailed" className="mt-4 text-sm text-warn" split="stack" />}
       </div>
     </section>
   )
@@ -218,54 +199,53 @@ function Alerts({ deviceId }: { deviceId: string }) {
 function Blocks({ deviceId }: { deviceId: string }) {
   const { data, loading, error, reload } = useAsync(() => api.deviceBlocks(deviceId), [deviceId])
   return (
-    <section className="rounded-3xl border border-ink-700 bg-ink-800/70 p-5 sm:p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2.5 text-lg font-bold text-paper">
-          <ShieldBan className="size-5 text-scam" aria-hidden="true" />
-          <T k="myBlocks" arClassName="font-semibold text-mist-300" />
-        </h2>
-        <button type="button" onClick={reload} aria-label="Refresh" className="grid size-9 place-items-center rounded-full text-mist-400 hover:bg-ink-700 hover:text-paper">
+    <section className="border-t border-line pt-6">
+      <div className="flex items-center justify-between gap-4">
+        <Tx k="myBlocks" as="h2" className="display text-xl text-paper" split="stack" />
+        <button type="button" onClick={reload} aria-label="Refresh" className="press grid size-10 place-items-center rounded-lg text-paper-3 hover:bg-ink-800 hover:text-paper">
           <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
       {error ? (
         <ErrorState onRetry={reload} />
       ) : !loading && !data?.length ? (
-        <Tx k="noBlocks" className="rounded-2xl border border-dashed border-ink-600 p-5 text-sm text-mist-400" split="stack" />
+        <Tx k="noBlocks" className="mt-4 text-base text-paper-3" split="stack" />
       ) : (
-        <ul className="space-y-2">
-          {(data ?? []).map((b, i) => {
-            const body = (
-              <>
-                <BrandMark brand={b.brand} className="size-9" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-mono text-sm text-paper" dir="ltr">
-                    {b.domain}
-                  </p>
-                  <Tx text={b.headline} className="truncate text-xs text-mist-400" split="stack" />
-                  <p className="mt-0.5 text-[11px] text-mist-500">
+        <ul className="mt-4">
+          <AnimatePresence initial={false}>
+            {(data ?? []).map((b, i) => {
+              const body = (
+                <>
+                  <BrandMark brand={b.brand} className="size-8" />
+                  <div className="min-w-0 flex-1">
+                    <p className="evidence truncate text-sm text-paper">{defang(b.domain)}</p>
+                    <Tx text={b.headline} className="truncate text-sm text-paper-3" split="stack" />
+                  </div>
+                  <span className="shrink-0 text-xs text-paper-3">
                     <T text={timeAgo(b.ts)} />
-                  </p>
-                </div>
-              </>
-            )
-            return (
-              <li key={`${b.domain}-${i}`}>
-                {b.scan_id ? (
-                  <Link to={`/scan/${encodeURIComponent(b.scan_id)}`} className="flex items-center gap-3 rounded-2xl bg-ink-850 px-3 py-2.5 hover:bg-ink-750">
-                    {body}
-                  </Link>
-                ) : (
-                  <div className="flex items-center gap-3 rounded-2xl bg-ink-850 px-3 py-2.5">{body}</div>
-                )}
-              </li>
-            )
-          })}
+                  </span>
+                </>
+              )
+              return (
+                <motion.li key={`${b.domain}-${b.ts}`} layout initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: i * 0.04, ease: EASE_OUT }} className="border-b border-line">
+                  {b.scan_id ? (
+                    <Link to={`/scan/${encodeURIComponent(b.scan_id)}`} className="flex items-center gap-4 py-3 hover:bg-ink-850">
+                      {body}
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-4 py-3">{body}</div>
+                  )}
+                </motion.li>
+              )
+            })}
+          </AnimatePresence>
         </ul>
       )}
     </section>
   )
 }
+
+const HOW: StringKey[] = ['hw1', 'hw2', 'hw3']
 
 export function Protect() {
   const { mode, t } = useLang()
@@ -287,73 +267,71 @@ export function Protect() {
     }
   }, [attempt, mode])
 
-  const howItWorks: { k: StringKey; icon: typeof Smartphone }[] = [
-    { k: 'hw1', icon: Smartphone },
-    { k: 'hw2', icon: ShieldCheck },
-    { k: 'hw3', icon: ShieldBan },
-  ]
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <section className="grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
-        <div>
-          <Tx k="protectTitle" as="h1" className="text-balance text-3xl font-extrabold leading-tight tracking-tight text-paper sm:text-[44px]" split="stack" />
-          <Tx k="protectBody" className="mt-4 max-w-2xl text-[15px] leading-relaxed text-mist-300 sm:text-base" split="stack" />
-          <ol className="mt-7 grid gap-3 sm:grid-cols-3">
-            {howItWorks.map(({ k, icon: Icon }, i) => (
-              <li key={k} className="rounded-2xl border border-ink-700 bg-ink-850 p-4">
-                <div className="flex items-center gap-2 text-brand-bright">
-                  <span className="num text-xs font-bold">{i + 1}</span>
-                  <Icon className="size-4" aria-hidden="true" />
-                </div>
-                <Tx k={k} className="mt-2 text-sm font-semibold leading-snug text-paper" split="stack" />
-              </li>
+    <div>
+      <section className="shell grid-12 items-center gap-y-12 pt-12 pb-16 lg:pt-20 lg:pb-24">
+        <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
+          <Tx k="protectTitle" as="h1" className="display text-4xl text-paper sm:text-5xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
+          <Tx k="protectBody" className="mt-6 max-w-[60ch] text-lg text-paper-2" split="stack" />
+          <Stagger as="div" className="mt-12 grid gap-x-8 sm:grid-cols-3" gap={0.08}>
+            {HOW.map((k, i) => (
+              <StaggerItem key={k} className="border-t border-line pt-4 pb-6">
+                <span className="evidence num text-sm text-gold">{i + 1}</span>
+                <Tx k={k} className="mt-2 text-base text-paper" split="stack" />
+              </StaggerItem>
             ))}
-          </ol>
-          <p className="mt-5 flex items-start gap-2 text-sm text-mist-400">
-            <EyeOff className="mt-0.5 size-4 shrink-0 text-seal" aria-hidden="true" />
-            <Tx k="privacyNote" as="span" split="stack" />
-          </p>
-        </div>
-        <div className="hidden lg:block">
+          </Stagger>
+          <Tx k="privacyNote" className="mt-6 text-sm text-paper-3" split="stack" />
+        </Reveal>
+        <div className="col-span-4 sm:col-span-8 lg:col-span-4 lg:col-start-9">
           <ProtectIllustration />
         </div>
       </section>
 
-      <div className="mt-12 grid items-start gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-3xl border border-ink-700 bg-ink-800/70 p-5 sm:p-7">
-          <div role="tablist" aria-label={t('navProtect')} className="mb-7 grid grid-cols-2 rounded-2xl bg-ink-900 p-1">
-            {(['ios', 'android'] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                role="tab"
-                aria-selected={platform === p}
-                onClick={() => setPlatform(p)}
-                className={`rounded-xl py-2.5 text-sm font-bold transition-colors ${platform === p ? 'bg-paper text-ink-900' : 'text-mist-400 hover:text-paper'}`}
-              >
-                <T k={p === 'ios' ? 'iphone' : 'android'} />
-              </button>
-            ))}
-          </div>
-          {failed ? (
-            <ErrorState message="deviceFailed" onRetry={() => setAttempt((a) => a + 1)} />
-          ) : !reg ? (
-            <div className="flex items-center justify-center gap-2.5 py-12 text-sm text-mist-400">
-              <Spinner />
-              <T k="settingUp" />
+      <section className="border-t border-line bg-ink-850">
+        <div className="shell grid-12 gap-y-16 py-16 lg:py-24">
+          <div className="col-span-4 sm:col-span-8 lg:col-span-7">
+            <SectionHead index={1} title="setupTitle" />
+            <div role="tablist" aria-label={t('navProtect')} className="mt-8 inline-flex h-12 rounded-lg bg-ink-900 p-1">
+              {(['ios', 'android'] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  role="tab"
+                  aria-selected={platform === p}
+                  onClick={() => setPlatform(p)}
+                  className={`press relative h-10 rounded-md px-6 text-base font-medium transition-colors ${platform === p ? 'text-ink-950' : 'text-paper-2 hover:text-paper'}`}
+                >
+                  {platform === p && <motion.span layoutId="platform-tab" transition={T_LAYOUT} className="absolute inset-0 rounded-md bg-paper" />}
+                  <span className="relative">
+                    <T k={p === 'ios' ? 'iphone' : 'android'} />
+                  </span>
+                </button>
+              ))}
             </div>
-          ) : platform === 'ios' ? (
-            <IphoneSetup reg={reg} />
-          ) : (
-            <AndroidSetup reg={reg} />
-          )}
-        </section>
-        <div className="space-y-6">
-          {reg && <Alerts deviceId={reg.device_id} />}
-          {reg && <Blocks deviceId={reg.device_id} />}
+            <div className="mt-8">
+              {failed ? (
+                <ErrorState message="deviceFailed" onRetry={() => setAttempt((a) => a + 1)} />
+              ) : !reg ? (
+                <div className="flex items-center gap-3 py-12 text-base text-paper-3">
+                  <Spinner />
+                  <T k="settingUp" />
+                </div>
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div key={platform} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2, ease: EASE_OUT }}>
+                    {platform === 'ios' ? <IphoneSetup reg={reg} /> : <AndroidSetup reg={reg} />}
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+          <div className="col-span-4 space-y-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+            {reg && <Alerts deviceId={reg.device_id} />}
+            {reg && <Blocks deviceId={reg.device_id} />}
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

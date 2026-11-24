@@ -1,14 +1,20 @@
-import { AlertTriangle, Loader2, RotateCcw } from 'lucide-react'
-import { T } from '../lib/lang'
+import { RotateCcw } from 'lucide-react'
+import { T, Tx } from '../lib/lang'
 import type { StringKey } from '../lib/i18n'
+import { btn } from './ui'
 
-export function Spinner({ className = 'size-5' }: { className?: string }) {
-  return <Loader2 className={`${className} animate-spin`} aria-hidden="true" />
+export function Spinner({ className = 'size-4' }: { className?: string }) {
+  return (
+    <span className={`relative inline-block shrink-0 ${className}`} aria-hidden="true">
+      <span className="absolute inset-0 rounded-full border-2 border-current opacity-25" />
+      <span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-current [animation-duration:600ms]" />
+    </span>
+  )
 }
 
 export function LoadingState({ label = 'loading' }: { label?: StringKey }) {
   return (
-    <div className="flex items-center justify-center gap-2.5 py-14 text-sm text-mist-400" role="status">
+    <div className="flex items-center justify-center gap-3 py-16 text-sm text-paper-3" role="status">
       <Spinner />
       <T k={label} />
     </div>
@@ -17,16 +23,11 @@ export function LoadingState({ label = 'loading' }: { label?: StringKey }) {
 
 export function ErrorState({ onRetry, message = 'loadFailed' }: { onRetry?: () => void; message?: StringKey }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-ink-500 px-6 py-10 text-center text-sm text-mist-300">
-      <AlertTriangle className="size-6 text-warn" aria-hidden="true" />
-      <T k={message} />
+    <div className="flex flex-col items-start gap-4 border-t border-line py-8 text-base text-paper-2">
+      <Tx k={message} split="stack" />
       {onRetry && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="inline-flex items-center gap-1.5 rounded-full border border-ink-500 px-4 py-2 text-xs font-semibold text-paper hover:border-brand"
-        >
-          <RotateCcw className="size-3.5" />
+        <button type="button" onClick={onRetry} className={btn.small}>
+          <RotateCcw className="size-4" />
           <T k="retry" />
         </button>
       )}
@@ -36,8 +37,12 @@ export function ErrorState({ onRetry, message = 'loadFailed' }: { onRetry?: () =
 
 export function EmptyState({ message }: { message: StringKey }) {
   return (
-    <div className="rounded-2xl border border-dashed border-ink-500 px-6 py-10 text-center text-sm text-mist-400">
-      <T k={message} />
+    <div className="border-t border-line py-8 text-base text-paper-3">
+      <Tx k={message} split="stack" />
     </div>
   )
+}
+
+export function Skeleton({ className = '' }: { className?: string }) {
+  return <span className={`block animate-pulse rounded-md bg-ink-800 ${className}`} aria-hidden="true" />
 }

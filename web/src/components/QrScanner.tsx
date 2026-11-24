@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import jsQR from 'jsqr'
 import { ImageUp } from 'lucide-react'
 import { Modal } from './Modal'
+import { btn } from './ui'
 import { T, Tx } from '../lib/lang'
 
 interface DetectedBarcode {
@@ -119,27 +120,29 @@ export function QrScanner({ open, onClose, onResult }: { open: boolean; onClose:
 
   return (
     <Modal open={open} onClose={onClose} title={<T k="qrTitle" />}>
-      <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-2xl bg-ink-950">
+      <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-lg bg-ink-950">
         {cameraFailed ? (
-          <div className="grid h-full place-items-center p-8 text-center text-sm text-mist-300">
+          <div className="grid h-full place-items-center p-8 text-center text-base text-paper-2">
             <Tx k="qrNoCamera" split="stack" />
           </div>
         ) : (
           <>
             <video ref={video} playsInline muted className="h-full w-full object-cover" />
             <div className="pointer-events-none absolute inset-8">
-              {['start-0 top-0 border-s-4 border-t-4 rounded-ss-2xl', 'end-0 top-0 border-e-4 border-t-4 rounded-se-2xl', 'start-0 bottom-0 border-s-4 border-b-4 rounded-es-2xl', 'end-0 bottom-0 border-e-4 border-b-4 rounded-ee-2xl'].map((c) => (
-                <span key={c} className={`absolute size-10 border-brand-bright ${c}`} />
+              {['start-0 top-0 border-s-2 border-t-2', 'end-0 top-0 border-e-2 border-t-2', 'start-0 bottom-0 border-s-2 border-b-2', 'end-0 bottom-0 border-e-2 border-b-2'].map((c) => (
+                <span key={c} className={`absolute size-8 border-gold ${c}`} />
               ))}
-              <span className="absolute inset-x-2 top-1/2 h-0.5 animate-pulse bg-brand-bright/80 shadow-[0_0_16px_2px_rgba(45,212,191,0.6)]" />
+              <span className="absolute inset-x-4 top-1/2 h-px overflow-hidden">
+                <span className="block h-px w-1/2 animate-scan-line bg-gold" />
+              </span>
             </div>
           </>
         )}
       </div>
       <canvas ref={canvas} className="hidden" />
-      <Tx k="qrHint" className="mt-4 text-sm leading-relaxed text-mist-300" split="stack" />
-      {notFound && <Tx k="qrNotFound" className="mt-3 text-sm font-medium text-warn" split="stack" />}
-      <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-ink-500 bg-ink-700 px-4 py-3 text-sm font-semibold text-paper hover:border-brand">
+      <Tx k="qrHint" className="mt-6 text-base text-paper-2" split="stack" />
+      {notFound && <Tx k="qrNotFound" className="mt-4 text-base text-warn" split="stack" />}
+      <label className={`${btn.secondary} mt-6 w-full cursor-pointer`}>
         <ImageUp className="size-4" />
         <T k="qrUpload" />
         <input type="file" accept="image/*" className="sr-only" onChange={(e) => void onFile(e.target.files?.[0])} />

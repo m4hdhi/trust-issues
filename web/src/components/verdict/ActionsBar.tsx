@@ -4,6 +4,7 @@ import { FileDown, Flag, RotateCcw, Share2 } from 'lucide-react'
 import { ReportModal } from './ReportModal'
 import { copyText } from '../CopyButton'
 import { useToast } from '../Toast'
+import { btn } from '../ui'
 import { T, useLang } from '../../lib/lang'
 import { api, scanUrls } from '../../lib/api'
 import { fill, S } from '../../lib/i18n'
@@ -67,31 +68,24 @@ export function ActionsBar({ result, onReported }: { result: ScanResult; onRepor
     if (await copyText(`${text}\n${link}`)) toast(S.warningCopied)
   }
 
-  const btn =
-    'inline-flex min-h-13 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-[15px] font-semibold transition-[transform,background-color,border-color] active:scale-[0.98]'
-
   return (
     <>
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        <button
-          type="button"
-          onClick={() => setReportOpen(true)}
-          className={`${btn} ${risky ? 'bg-scam text-white hover:bg-[#f05252]' : 'border border-ink-600 bg-ink-800 text-paper hover:border-ink-500'}`}
-        >
-          <Flag className="size-[18px] shrink-0" aria-hidden="true" />
-          <T k="reportScam" stacked arClassName="text-[13px] opacity-85" />
+      <div className="grid gap-2 sm:flex sm:flex-wrap">
+        <button type="button" onClick={() => void share()} className={btn.primary}>
+          <Share2 className="size-4 shrink-0" aria-hidden="true" />
+          <T k="shareWarning" />
         </button>
-        <button type="button" onClick={() => void share()} className={`${btn} bg-paper text-ink-900 hover:bg-white`}>
-          <Share2 className="size-[18px] shrink-0" aria-hidden="true" />
-          <T k="shareWarning" stacked arClassName="text-[13px] opacity-75" />
+        <button type="button" onClick={() => setReportOpen(true)} className={risky ? btn.danger : btn.secondary}>
+          <Flag className="size-4 shrink-0" aria-hidden="true" />
+          <T k="reportScam" />
         </button>
-        <a href={scanUrls(result.id).evidencePdf} download className={`${btn} border border-ink-600 bg-ink-800 text-paper hover:border-ink-500`}>
-          <FileDown className="size-[18px] shrink-0" aria-hidden="true" />
-          <T k="evidencePdf" stacked arClassName="text-[13px] opacity-75" />
+        <a href={scanUrls(result.id).evidencePdf} download className={btn.secondary}>
+          <FileDown className="size-4 shrink-0" aria-hidden="true" />
+          <T k="evidencePdf" />
         </a>
-        <Link to="/" className={`${btn} border border-ink-600 bg-ink-800 text-paper hover:border-ink-500`}>
-          <RotateCcw className="size-[18px] shrink-0" aria-hidden="true" />
-          <T k="scanAnother" stacked arClassName="text-[13px] opacity-75" />
+        <Link to="/" className={btn.ghost}>
+          <RotateCcw className="size-4 shrink-0" aria-hidden="true" />
+          <T k="scanAnother" />
         </Link>
       </div>
       <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} url={result.final_url ?? result.url} onReported={onReported} />

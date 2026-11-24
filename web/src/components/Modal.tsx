@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { X } from 'lucide-react'
 import { useLang } from '../lib/lang'
+import { EASE_DRAWER, EASE_OUT } from '../lib/motion'
 
 interface ModalProps {
   open: boolean
@@ -37,33 +38,32 @@ export function Modal({ open, onClose, title, children, wide = false }: ModalPro
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6"
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+          exit={{ opacity: 0, transition: { duration: 0.18 } }}
+          transition={{ duration: 0.2 }}
         >
-          <div className="absolute inset-0 bg-ink-950/75 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+          <div className="absolute inset-0 bg-ink-950/85" onClick={onClose} aria-hidden="true" />
           <motion.div
             ref={panel}
             role="dialog"
             aria-modal="true"
             tabIndex={-1}
-            className={`relative max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-ink-600 bg-ink-800 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl outline-none sm:rounded-3xl sm:p-7 ${
+            className={`relative max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl border border-line bg-ink-800 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] outline-none sm:rounded-xl sm:p-8 ${
               wide ? 'sm:max-w-4xl' : 'sm:max-w-lg'
             }`}
-            initial={{ y: 40, opacity: 0.6 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 40, opacity: 0 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 380 }}
+            initial={{ y: 32, opacity: 0, scale: 0.98 }}
+            animate={{ y: 0, opacity: 1, scale: 1, transition: { duration: 0.35, ease: EASE_DRAWER } }}
+            exit={{ y: 16, opacity: 0, transition: { duration: 0.18, ease: EASE_OUT } }}
           >
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div className="text-lg font-bold text-paper">{title}</div>
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="display text-xl text-paper">{title}</div>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label={t('close')}
-                className="-m-1.5 grid size-9 shrink-0 place-items-center rounded-full text-mist-400 hover:bg-ink-700 hover:text-paper"
+                className="press -m-2 grid size-10 shrink-0 place-items-center rounded-lg text-paper-3 hover:bg-ink-700 hover:text-paper"
               >
                 <X className="size-5" />
               </button>

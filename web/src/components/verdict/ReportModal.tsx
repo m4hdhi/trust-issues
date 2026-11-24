@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { motion } from 'motion/react'
+import { Check } from 'lucide-react'
 import { Modal } from '../Modal'
-import { ChannelIcon, CHANNEL_COLOR, CHANNELS } from '../ChannelIcon'
+import { ChannelIcon, CHANNELS } from '../ChannelIcon'
 import { Spinner } from '../States'
+import { btn } from '../ui'
 import { T, Tx, useLang } from '../../lib/lang'
 import { api } from '../../lib/api'
+import { T_STAMP } from '../../lib/motion'
 import type { Channel } from '../../lib/types'
 
 export function ReportModal({ open, onClose, url, onReported }: { open: boolean; onClose: () => void; url: string; onReported?: () => void }) {
@@ -36,10 +39,12 @@ export function ReportModal({ open, onClose, url, onReported }: { open: boolean;
   return (
     <Modal open={open} onClose={onClose} title={<T k={state === 'sent' ? 'reportScam' : 'reportTitle'} />}>
       {state === 'sent' ? (
-        <div className="flex flex-col items-center py-6 text-center">
-          <CheckCircle2 className="size-14 text-safe" aria-hidden="true" />
-          <Tx k="reportSent" className="mt-4 text-lg font-semibold text-paper" split="stack" />
-          <button type="button" onClick={onClose} className="mt-6 w-full rounded-2xl bg-paper py-3.5 text-base font-bold text-ink-900">
+        <div className="flex flex-col items-center py-8 text-center">
+          <motion.span initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={T_STAMP} className="grid size-16 place-items-center rounded-full bg-safe text-ink-950">
+            <Check className="size-8" strokeWidth={2.5} />
+          </motion.span>
+          <Tx k="reportSent" className="mt-6 text-lg text-paper" split="stack" />
+          <button type="button" onClick={onClose} className={`${btn.secondary} mt-8 w-full`}>
             <T k="done" />
           </button>
         </div>
@@ -50,10 +55,9 @@ export function ReportModal({ open, onClose, url, onReported }: { open: boolean;
             void submit()
           }}
         >
-          <div role="radiogroup" aria-label={t('reportTitle')} className="grid grid-cols-4 gap-2">
+          <div role="radiogroup" aria-label={t('reportTitle')} className="grid grid-cols-5 gap-2">
             {CHANNELS.map((ch) => {
               const active = ch === channel
-              const color = CHANNEL_COLOR[ch]
               return (
                 <button
                   key={ch}
@@ -61,21 +65,20 @@ export function ReportModal({ open, onClose, url, onReported }: { open: boolean;
                   role="radio"
                   aria-checked={active}
                   onClick={() => setChannel(ch)}
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl border px-1 py-3 text-[11px] font-semibold transition-colors ${
-                    active ? 'border-transparent text-paper' : 'border-ink-600 text-mist-300 hover:border-ink-500'
+                  className={`press flex flex-col items-center gap-2 rounded-lg px-1 py-3 text-xs transition-colors ${
+                    active ? 'bg-paper text-ink-950' : 'bg-ink-900 text-paper-2 hover:bg-ink-700'
                   }`}
-                  style={active ? { background: `${color}26`, boxShadow: `inset 0 0 0 2px ${color}` } : undefined}
                 >
-                  <span style={{ color }}>
-                    <ChannelIcon channel={ch} className="size-6" />
+                  <ChannelIcon channel={ch} className="size-6" />
+                  <span className="max-w-full truncate">
+                    <T k={`ch_${ch}`} />
                   </span>
-                  <T k={`ch_${ch}`} stacked />
                 </button>
               )
             })}
           </div>
-          <label className="mt-5 block">
-            <span className="text-sm font-medium text-mist-300">
+          <label className="mt-6 block">
+            <span className="text-sm text-paper-2">
               <T k="reportNote" />
             </span>
             <textarea
@@ -85,17 +88,13 @@ export function ReportModal({ open, onClose, url, onReported }: { open: boolean;
               dir="auto"
               maxLength={1000}
               placeholder={t('reportNotePh')}
-              className="mt-2 block w-full resize-none rounded-2xl border border-ink-600 bg-ink-900 px-4 py-3 text-[15px] text-paper placeholder:text-mist-500 focus:border-brand focus:outline-none"
+              className="mt-2 block w-full resize-none rounded-lg border border-line bg-ink-900 px-4 py-3 text-base text-paper placeholder:text-paper-3 focus:border-gold focus:outline-none"
             />
           </label>
-          {state === 'error' && <Tx k="reportFailed" className="mt-3 text-sm text-scam" split="stack" />}
-          <button
-            type="submit"
-            disabled={!channel || state === 'sending'}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-scam py-3.5 text-base font-bold text-white transition-opacity disabled:opacity-40"
-          >
+          {state === 'error' && <Tx k="reportFailed" className="mt-4 text-sm text-scam" split="stack" />}
+          <button type="submit" disabled={!channel || state === 'sending'} className={`${btn.danger} mt-6 w-full`}>
             {state === 'sending' && <Spinner />}
-            <T k={state === 'sending' ? 'sending' : 'sendReport'} arClassName="opacity-85" />
+            <T k={state === 'sending' ? 'sending' : 'sendReport'} />
           </button>
         </form>
       )}

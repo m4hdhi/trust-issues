@@ -122,16 +122,16 @@ export function Network() {
       ) : (
         <div className="grid gap-4 lg:h-[calc(100dvh-170px)] lg:min-h-[560px] lg:grid-cols-[280px_1fr]">
           <Panel className="flex min-h-0 flex-col p-3">
-            <p className="px-2 pt-1 pb-2 text-sm font-bold text-paper">
+            <p className="px-2 pt-1 pb-2 text-sm font-semibold text-paper">
               <T k="campaigns" />
-              <span className="num ms-2 text-xs font-medium text-mist-500">{data.campaigns.length}</span>
+              <span className="num ms-2 text-xs font-medium text-paper-3">{data.campaigns.length}</span>
             </p>
             <div className="scrollbar-thin -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-visible">
               {campaign && (
                 <button
                   type="button"
                   onClick={() => setCampaign(null)}
-                  className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-ink-500 px-2.5 py-1.5 text-xs font-semibold text-mist-200 hover:border-brand"
+                  className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg border border-line-strong px-3 py-1 text-xs font-semibold text-paper hover:border-gold"
                 >
                   <Maximize2 className="size-3.5" aria-hidden="true" />
                   <T k="showAll" />
@@ -148,22 +148,22 @@ export function Network() {
                       setCampaign(active ? null : c.id)
                     }}
                     className={`w-64 shrink-0 rounded-xl border p-3 text-start transition-colors lg:w-auto ${
-                      active ? 'border-brand bg-brand/10' : 'border-ink-700 bg-ink-900 hover:border-ink-500'
+                      active ? 'border-gold bg-gold/10' : 'border-line bg-ink-900 hover:border-line-strong'
                     }`}
                   >
-                    <p className="text-sm font-bold text-paper">
+                    <p className="text-sm font-semibold text-paper">
                       <T text={sitesCount(c.size)} />
                     </p>
                     {c.brands.length > 0 && (
                       <p className="mt-1 flex flex-wrap gap-1">
                         {c.brands.slice(0, 3).map((b) => (
-                          <span key={b} className="rounded-md bg-ink-700 px-1.5 py-0.5 text-[11px] text-mist-200">
+                          <span key={b} className="rounded-md bg-ink-700 px-2 py-1 text-xs text-paper">
                             {b}
                           </span>
                         ))}
                       </p>
                     )}
-                    <ul className="mt-2 space-y-0.5 font-mono text-[11px] text-mist-500" dir="ltr">
+                    <ul className="mt-2 space-y-0.5 font-mono text-xs text-paper-3" dir="ltr">
                       {c.domains.slice(0, 3).map((d) => (
                         <li key={d} className="truncate">
                           {d}
@@ -186,33 +186,33 @@ export function Network() {
                 e.preventDefault()
                 find()
               }}
-              className="absolute start-3 top-3 flex w-[min(320px,calc(100%-24px))] items-center gap-2 rounded-xl border border-ink-600 bg-ink-850/95 px-3 backdrop-blur"
+              className="absolute start-3 top-3 flex w-[min(320px,calc(100%-24px))] items-center gap-2 rounded-xl border border-line bg-ink-850 px-3"
             >
-              <Search className="size-4 shrink-0 text-mist-500" aria-hidden="true" />
+              <Search className="size-4 shrink-0 text-paper-3" aria-hidden="true" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('searchNodes')}
                 aria-label={t('searchNodes')}
-                className="h-10 w-full bg-transparent text-sm text-paper placeholder:text-mist-500 focus:outline-none"
+                className="h-10 w-full bg-transparent text-sm text-paper placeholder:text-paper-3 focus:outline-none"
                 dir="auto"
               />
             </form>
-            <div className="absolute start-3 bottom-3 max-w-[calc(100%-24px)] rounded-xl border border-ink-700 bg-ink-900/90 px-3 py-2 backdrop-blur">
+            <div className="absolute start-3 bottom-3 max-w-[calc(100%-24px)] rounded-xl border border-line bg-ink-900 px-3 py-2">
               <GraphLegend kinds={kinds} />
             </div>
             {node && (
-              <div className="absolute end-3 top-16 w-[min(300px,calc(100%-24px))] rounded-2xl border border-ink-600 bg-ink-850/95 p-4 shadow-2xl backdrop-blur sm:top-3">
+              <div className="absolute end-3 top-16 w-[min(300px,calc(100%-24px))] rounded-xl border border-line bg-ink-850 p-4 sm:top-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="flex items-center gap-1.5 text-xs font-medium" style={{ color: nodeColor(node) }}>
+                    <p className="flex items-center gap-2 text-xs font-medium" style={{ color: nodeColor(node) }}>
                       <T k={`nk_${node.kind}`} />
                     </p>
                     <p className="mt-1 break-all font-mono text-sm font-semibold text-paper" dir="ltr">
                       {node.label}
                     </p>
                   </div>
-                  <button type="button" onClick={() => setSelected(null)} aria-label={t('close')} className="-m-1 grid size-7 shrink-0 place-items-center rounded-full text-mist-400 hover:bg-ink-700">
+                  <button type="button" onClick={() => setSelected(null)} aria-label={t('close')} className="-m-1 grid size-7 shrink-0 place-items-center rounded-full text-paper-3 hover:bg-ink-700">
                     <X className="size-4" />
                   </button>
                 </div>
@@ -225,21 +225,21 @@ export function Network() {
                   <button
                     type="button"
                     onClick={() => node.scan_id && setScan({ id: node.scan_id, title: node.label })}
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-ink-500 px-2.5 py-1.5 text-xs font-semibold text-paper hover:border-brand"
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-line-strong px-3 py-1 text-xs font-semibold text-paper hover:border-gold"
                   >
                     <PanelRightOpen className="size-3.5" aria-hidden="true" />
                     <T k="openScan" />
                   </button>
                 )}
                 {neighbors.length > 0 && (
-                  <div className="mt-4 border-t border-ink-700 pt-3">
-                    <p className="mb-2 text-xs font-semibold text-mist-400">
+                  <div className="mt-4 border-t border-line pt-3">
+                    <p className="mb-2 text-xs font-semibold text-paper-3">
                       <T k="connections" />
                     </p>
-                    <div className="scrollbar-thin max-h-56 space-y-2.5 overflow-y-auto">
+                    <div className="scrollbar-thin max-h-56 space-y-2 overflow-y-auto">
                       {neighbors.map(([kind, list]) => (
                         <div key={kind}>
-                          <p className="text-[11px] text-mist-500">
+                          <p className="text-xs text-paper-3">
                             <T k={`nk_${kind}`} /> <span className="num">({list.length})</span>
                           </p>
                           <ul className="mt-1 space-y-0.5">
@@ -248,7 +248,7 @@ export function Network() {
                                 <button
                                   type="button"
                                   onClick={() => setSelected(n.id)}
-                                  className="flex w-full items-center gap-2 truncate rounded-md px-1.5 py-0.5 text-start font-mono text-xs text-mist-200 hover:bg-ink-700"
+                                  className="flex w-full items-center gap-2 truncate rounded-md px-2 py-1 text-start font-mono text-xs text-paper hover:bg-ink-700"
                                   dir="ltr"
                                 >
                                   <span className="size-2 shrink-0 rounded-full" style={{ background: nodeColor(n) }} />

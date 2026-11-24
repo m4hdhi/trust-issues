@@ -1,23 +1,23 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Check, PanelRightOpen, X } from 'lucide-react'
-import { PageHeader, Panel, Segmented, SourceIcon, SourceLabel } from './ui'
+import { PageHeader, Segmented, SourceTag } from './ui'
 import { ScanDrawer } from './ScanDrawer'
-import { brandName } from '../components/BrandMark'
+import { BrandMark, brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
 import { EmptyState, ErrorState, LoadingState } from '../components/States'
 import { T, useLang } from '../lib/lang'
 import { consoleApi } from '../lib/api'
-import { timeAgo } from '../lib/format'
+import { defang, timeAgo } from '../lib/format'
+import { EASE_OUT, T_LAYOUT } from '../lib/motion'
 import { useAsync } from '../lib/useAsync'
 import type { CaseItem, CaseStatus } from '../lib/types'
 
 type Filter = CaseStatus | 'all'
 
-const STATUS_COLOR: Record<CaseStatus, string> = {
-  pending: '#f59e0b',
-  confirmed: '#ef4444',
-  rejected: '#94a3b8',
-}
+const STATUS_COLOR: Record<CaseStatus, string> = { pending: '#e3a13a', confirmed: '#e5534b', rejected: '#8c867c' }
+
+const COLUMNS = ['col_domain', 'col_source', 'col_brand', 'col_score', 'col_reports', 'col_detected', 'col_status'] as const
 
 export function Cases() {
   const { t } = useLang()
@@ -31,11 +31,7 @@ export function Cases() {
     try {
       await consoleApi.decide(c.id, action)
       const status: CaseStatus = action === 'confirm' ? 'confirmed' : 'rejected'
-      setData((prev) =>
-        (prev ?? [])
-          .map((x) => (x.id === c.id ? { ...x, status } : x))
-          .filter((x) => filter === 'all' || x.status === filter),
-      )
+      setData((prev) => (prev ?? []).map((x) => (x.id === c.id ? { ...x, status } : x)).filter((x) => filter === 'all' || x.status === filter))
     } catch {
       reload()
     } finally {
@@ -69,63 +65,77 @@ export function Cases() {
       ) : !data?.length ? (
         <EmptyState message="casesEmpty" />
       ) : (
-        <Panel className="overflow-hidden">
-          <div className="scrollbar-thin overflow-x-auto">
-            <table className="w-full min-w-[880px] text-sm">
-              <thead className="border-b border-ink-700 text-xs text-mist-400">
-                <tr className="text-start">
-                  {(['col_domain', 'col_source', 'col_brand', 'col_score', 'col_reports', 'col_detected', 'col_status'] as const).map((k) => (
-                    <th key={k} className="px-4 py-3 text-start font-medium">
-                      <T k={k} />
-                    </th>
-                  ))}
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-ink-700">
-                {data.map((c) => {
+        <div className="scrollbar-thin overflow-x-auto">
+          <table className="w-full min-w-[880px] text-sm">
+            <thead className="border-b border-line text-xs text-paper-3">
+              <tr>
+                {COLUMNS.map((k) => (
+                  <th key={k} className="px-4 py-3 text-start font-normal first:ps-0">
+                    <T k={k} />
+                  </th>
+                ))}
+                <th className="py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence initial={false}>
+                {data.map((c, i) => {
                   const brand = brandName(c.brand)
                   const color = STATUS_COLOR[c.status]
+                  const risky = c.verdict === 'scam' || c.verdict === 'suspicious'
                   return (
-                    <tr key={c.id} className="hover:bg-ink-800/60">
-                      <td className="max-w-[280px] px-4 py-3">
-                        <p className="truncate font-mono font-semibold text-paper" dir="ltr">
-                          {c.domain}
-                        </p>
-                        <p className="truncate font-mono text-xs text-mist-500" dir="ltr">
-                          {c.url}
-                        </p>
+                    <motion.tr
+                      key={c.id}
+                      layout="position"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0, transition: { duration: 0.25, delay: Math.min(i, 12) * 0.02, ease: EASE_OUT } }}
+                      exit={{ opacity: 0, x: 16, transition: { duration: 0.2 } }}
+                      transition={T_LAYOUT}
+                      className="border-b border-line hover:bg-ink-850"
+                    >
+                      <td className="max-w-[300px] py-4 pe-4">
+                        <p className="evidence truncate text-base text-paper">{risky ? defang(c.domain) : c.domain}</p>
+                        <p className="evidence truncate text-xs text-paper-3">{c.url}</p>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-2 whitespace-nowrap text-mist-300">
-                          <SourceIcon source={c.source} className="size-7" />
-                          <SourceLabel source={c.source} />
-                        </span>
+                      <td className="px-4 py-4">
+                        <SourceTag source={c.source} />
                       </td>
-                      <td className="px-4 py-3 text-mist-200">{brand ? <T text={brand} /> : '—'}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-4">
+                        {brand ? (
+                          <span className="inline-flex items-center gap-2 text-paper-2">
+                            <BrandMark brand={c.brand} className="size-6" />
+                            <span className="max-w-[160px] truncate">
+                              <T text={brand} />
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-paper-3">n/a</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
                         <VerdictChip verdict={c.verdict} score={c.score} />
                       </td>
-                      <td className="num px-4 py-3 text-mist-200">{c.reports}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-xs text-mist-400">
+                      <td className="evidence num px-4 py-4 text-paper-2">{c.reports}</td>
+                      <td className="whitespace-nowrap px-4 py-4 text-xs text-paper-3">
                         <T text={timeAgo(c.created_at)} />
                       </td>
-                      <td className="px-4 py-3">
-                        <span className="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold" style={{ color, background: `${color}1a` }}>
+                      <td className="px-4 py-4">
+                        <span className="whitespace-nowrap text-sm" style={{ color }}>
                           <T k={`filter_${c.status}`} />
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1.5">
+                      <td className="py-4 ps-4">
+                        <div className="flex justify-end gap-1">
                           {c.status !== 'confirmed' && (
                             <button
                               type="button"
                               disabled={busy === c.id}
                               onClick={() => void decide(c, 'confirm')}
-                              className="inline-flex items-center gap-1 rounded-lg bg-scam/15 px-2.5 py-1.5 text-xs font-semibold text-scam hover:bg-scam/25 disabled:opacity-50"
+                              title={t('confirm')}
+                              aria-label={t('confirm')}
+                              className="press grid size-9 place-items-center rounded-md text-scam transition-colors hover:bg-scam/15 disabled:opacity-50"
                             >
-                              <Check className="size-3.5" aria-hidden="true" />
-                              <T k="confirm" />
+                              <Check className="size-4" />
                             </button>
                           )}
                           {c.status !== 'rejected' && (
@@ -133,31 +143,32 @@ export function Cases() {
                               type="button"
                               disabled={busy === c.id}
                               onClick={() => void decide(c, 'reject')}
-                              className="inline-flex items-center gap-1 rounded-lg bg-ink-700 px-2.5 py-1.5 text-xs font-semibold text-mist-200 hover:bg-ink-600 disabled:opacity-50"
+                              title={t('reject')}
+                              aria-label={t('reject')}
+                              className="press grid size-9 place-items-center rounded-md text-paper-2 transition-colors hover:bg-ink-700 disabled:opacity-50"
                             >
-                              <X className="size-3.5" aria-hidden="true" />
-                              <T k="reject" />
+                              <X className="size-4" />
                             </button>
                           )}
                           <button
                             type="button"
                             disabled={!c.scan_id}
                             onClick={() => setOpen(c)}
-                            title={c.scan_id ? undefined : t('noScanYet')}
-                            className="inline-flex items-center gap-1 rounded-lg border border-ink-500 px-2.5 py-1.5 text-xs font-semibold text-paper hover:border-brand disabled:opacity-40"
+                            title={c.scan_id ? t('open') : t('noScanYet')}
+                            aria-label={t('open')}
+                            className="press grid size-9 place-items-center rounded-md text-paper-2 transition-colors hover:bg-ink-700 hover:text-paper disabled:opacity-40"
                           >
-                            <PanelRightOpen className="size-3.5" aria-hidden="true" />
-                            <T k="open" />
+                            <PanelRightOpen className="size-4" />
                           </button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   )
                 })}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
+              </AnimatePresence>
+            </tbody>
+          </table>
+        </div>
       )}
       <ScanDrawer scanId={open?.scan_id ?? null} title={open?.domain} onClose={() => setOpen(null)} />
     </div>

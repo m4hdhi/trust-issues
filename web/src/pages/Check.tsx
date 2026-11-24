@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router'
-import { ChevronRight, Link2 } from 'lucide-react'
+import { motion } from 'motion/react'
+import { ArrowRight } from 'lucide-react'
 import { MessageAnalysisCard } from '../components/verdict/MessageAnalysisCard'
-import { Section } from '../components/verdict/Section'
 import { Spinner } from '../components/States'
 import { VerdictChip } from '../components/VerdictChip'
+import { SectionHead } from '../components/ui'
 import { T, Tx } from '../lib/lang'
 import { api } from '../lib/api'
-import { hostOf } from '../lib/format'
+import { defang, hostOf } from '../lib/format'
+import { EASE_OUT } from '../lib/motion'
 import { readJson } from '../lib/storage'
 import { LAST_CHECK_KEY, type CheckState } from '../lib/useStartScan'
 import type { MessageAnalysis, ScanResult } from '../lib/types'
 
-function LinkResult({ id, url, message }: { id: string; url: string; message: MessageAnalysis | null }) {
+function LinkResult({ id, url, message, index }: { id: string; url: string; message: MessageAnalysis | null; index: number }) {
   const [result, setResult] = useState<ScanResult | null>(null)
   const [done, setDone] = useState(0)
 
@@ -39,30 +41,28 @@ function LinkResult({ id, url, message }: { id: string; url: string; message: Me
     }
   }, [id])
 
+  const risky = result && (result.verdict === 'scam' || result.verdict === 'suspicious')
+
   return (
-    <Link
-      to={`/scan/${encodeURIComponent(id)}`}
-      state={{ url, message }}
-      className="group flex items-center gap-3 rounded-2xl border border-ink-700 bg-ink-850 px-4 py-3.5 transition-colors hover:border-ink-500"
-    >
-      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-ink-700 text-mist-300">
-        {result ? <Link2 className="size-4" aria-hidden="true" /> : <Spinner className="size-4 text-brand-bright" />}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-mono text-sm text-paper" dir="ltr">
-          {hostOf(url)}
-        </p>
-        {result ? (
-          <Tx text={result.headline} className="mt-0.5 line-clamp-2 text-sm text-mist-300" split="stack" />
-        ) : (
-          <p className="num mt-0.5 text-xs text-mist-500">
-            <T k="investigating" /> {Math.min(done, 10)}/10
-          </p>
-        )}
-      </div>
-      {result && <VerdictChip verdict={result.verdict} score={result.score} />}
-      <ChevronRight className="size-4 shrink-0 text-mist-500 rtl:rotate-180" aria-hidden="true" />
-    </Link>
+    <motion.li initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.06, ease: EASE_OUT }} className="border-b border-line">
+      <Link to={`/scan/${encodeURIComponent(id)}`} state={{ url, message }} className="group grid grid-cols-[1fr_auto] items-center gap-4 py-4">
+        <span className="min-w-0">
+          <span className="evidence block truncate text-base text-paper">{risky ? defang(hostOf(url)) : hostOf(url)}</span>
+          {result ? (
+            <Tx text={result.headline} as="span" className="mt-1 block text-sm text-paper-2" split="stack" />
+          ) : (
+            <span className="mt-1 flex items-center gap-2 text-sm text-paper-3">
+              <Spinner className="size-3" />
+              <T k="investigating" /> <span className="evidence num">{Math.min(done, 10)}/10</span>
+            </span>
+          )}
+        </span>
+        <span className="flex items-center gap-4">
+          {result && <VerdictChip verdict={result.verdict} score={result.score} />}
+          <ArrowRight className="size-4 text-paper-3 transition-transform group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden="true" />
+        </span>
+      </Link>
+    </motion.li>
   )
 }
 
@@ -73,29 +73,32 @@ export function Check() {
   const { response, input } = state
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 px-4 py-6 sm:px-6 sm:py-10">
-      <figure className="rounded-3xl rounded-ss-md border border-ink-700 bg-ink-800 px-5 py-4">
-        <p className="line-clamp-6 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-mist-200" dir="auto">
+    <div className="shell pt-12 pb-16 lg:pt-16 lg:pb-24">
+      <figure className="max-w-3xl rounded-xl rounded-ss-sm bg-ink-800 px-6 py-4">
+        <p className="line-clamp-6 whitespace-pre-wrap break-words text-base text-paper-2" dir="auto">
           {input}
         </p>
       </figure>
-      {response.message && <MessageAnalysisCard message={response.message} />}
-      <Section icon={Link2} title="linksInMessage">
+      {response.message && (
+        <div className="mt-12">
+          <MessageAnalysisCard message={response.message} />
+        </div>
+      )}
+      <section className="mt-12">
+        <SectionHead title="linksInMessage" />
         {response.scans.length ? (
-          <div className="space-y-2.5">
-            {response.scans.map((s) => (
-              <LinkResult key={s.id} id={s.id} url={s.url} message={response.message} />
+          <ul className="mt-6 border-t border-line">
+            {response.scans.map((s, i) => (
+              <LinkResult key={s.id} id={s.id} url={s.url} message={response.message} index={i} />
             ))}
-          </div>
+          </ul>
         ) : (
-          <Tx k="noLinksFound" className="text-sm text-mist-400" split="stack" />
+          <Tx k="noLinksFound" className="mt-6 text-base text-paper-2" split="stack" />
         )}
-      </Section>
-      <div className="text-center">
-        <Link to="/" className="text-sm font-semibold text-brand-bright hover:underline">
-          <T k="scanAnother" />
-        </Link>
-      </div>
+      </section>
+      <Link to="/" className="mt-12 inline-flex text-sm font-medium text-gold hover:underline">
+        <T k="scanAnother" />
+      </Link>
     </div>
   )
 }

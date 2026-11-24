@@ -21,25 +21,25 @@ export function Share() {
   }, [text, start])
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-6 py-24 text-center">
-      {!text ? (
-        <Tx k="shareEmpty" className="text-mist-300" split="stack" />
-      ) : failed ? (
-        <Tx k={failed} className="text-scam" split="stack" />
-      ) : (
-        <>
-          <Spinner className="size-8 text-brand-bright" />
-          <Tx k="shareReceived" className="mt-4 text-lg font-semibold text-paper" split="stack" />
-          <p className="mt-3 line-clamp-3 break-all font-mono text-xs text-mist-500" dir="auto">
-            {text}
-          </p>
-        </>
-      )}
-      {(!text || failed) && (
-        <Link to={`/?u=${encodeURIComponent(text)}`} className="mt-6 text-sm font-semibold text-brand-bright hover:underline">
-          <T k="backHome" />
-        </Link>
-      )}
+    <div className="shell">
+      <div className="flex max-w-xl flex-col items-start py-24">
+        {!text ? (
+          <Tx k="shareEmpty" className="text-lg text-paper-2" split="stack" />
+        ) : failed ? (
+          <Tx k={failed} className="text-lg text-scam" split="stack" />
+        ) : (
+          <>
+            <Spinner className="size-6 text-gold" />
+            <Tx k="shareReceived" as="h1" className="display mt-6 text-2xl text-paper" split="stack" />
+            <p className="evidence mt-4 line-clamp-3 break-all text-sm text-paper-3">{text}</p>
+          </>
+        )}
+        {(!text || failed) && (
+          <Link to={`/?u=${encodeURIComponent(text)}`} className="mt-8 text-sm font-medium text-gold hover:underline">
+            <T k="backHome" />
+          </Link>
+        )}
+      </div>
     </div>
   )
 }

@@ -281,6 +281,8 @@ export type Channel =
   | 'email'
   | 'facebook'
   | 'tiktok'
+  | 'snapchat'
+  | 'x'
   | 'other'
 
 export interface ReportRequest {
@@ -339,7 +341,24 @@ export interface BlockItem {
   scan_id: string | null
 }
 
-export type CaseSource = 'report' | 'ct' | 'search' | 'maps' | 'typosquat' | 'nrd' | 'batch' | 'scan'
+export type CaseSource = 'report' | 'ct' | 'search' | 'maps' | 'typosquat' | 'nrd' | 'batch' | 'scan' | 'feed' | 'dns'
+
+export interface LiveItem {
+  domain: string
+  brand: BrandRef | null
+  source: string
+  score: number
+  ts: string
+  scan_id?: string | null
+}
+
+export interface LiveFeed {
+  certs_checked: number
+  scams_today: number
+  blocked_queries: number
+  brands_protected: number
+  recent: LiveItem[]
+}
 export type CaseStatus = 'pending' | 'confirmed' | 'rejected'
 
 export interface CaseItem {

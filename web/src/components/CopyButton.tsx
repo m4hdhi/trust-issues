@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Check, Copy } from 'lucide-react'
 import { T } from '../lib/lang'
 import type { StringKey } from '../lib/i18n'
+import { btn } from './ui'
 
 export async function copyText(text: string): Promise<boolean> {
   try {
@@ -32,9 +34,20 @@ export function CopyButton({ value, label = 'copy', className = '' }: { value: s
           setTimeout(() => setCopied(false), 1600)
         }
       }}
-      className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-500 bg-ink-700 px-3 py-1.5 text-xs font-semibold text-paper transition-colors hover:border-brand hover:text-brand-bright ${className}`}
+      className={`${btn.small} shrink-0 ${className}`}
     >
-      {copied ? <Check className="size-3.5 text-safe" /> : <Copy className="size-3.5" />}
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={copied ? 'done' : 'idle'}
+          initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
+          transition={{ duration: 0.16 }}
+          className="inline-flex"
+        >
+          {copied ? <Check className="size-4 text-safe" /> : <Copy className="size-4" />}
+        </motion.span>
+      </AnimatePresence>
       <T k={copied ? 'copied' : label} />
     </button>
   )

@@ -1,54 +1,36 @@
-import { Ban, CreditCard, KeyRound, Phone, ShieldCheck, Smartphone, type LucideIcon } from 'lucide-react'
-import { T, Tx } from '../../lib/lang'
+import { Tx, T } from '../../lib/lang'
 import type { StringKey } from '../../lib/i18n'
 import type { Verdict } from '../../lib/types'
 import { VERDICT_COLOR } from '../../lib/verdict'
 
-const STEPS: Record<Verdict, { k: StringKey; icon: LucideIcon; tel?: string }[]> = {
-  scam: [
-    { k: 'doScam1', icon: Ban },
-    { k: 'doScam2', icon: CreditCard },
-    { k: 'doScam3', icon: Phone, tel: '8002626' },
-  ],
-  suspicious: [
-    { k: 'doSuspicious1', icon: KeyRound },
-    { k: 'doSuspicious2', icon: Smartphone },
-  ],
-  unknown: [
-    { k: 'doSuspicious1', icon: KeyRound },
-    { k: 'doSuspicious2', icon: Smartphone },
-  ],
-  safe: [{ k: 'doSafe', icon: ShieldCheck }],
+const STEPS: Record<Verdict, { k: StringKey; tel?: string }[]> = {
+  scam: [{ k: 'doScam1' }, { k: 'doScam2' }, { k: 'doScam3', tel: '8002626' }],
+  suspicious: [{ k: 'doSuspicious1' }, { k: 'doSuspicious2' }],
+  unknown: [{ k: 'doSuspicious1' }, { k: 'doSuspicious2' }],
+  safe: [{ k: 'doSafe' }],
 }
+
+const COLS: Record<number, string> = { 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-3' }
 
 export function WhatToDo({ verdict }: { verdict: Verdict }) {
   const color = VERDICT_COLOR[verdict]
+  const steps = STEPS[verdict]
   return (
-    <section className="rounded-3xl border p-5 sm:p-6" style={{ borderColor: `${color}55`, background: `${color}0d` }}>
-      <h2 className="text-[17px] font-bold text-paper">
-        <T k="whatToDo" arClassName="font-semibold text-mist-300" />
+    <section className="rounded-xl p-6 sm:p-8" style={{ background: `color-mix(in oklab, ${color} 9%, var(--color-ink-900))` }}>
+      <h2 className="display text-lg" style={{ color }}>
+        <T k="whatToDo" arClassName="opacity-80" />
       </h2>
-      <ol className="mt-4 space-y-3">
-        {STEPS[verdict].map(({ k, icon: Icon, tel }) => {
+      <ol className={`mt-4 grid gap-x-8 gap-y-4 ${COLS[steps.length] ?? ''}`}>
+        {steps.map(({ k, tel }, i) => {
           const body = (
-            <>
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl" style={{ background: `${color}22`, color }}>
-                <Icon className="size-[18px]" aria-hidden="true" />
+            <span className="flex gap-4">
+              <span className="evidence num shrink-0 pt-1 text-sm" style={{ color }}>
+                {i + 1}
               </span>
-              <Tx k={k} className="pt-1.5 text-[15px] font-medium leading-snug text-paper" split="stack" />
-            </>
+              <Tx k={k} as="span" className="block text-lg text-paper" split="stack" />
+            </span>
           )
-          return (
-            <li key={k}>
-              {tel ? (
-                <a href={`tel:${tel}`} className="flex items-start gap-3 rounded-xl hover:opacity-90">
-                  {body}
-                </a>
-              ) : (
-                <div className="flex items-start gap-3">{body}</div>
-              )}
-            </li>
-          )
+          return <li key={k}>{tel ? <a href={`tel:${tel}`} className="block underline decoration-line-strong underline-offset-4 hover:decoration-paper">{body}</a> : body}</li>
         })}
       </ol>
     </section>
