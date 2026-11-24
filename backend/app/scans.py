@@ -11,15 +11,18 @@ from sqlmodel import select
 from . import bus, db, pipeline
 from .graph.campaigns import campaign_for
 from .schemas import ScanResult
+from .config import get_settings
 from .detectors import anchors
 from .registry import get_registry
 from .urlutil import parse
 
 log = logging.getLogger(__name__)
 
-_deep_sem = asyncio.Semaphore(6)
+_LOW = get_settings().low_resource
+_deep_sem = asyncio.Semaphore(2 if _LOW else 6)
+_hunt_sem = asyncio.Semaphore(1 if _LOW else 3)
 _tasks: set[asyncio.Task] = set()
-HUNTER_SOURCES = {"ct", "search", "maps", "typosquat", "nrd", "report"}
+HUNTER_SOURCES = {"ct", "search", "maps", "typosquat", "nrd", "report", "feedwatch"}
 
 
 def _spawn(coro) -> asyncio.Task:
@@ -92,7 +95,8 @@ async def run(raw: str, scan_id: str, mode: str, source: str) -> ScanResult | No
     ch = bus.channel(f"scan:{scan_id}")
     emit = pipeline.make_emitter(scan_id)
     try:
-        async with _deep_sem if mode == "deep" else _null():
+        sem = (_hunt_sem if source in HUNTER_SOURCES else _deep_sem) if mode == "deep" else _null()
+        async with sem:
             result = await pipeline.scan(raw, scan_id, mode=mode, source=source, emit=emit)
         result.campaign = await asyncio.to_thread(campaign_for, result)
         await asyncio.to_thread(persist, result, source)

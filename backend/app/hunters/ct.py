@@ -10,6 +10,7 @@ import struct
 from cryptography import x509
 
 from .. import db
+from ..config import get_settings
 from ..http import client
 from ..pipeline import url_model_or_none
 from ..registry import get_registry
@@ -71,7 +72,7 @@ def assess(host: str) -> tuple[str | None, float] | None:
     return None
 
 
-BATCH_PAUSE_S = 0.5
+BATCH_PAUSE_S = 2.0 if get_settings().low_resource else 0.5
 
 
 def _scan_batch(entries: list[dict]) -> tuple[int, list[tuple[str, tuple[str, float]]]]:

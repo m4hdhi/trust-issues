@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 import dnstwist
 
 from ..http import client
+from ..config import get_settings
 from ..pipeline import instant
 from ..registry import get_registry
 from . import radar
@@ -22,7 +23,7 @@ PRIORITY = ["tamm", "uaepass", "adpolice", "dubaipolice", "salik", "darb", "rta"
 
 
 def _registered_permutations(domain: str) -> list[dict]:
-    return dnstwist.run(domain=domain, registered=True, format="null", threads=32,
+    return dnstwist.run(domain=domain, registered=True, format="null", threads=8 if get_settings().low_resource else 32,
                         fuzzers="addition,bitsquatting,homoglyph,hyphenation,insertion,omission,repetition,replacement,subdomain,transposition,vowel-swap,dictionary")
 
 

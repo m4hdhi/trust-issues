@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     urlhaus_auth_key: str = ""
     telegram_bot_token: str = ""
 
+    low_resource: bool = False
     console_password: str = "change-me"
     public_base_url: str = "http://localhost:8000"
     database_url: str = f"sqlite:///{BACKEND_DIR / 'trust_issues.db'}"

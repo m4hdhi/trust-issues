@@ -184,7 +184,7 @@ class Sandbox:
         self._pw: Playwright | None = None
         self._browser: Browser | None = None
         self._lock = asyncio.Lock()
-        self._sem = asyncio.Semaphore(4)
+        self._sem = asyncio.Semaphore(2 if get_settings().low_resource else 4)
 
     async def browser(self) -> Browser:
         async with self._lock:

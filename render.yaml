@@ -13,6 +13,8 @@ services:
         fromDatabase:
           name: trust-issues-db
           property: connectionString
+      - key: LOW_RESOURCE
+        value: "true"
       - key: CONSOLE_PASSWORD
         sync: false
       - key: ANTHROPIC_API_KEY
