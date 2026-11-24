@@ -45,6 +45,10 @@ Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes 
 | **Police console: live radar** | **Police console: cases** |
 | ![Radar](docs/screens/radar.png) | ![Cases](docs/screens/cases.png) |
 
+**Family Shield: the guardian approves a held site, and Mum's phone gets a simple home with SOS** (live site, real DNS decisions)
+
+<p align="center"><img src="docs/screens/family_guardian.png" width="260" alt="Guardian approvals"> <img src="docs/screens/family_member.png" width="260" alt="Elder home with SOS"></p>
+
 <p align="center"><img src="docs/screens/mobile_home.png" width="200" alt="Mobile home"> <img src="docs/screens/mobile_verdict.png" width="200" alt="Mobile verdict"> <img src="docs/screens/mobile_protect.png" width="200" alt="Protect my phone"> <img src="docs/screens/mobile_trending.png" width="200" alt="Trending scams"></p>
 
 **1-minute demo video:** [`docs/Trust-Issues-Demo.mp4`](docs/Trust-Issues-Demo.mp4), recorded from the running product on live data.

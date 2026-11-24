@@ -651,9 +651,9 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
             <Tile to="/protect" icon={ShieldCheck} label={S.tileBlocks} />
           </div>
 
-          <button type="button" onClick={() => setSosOpen(true)} className="press mt-4 flex h-20 w-full items-center justify-center gap-3 rounded-2xl bg-scam text-xl font-medium text-ink-950 transition-colors hover:bg-[#ec6a63]">
-            <Siren className="size-7" aria-hidden="true" />
-            <T k="sosButton" />
+          <button type="button" onClick={() => setSosOpen(true)} className="press mt-4 flex min-h-20 w-full items-center justify-center gap-4 rounded-2xl bg-scam px-5 py-4 text-lg font-medium text-ink-950 transition-colors hover:bg-[#ec6a63] sm:text-xl">
+            <Siren className="size-8 shrink-0" aria-hidden="true" />
+            <T k="sosButton" stacked />
           </button>
         </Reveal>
 
