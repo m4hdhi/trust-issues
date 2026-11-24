@@ -218,13 +218,13 @@ function RequestCard({ r, busy, onDecide }: { r: FamilyRequest; busy: boolean; o
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <button type="button" disabled={busy} onClick={() => onDecide('block')} className={btn.primary}>
-          <ShieldCheck className="size-4" aria-hidden="true" />
-          <T k="famKeepBlocked" />
+        <button type="button" disabled={busy} onClick={() => onDecide('block')} className={`${btn.primary} h-auto! min-h-12 py-2`}>
+          <ShieldCheck className="size-4 shrink-0" aria-hidden="true" />
+          <T k="famKeepBlocked" stacked />
         </button>
-        <button type="button" disabled={busy} onClick={() => onDecide('allow')} className={btn.secondary}>
-          <Check className="size-4" aria-hidden="true" />
-          <T k="famAllow" />
+        <button type="button" disabled={busy} onClick={() => onDecide('allow')} className={`${btn.secondary} h-auto! min-h-12 py-2`}>
+          <Check className="size-4 shrink-0" aria-hidden="true" />
+          <T k="famAllow" stacked />
         </button>
       </div>
     </motion.li>
@@ -555,12 +555,12 @@ function SosModal({ open, onClose, deviceId }: { open: boolean; onClose: () => v
           <Tx k="sosConfirmBody" className="text-base text-paper-2" split="stack" />
           {failed && <Tx k="famFailed" className="mt-4 text-sm text-warn" split="stack" />}
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <button type="button" onClick={onClose} className={btn.secondary}>
-              <T k="sosCancel" />
+            <button type="button" onClick={onClose} className={`${btn.secondary} h-auto! min-h-12 py-2`}>
+              <T k="sosCancel" stacked />
             </button>
-            <button type="button" onClick={() => void send()} disabled={busy} className={btn.danger}>
-              {busy ? <Spinner /> : <Siren className="size-4" aria-hidden="true" />}
-              <T k="sosSend" />
+            <button type="button" onClick={() => void send()} disabled={busy} className={`${btn.danger} h-auto! min-h-12 py-2`}>
+              {busy ? <Spinner /> : <Siren className="size-4 shrink-0" aria-hidden="true" />}
+              <T k="sosSend" stacked />
             </button>
           </div>
         </div>
@@ -666,6 +666,13 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
           <TestProtection />
           <Alerts deviceId={reg.device_id} />
           {mine.length > 0 && <Timeline events={mine} />}
+          <button
+            type="button"
+            onClick={() => void api.removeMember(reg.device_id, reg.device_id).then(() => window.location.reload())}
+            className={btn.quiet}
+          >
+            <T k="famLeave" />
+          </button>
         </div>
       </section>
       <SosModal open={sosOpen} onClose={() => setSosOpen(false)} deviceId={reg.device_id} />

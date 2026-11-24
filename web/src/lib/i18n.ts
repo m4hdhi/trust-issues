@@ -519,6 +519,7 @@ export const S = {
   strictHint: { en: 'Risky new sites wait for your OK', ar: 'المواقع الجديدة المشبوهة تنتظر موافقتك' },
   famRemove: { en: 'Remove', ar: 'إزالة' },
   famYou: { en: 'You', ar: 'أنت' },
+  famLeave: { en: 'Leave this family', ar: 'مغادرة العائلة' },
   inviteTitle: { en: 'Add a family member', ar: 'أضف فردًا من العائلة' },
   inviteName: { en: 'Their name', ar: 'اسمه' },
   inviteNamePh: { en: 'Mum', ar: 'أمي' },

@@ -16,14 +16,21 @@ UAE residents receive links through WhatsApp, SMS and social media every day. Fa
 
 ## 2. Our solution
 
-**One AI detection engine that people and police can reach in four ways.** All of them work on live data.
+**One AI detection engine that families, communities and police can reach in five ways.** All of them work on live data.
 
 | Surface | What it does |
 |---|---|
 | 📱 **Phone shield (PWA + protective DNS)** | Check a link, a whole pasted message or a QR code in Arabic or English. A one-tap iPhone profile (or the Intra/RethinkDNS app on Android) routes DNS through our resolver. Confirmed scam domains then **fail to open in every app**: WhatsApp, SMS, Instagram, Safari. A push notification explains why. |
+| 👨‍👩‍👧 **Family Shield (درع العائلة)** | Scanners need the victim to be suspicious, and the people scammers target most (parents, grandparents, children, household helpers) rarely are. A **guardian** links their phones to the family with one QR code. Scam sites are blocked on those phones in every app. In **strict mode**, risky new sites (brand look-alikes, unknown domains with payment or login wording) are held, and the guardian gets an approval request: *"Mum tried to open salik-pay.com. Looks like a fake Salik site. [Keep blocked] [Allow]"*. The family member gets a big-button home screen and an **SOS** button that alerts the guardian and shows the verified bank helplines, 999 and Aman 8002626. The guardian sees a family timeline and warnings about new fake sites caught that week. |
 | 👥 **Community shield** | Anyone can report a link and say where it arrived (WhatsApp, SMS…). Every report triggers a sandboxed deep scan. Confirmed scams are blocked for **all** protected phones and appear in **🔥 Trending scams**. Reporters build up trust scores, official domains can never be blocked, and Trending shows only confirmed items. |
 | 🛡️ **Police console** | A live **scam radar** fed by Certificate Transparency, newly registered domains, typosquats, **Google Search ads/results** and **Google Maps listings with fake helplines**. It also has a cases queue, a **campaign network graph**, one-click **evidence packs**, takedown drafts, **RPZ/STIX blocklist feeds** for telcos and TDRA, and **batch CSV testing**. |
 | 🧩 **Chrome extension** | Shows scam/official badges on Google Search, Google Maps and WhatsApp Web, and puts a warning screen in front of dangerous links. |
+
+### Family Shield in 60 seconds
+1. The guardian opens **Family** → *Create Family Shield* → *Add family member* (name, role: parent/elder, child, helper, adult or a second guardian). Strict mode is on by default for elders, children and helpers.
+2. A QR code appears. The family member scans it with their phone camera, taps **Join and protect this phone** and installs the DNS profile (iPhone) or sets Private DNS (Android).
+3. From then on, every lookup from that phone goes through our resolver. Confirmed scams return "site not found". Risky unknown sites are held and appear in the guardian's **Waiting for you** list, with push notifications on both phones when the guardian decides.
+4. One honest limit: DNS cannot pause a page while it waits for approval, so the family member opens the link again after the guardian allows it.
 
 ### Why it catches scams *before* the first victim
 Scam sites need an HTTPS certificate before the first SMS or WhatsApp wave goes out. Our **CT-log monitor** reads every new certificate from public CT logs as it is issued. It flags look-alikes of 49 UAE brands (TAMM, UAE PASS, Abu Dhabi Police, Salik, Emirates NBD, ADCB…), sandbox-scans them and pushes them into the DNS blocklist. When the link reaches a protected phone, it is already blocked.
@@ -169,6 +176,7 @@ uv run python ../ml/build_dataset.py && uv run python ../ml/train_url_model.py &
 
 ## 7. Privacy and safety
 - The DNS resolver sees **domain names only**, never full URLs or message content. Allowed lookups are not logged. Only block events are stored, against a random device ID.
+- Family Shield shows the guardian **only blocked or held domains**, never the family member's normal browsing. A family stores a display name per phone and, optionally, the guardian's number for the Call button. Any member can leave, and the guardian can remove a phone at any time.
 - Community reports are anonymous and trust-weighted. Official domains cannot be blocked by reports.
 - The sandbox only reads pages. It never submits forms or credentials.
 - Takedown emails are drafted for an officer to review. Nothing is sent automatically.
