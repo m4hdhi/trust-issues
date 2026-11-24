@@ -12,8 +12,8 @@ const KIND_COLOR: Record<AnnotationKind, string> = {
   phone: '#e07b3c',
   form: '#e07b3c',
   urgency: '#e3a13a',
-  logo: '#c9a35b',
-  other: '#8c867c',
+  logo: '#5a48f2',
+  other: '#7775a0',
 }
 
 export function AnnotatedShot({ page }: { page: PageCapture & { screenshot_url: string } }) {

@@ -48,13 +48,13 @@ export function Modal({ open, onClose, title, children, wide = false }: ModalPro
           exit={{ opacity: 0, transition: { duration: 0.18 } }}
           transition={{ duration: 0.2 }}
         >
-          <div className="absolute inset-0 bg-ink-950/85" onClick={onClose} aria-hidden="true" />
+          <div className="absolute inset-0 bg-[#15143c]/45 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
           <motion.div
             ref={panel}
             role="dialog"
             aria-modal="true"
             tabIndex={-1}
-            className={`relative max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl border border-line bg-ink-800 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] outline-none sm:rounded-xl sm:p-8 ${
+            className={`relative max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] bg-ink-950 p-6 shadow-[0_30px_80px_-20px_rgb(21_20_60/0.5)] pb-[max(1.5rem,env(safe-area-inset-bottom))] outline-none sm:rounded-[2rem] sm:p-8 ${
               wide ? 'sm:max-w-4xl' : 'sm:max-w-lg'
             }`}
             initial={{ y: 32, opacity: 0, scale: 0.98 }}

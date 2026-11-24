@@ -30,7 +30,7 @@ function Headline() {
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
           {first}.
-          <span className="block text-paper-2">{second}</span>
+          <span className="text-grad block">{second}</span>
         </motion.span>
       )}
       {mode !== 'en' && (
@@ -74,7 +74,7 @@ function HowItWorks() {
 
 function BrandWall({ brands }: { brands: BrandRef[] }) {
   return (
-    <section className="border-t border-line bg-ink-850">
+    <section>
       <div className="shell py-16 lg:py-24">
         <SectionHead index={2} title="brandsTitle" />
         <Tx text={fill(S.brandsSub, { n: brands.length || 49 })} className="mt-4 max-w-[60ch] text-base text-paper-2" split="stack" />
@@ -130,8 +130,8 @@ function TrendingPreview() {
 
 function ProtectBand() {
   return (
-    <section className="border-t border-line bg-gold-ink">
-      <div className="shell grid-12 items-center gap-y-12 py-16 lg:py-24">
+    <section className="px-3 sm:px-6">
+      <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] items-center gap-y-12 rounded-[2rem] px-6 py-14 sm:px-10 lg:px-14 lg:py-20">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-6">
           <div className="flex items-baseline gap-4">
             <span className="evidence shrink-0 text-sm text-gold">04</span>
@@ -153,8 +153,8 @@ function ProtectBand() {
 
 function FamilyBand() {
   return (
-    <section className="border-t border-line">
-      <div className="shell grid-12 items-center gap-y-8 py-16 lg:py-20">
+    <section className="px-3 py-10 sm:px-6 lg:py-14">
+      <div className="field-dawn grid-12 mx-auto max-w-[1232px] items-center gap-y-8 rounded-[2rem] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
         <Reveal className="col-span-4 sm:col-span-8 lg:col-span-7">
           <div className="flex items-baseline gap-4">
             <span className="evidence shrink-0 text-sm text-gold">05</span>

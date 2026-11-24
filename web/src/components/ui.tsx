@@ -5,17 +5,17 @@ import type { Bilingual } from '../lib/types'
 
 export const btn = {
   primary:
-    'press inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-gold px-6 text-base font-medium text-ink-950 transition-colors hover:bg-[#d4ae66] disabled:opacity-50',
+    'press inline-flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-[#5a48f2] to-[#8a4df0] px-6 text-base font-semibold text-white shadow-[0_10px_24px_-10px_rgb(90_72_242/0.7)] transition-[filter] hover:brightness-110 disabled:opacity-50',
   secondary:
-    'press inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-ink-800 px-4 text-base font-medium text-paper transition-colors hover:bg-ink-700 disabled:opacity-50',
+    'press inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink-800 px-5 text-base font-semibold text-paper transition-colors hover:bg-ink-700 disabled:opacity-50',
   quiet:
-    'press inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium text-paper-2 transition-colors hover:bg-ink-800 hover:text-paper disabled:opacity-50',
+    'press inline-flex h-10 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold text-paper-2 transition-colors hover:bg-ink-800 hover:text-paper disabled:opacity-50',
   ghost:
-    'press inline-flex h-12 items-center justify-center gap-2 rounded-lg px-4 text-base font-medium text-paper-2 transition-colors hover:bg-ink-800 hover:text-paper',
+    'press inline-flex h-12 items-center justify-center gap-2 rounded-full px-4 text-base font-semibold text-paper-2 transition-colors hover:bg-ink-800 hover:text-paper',
   danger:
-    'press inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-scam px-6 text-base font-medium text-ink-950 transition-colors hover:bg-[#ec6a63] disabled:opacity-50',
+    'press inline-flex h-12 items-center justify-center gap-2 rounded-full bg-linear-to-r from-[#e2434b] to-[#f0624a] px-6 text-base font-semibold text-white shadow-[0_10px_24px_-10px_rgb(226_67_75/0.7)] transition-[filter] hover:brightness-110 disabled:opacity-50',
   small:
-    'press inline-flex h-8 items-center justify-center gap-2 rounded-md bg-ink-800 px-3 text-sm font-medium text-paper transition-colors hover:bg-ink-700 disabled:opacity-50',
+    'press inline-flex h-8 items-center justify-center gap-2 rounded-full bg-ink-800 px-3 text-sm font-semibold text-paper transition-colors hover:bg-ink-700 disabled:opacity-50',
 }
 
 export function SectionHead({

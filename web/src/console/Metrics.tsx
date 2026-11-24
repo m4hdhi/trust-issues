@@ -95,7 +95,7 @@ function AreaChart({ points, color }: { points: number[]; color: string }) {
         </linearGradient>
       </defs>
       {[0.25, 0.5, 0.75].map((f) => (
-        <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="#1a2742" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="var(--color-line)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
       ))}
       {points.length > 1 ? (
         <>

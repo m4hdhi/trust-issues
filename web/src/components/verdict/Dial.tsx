@@ -56,7 +56,7 @@ export function Dial({ score, color, animated }: { score: number; color: string;
               y1={a.y}
               x2={b.x}
               y2={b.y}
-              stroke={on ? color : '#2a2e35'}
+              stroke={on ? color : 'var(--color-ink-700)'}
               strokeWidth={major ? 2.2 : 1.6}
               strokeLinecap="round"
             />
@@ -77,9 +77,9 @@ export function Dial({ score, color, animated }: { score: number; color: string;
           animate={{ rotate: needleDeg }}
           transition={play ? { ...T_NEEDLE, delay: 0.15 } : { duration: 0 }}
         >
-          <line x1="100" y1="100" x2="100" y2="22" stroke="#eee9e0" strokeWidth="2" strokeLinecap="round" />
+          <line x1="100" y1="100" x2="100" y2="22" stroke="var(--color-paper)" strokeWidth="2" strokeLinecap="round" />
         </motion.g>
-        <circle cx="100" cy="100" r="6" fill="#101215" stroke="#eee9e0" strokeWidth="2" />
+        <circle cx="100" cy="100" r="6" fill="var(--color-ink-950)" stroke="var(--color-paper)" strokeWidth="2" />
       </svg>
       <div className="mt-2 text-center">
         <span ref={numberRef} className="display num block text-6xl leading-none" style={{ color }}>

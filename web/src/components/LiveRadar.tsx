@@ -52,22 +52,22 @@ export function LiveRadar({ feed }: { feed: LiveFeed | null }) {
         <svg viewBox="0 0 200 200" className="h-full w-full" role="img" aria-label="Radar of recently caught scam sites">
           <defs>
             <linearGradient id="sweep-fade" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stopColor="#c9a35b" stopOpacity="0" />
-              <stop offset="1" stopColor="#c9a35b" stopOpacity="0.28" />
+              <stop offset="0" stopColor="var(--color-gold)" stopOpacity="0" />
+              <stop offset="1" stopColor="var(--color-gold)" stopOpacity="0.28" />
             </linearGradient>
           </defs>
           {[30, 55, 80, 96].map((r) => (
-            <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#2a2e35" strokeWidth="1" />
+            <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="var(--color-line-strong)" strokeWidth="1" />
           ))}
-          <line x1="4" y1="100" x2="196" y2="100" stroke="#2a2e35" strokeWidth="1" />
-          <line x1="100" y1="4" x2="100" y2="196" stroke="#2a2e35" strokeWidth="1" />
+          <line x1="4" y1="100" x2="196" y2="100" stroke="var(--color-line-strong)" strokeWidth="1" />
+          <line x1="100" y1="4" x2="100" y2="196" stroke="var(--color-line-strong)" strokeWidth="1" />
           {!reduce && (
             <g className="origin-center animate-sweep" style={{ transformBox: 'view-box', transformOrigin: '100px 100px' }}>
               <path d="M100 100 L196 100 A96 96 0 0 0 167.9 32.1 Z" fill="url(#sweep-fade)" />
-              <line x1="100" y1="100" x2="196" y2="100" stroke="#c9a35b" strokeOpacity="0.7" strokeWidth="1" />
+              <line x1="100" y1="100" x2="196" y2="100" stroke="var(--color-gold)" strokeOpacity="0.7" strokeWidth="1" />
             </g>
           )}
-          <circle cx="100" cy="100" r="2.5" fill="#c9a35b" />
+          <circle cx="100" cy="100" r="2.5" fill="var(--color-gold)" />
           <AnimatePresence>
             {blips.map((b) => {
               const p = blipPosition(b)

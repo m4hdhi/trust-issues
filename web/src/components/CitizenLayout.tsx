@@ -30,8 +30,8 @@ export function CitizenLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-line bg-ink-900 pt-[env(safe-area-inset-top)]">
-        <div className="shell flex h-16 items-center justify-between gap-6">
+      <header className="sticky top-0 z-40 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6">
+        <div className="glass mx-auto flex h-16 max-w-[1232px] items-center justify-between gap-6 rounded-full px-5 sm:px-7">
           <Link to="/" className="rounded-md" aria-label="Trust Issues, أزمة ثقة">
             <Wordmark />
           </Link>
@@ -43,10 +43,12 @@ export function CitizenLayout() {
                   key={to}
                   to={to}
                   end={end}
-                  className={`relative inline-flex items-center px-4 text-sm font-medium transition-colors ${active ? 'text-paper' : 'text-paper-3 hover:text-paper'}`}
+                  className={`relative my-3 inline-flex items-center rounded-full px-4 text-sm font-semibold transition-colors ${active ? 'text-white' : 'text-paper-2 hover:text-paper'}`}
                 >
-                  <T k={k} />
-                  {active && <motion.span layoutId="nav-underline" transition={T_LAYOUT} className="absolute inset-x-4 -bottom-px h-0.5 bg-gold" />}
+                  {active && <motion.span layoutId="nav-underline" transition={T_LAYOUT} className="absolute inset-0 rounded-full bg-paper" />}
+                  <span className="relative">
+                    <T k={k} />
+                  </span>
                 </NavLink>
               )
             })}
@@ -55,12 +57,12 @@ export function CitizenLayout() {
         </div>
       </header>
 
-      <main className="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
+      <main className="flex-1">
         <Outlet />
       </main>
 
-      <footer className="border-t border-line pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <div className="shell grid-12 gap-y-8 py-12">
+      <footer className="px-3 pt-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-6">
+        <div className="zone-dark field-night grid-12 mx-auto max-w-[1232px] gap-y-8 rounded-[2rem] px-6 py-12 sm:px-10">
           <div className="col-span-4 sm:col-span-8 lg:col-span-6">
             <Wordmark size="lg" />
             <Tx k="footerNote" className="mt-4 max-w-[52ch] text-sm text-paper-3" split="stack" />
@@ -76,8 +78,8 @@ export function CitizenLayout() {
         </div>
       </footer>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink-900 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
-        <div className="grid grid-cols-4">
+      <nav className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 md:hidden" aria-label="Main">
+        <div className="zone-dark glass grid grid-cols-4 rounded-full px-2">
           {NAV.map(({ to, k, icon: Icon, end }) => {
             const active = isActive(pathname, to, end)
             return (
@@ -85,11 +87,13 @@ export function CitizenLayout() {
                 key={to}
                 to={to}
                 end={end}
-                className={`press relative flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${active ? 'text-paper' : 'text-paper-3'}`}
+                className={`press relative flex h-16 flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors ${active ? 'text-paper' : 'text-paper-3'}`}
               >
-                {active && <motion.span layoutId="tab-indicator" transition={T_LAYOUT} className="absolute inset-x-8 top-0 h-0.5 bg-gold" />}
-                <Icon className={`size-5 ${active ? 'text-gold' : ''}`} aria-hidden="true" />
-                <T k={k} />
+                {active && <motion.span layoutId="tab-indicator" transition={T_LAYOUT} className="absolute inset-x-1 inset-y-1.5 rounded-full bg-ink-800" />}
+                <Icon className={`relative size-5 ${active ? 'text-gold' : ''}`} aria-hidden="true" />
+                <span className="relative">
+                  <T k={k} />
+                </span>
               </NavLink>
             )
           })}

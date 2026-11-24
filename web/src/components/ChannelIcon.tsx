@@ -20,7 +20,7 @@ export function isChannel(v: string): v is Channel {
 
 export function channelColor(channel: Channel): string {
   const icon = BRAND[channel]
-  if (!icon || icon.hex === '000000') return '#eee9e0'
+  if (!icon || icon.hex === '000000') return '#15143c'
   return `#${icon.hex}`
 }
 

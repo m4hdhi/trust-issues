@@ -13,8 +13,14 @@ function Quote() {
 
 export function LogoMark({ className = 'size-8' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={`${className} text-gold`} aria-hidden="true">
-      <rect width="64" height="64" rx="14" className="fill-ink-800" />
+    <svg viewBox="0 0 64 64" className={`${className} text-white`} aria-hidden="true">
+      <defs>
+        <linearGradient id="ti-mark" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#5a48f2" />
+          <stop offset="1" stopColor="#c64fd8" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="18" fill="url(#ti-mark)" />
       <g fill="currentColor">
         <g transform="translate(10 9)">
           <Quote />

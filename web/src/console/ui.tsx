@@ -15,9 +15,9 @@ export const SOURCE_META: Record<CaseSource, { icon: LucideIcon; color: string; 
   nrd: { icon: CalendarPlus, color: '#a99bd6', k: 'src_nrd' },
   report: { icon: Flag, color: '#e5534b', k: 'src_report' },
   batch: { icon: FileSpreadsheet, color: '#8c867c', k: 'src_batch' },
-  scan: { icon: ScanSearch, color: '#c9a35b', k: 'src_scan' },
+  scan: { icon: ScanSearch, color: '#5a48f2', k: 'src_scan' },
   feed: { icon: Rss, color: '#8c867c', k: 'src_feed' },
-  dns: { icon: ShieldBan, color: '#c9a35b', k: 'src_dns' },
+  dns: { icon: ShieldBan, color: '#5a48f2', k: 'src_dns' },
 }
 
 export function SourceTag({ source }: { source: string }) {

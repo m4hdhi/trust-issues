@@ -173,7 +173,7 @@ export function Batch() {
                   <button
                     type="button"
                     onClick={() => void consoleApi.batchDownload(jobId)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-3 text-sm font-semibold text-ink-950 hover:bg-[#d4ae66]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gold px-4 py-3 text-sm font-semibold text-ink-950 hover:bg-gold-deep"
                   >
                     <Download className="size-4" aria-hidden="true" />
                     <T k="downloadCsv" />

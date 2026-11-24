@@ -148,8 +148,8 @@ export function Radar() {
                 <motion.li
                   key={key}
                   layout="position"
-                  initial={{ opacity: 0, y: -12, backgroundColor: 'rgba(201,163,91,0.12)' }}
-                  animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(201,163,91,0)' }}
+                  initial={{ opacity: 0, y: -12, backgroundColor: 'rgba(90,72,242,0.14)' }}
+                  animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(90,72,242,0)' }}
                   exit={{ opacity: 0 }}
                   transition={{ ...T_LAYOUT, backgroundColor: { duration: 2, ease: EASE_OUT } }}
                   className="border-b border-line"

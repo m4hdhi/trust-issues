@@ -46,7 +46,7 @@ export default function ConsoleApp() {
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
-      <aside className="sticky top-0 z-30 border-b border-line bg-ink-950 lg:h-dvh lg:border-e lg:border-b-0">
+      <aside className="zone-dark field-night sticky top-0 z-30 lg:m-3 lg:h-[calc(100dvh-1.5rem)] lg:rounded-[2rem]">
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between gap-4 px-4 py-4 lg:block lg:px-6 lg:pt-8 lg:pb-8">
             <Link to="/console/radar" className="block">
