@@ -37,6 +37,34 @@ MAPS_QUERIES = [
     "Aramex customer service",
 ]
 CACHE_TTL = 6 * 3600
+SWEEP_BATCH = 4
+RESERVE = 100
+SWEEP_JOBS = [job for pair in zip(
+    [("search", q, lang) for q, lang in SEARCH_QUERIES],
+    [("maps", q, None) for q in MAPS_QUERIES] + [None] * (len(SEARCH_QUERIES) - len(MAPS_QUERIES)),
+) for job in pair if job]
+_quota: dict[str, Any] = {"at": 0.0, "left": None}
+_cursor = 0
+
+
+class QuotaExhausted(RuntimeError):
+    pass
+
+
+async def searches_left() -> int | None:
+    """Remaining SerpAPI searches this month. The account endpoint is free and does not use a search."""
+    key = get_settings().serpapi_key
+    if not key:
+        return None
+    if time.time() - _quota["at"] < 600:
+        return _quota["left"]
+    try:
+        r = await client().get("https://serpapi.com/account.json", params={"api_key": key}, timeout=10.0)
+        left = r.json().get("total_searches_left")
+    except Exception:
+        left = _quota["left"]
+    _quota.update(at=time.time(), left=left)
+    return left
 
 
 async def _serpapi(params: dict[str, Any]) -> dict[str, Any]:
@@ -45,12 +73,19 @@ async def _serpapi(params: dict[str, Any]) -> dict[str, Any]:
     path = s.cache_dir / f"serp_{key}.json"
     if path.exists() and time.time() - path.stat().st_mtime < CACHE_TTL:
         return json.loads(path.read_text(encoding="utf-8"))
-    if not s.serpapi_key:
-        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    left = await searches_left()
+    if not s.serpapi_key or left == 0:
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
+        if left == 0:
+            raise QuotaExhausted("SerpAPI searches for this month are used up")
+        return {}
     r = await client().get("https://serpapi.com/search.json", params={**params, "api_key": s.serpapi_key}, timeout=40.0)
     r.raise_for_status()
     data = r.json()
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    if _quota["left"]:
+        _quota["left"] -= 1
     return data
 
 
@@ -105,24 +140,32 @@ def _flags_for_listing(listing: dict[str, Any]) -> tuple[list[dict[str, str]], A
     phone = listing.get("phone") or ""
     d = digits(phone)
     website = listing.get("website") or ""
+    official_site = False
     if brand:
         if website:
             try:
                 wp = parse(website)
-                if not reg.is_official(wp.registrable, wp.hostname):
+                official_site = reg.is_official(wp.registrable, wp.hostname)
+                if not official_site:
                     flags.append({"en": f"Website {wp.registrable} is not an official {brand.name_en} domain",
                                   "ar": f"الموقع {wp.registrable} ليس نطاقًا رسميًا لـ{brand.name_ar}"})
                     score += 40
             except ValueError:
                 pass
-        if d:
+        raw = re.sub(r"\D", "", phone)
+        foreign = bool(d) and (len(d) > 9 or (phone.strip().startswith(("+", "00")) and not raw.lstrip("0").startswith("971")))
+        if foreign:
+            flags.append({"en": f"International number used as {brand.name_en} customer service in the UAE",
+                          "ar": f"رقم دولي يُستخدم كخدمة عملاء {brand.name_ar} في الإمارات"})
+            score += 45
+        elif d:
             if d in brand.helpline_digits:
                 flags.append({"en": "Phone matches the official helpline", "ar": "الرقم مطابق للخط الرسمي"})
                 score -= 5
             elif re.fullmatch(r"5[024568]\d{7}", d):
                 flags.append({"en": f"Uses a personal mobile number for {brand.name_en} customer service",
                               "ar": f"يستخدم رقم هاتف متحرك شخصي لخدمة عملاء {brand.name_ar}"})
-                score += 45
+                score += 15 if official_site else 45
             elif not d.startswith(("2", "3", "4", "6", "7", "9")) or len(d) < 7:
                 flags.append({"en": "Phone number is not a verified UAE helpline", "ar": "الرقم ليس خط مساعدة إماراتي موثّق"})
                 score += 25
@@ -131,6 +174,8 @@ def _flags_for_listing(listing: dict[str, Any]) -> tuple[list[dict[str, str]], A
                               "ar": f"الرقم المجاني يختلف عن الخط الرسمي لـ{brand.name_ar}"})
                 score += 35
         reviews = listing.get("reviews") or 0
+        if reviews >= 20 and (official_site or not website):
+            score -= 15
         if reviews < 5 and flags:
             flags.append({"en": "Very few reviews (new or fake listing)", "ar": "عدد قليل جدًا من المراجعات (قائمة جديدة أو مزيفة)"})
             score += 10
@@ -159,13 +204,16 @@ async def hunt_maps(query: str) -> list[dict[str, Any]]:
 
 
 async def sweep() -> None:
-    for q, lang in SEARCH_QUERIES:
+    """Background hunt over a rotating slice of the queries, keeping RESERVE searches for console hunts."""
+    global _cursor
+    left = await searches_left()
+    if left is not None and left <= RESERVE:
+        log.info("search hunters paused: %s SerpAPI searches left, %s kept for console hunts", left, RESERVE)
+        return
+    for i in range(SWEEP_BATCH):
+        kind, q, lang = SWEEP_JOBS[(_cursor + i) % len(SWEEP_JOBS)]
         try:
-            await hunt_search(q, lang)
+            await (hunt_search(q, lang) if kind == "search" else hunt_maps(q))
         except Exception as exc:
-            log.info("search hunt %s failed: %s", q, exc)
-    for q in MAPS_QUERIES:
-        try:
-            await hunt_maps(q)
-        except Exception as exc:
-            log.info("maps hunt %s failed: %s", q, exc)
+            log.info("%s hunt %s failed: %s", kind, q, exc)
+    _cursor = (_cursor + SWEEP_BATCH) % len(SWEEP_JOBS)

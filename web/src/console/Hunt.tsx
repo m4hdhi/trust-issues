@@ -9,11 +9,13 @@ import { brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
 import { EmptyState, ErrorState, Spinner } from '../components/States'
 import { T, Tx, useLang } from '../lib/lang'
-import { consoleApi } from '../lib/api'
+import { ApiError, consoleApi } from '../lib/api'
 import { hostOf } from '../lib/format'
 import type { StringKey } from '../lib/i18n'
 import type { MapsHit, SearchHit } from '../lib/types'
 import { VERDICT_COLOR } from '../lib/verdict'
+
+const huntError = (e: unknown): StringKey => (e instanceof ApiError && e.status === 429 ? 'huntQuota' : 'huntFailed')
 
 const SEARCH_SUGGESTIONS = ['pay traffic fines Abu Dhabi', 'دفع مخالفات المرور أبوظبي', 'Salik recharge', 'Emirates NBD customer care number']
 const MAPS_SUGGESTIONS = ['Emirates NBD customer service Dubai', 'خدمة عملاء بنك الإمارات دبي الوطني', 'Etisalat customer care Abu Dhabi', 'Aramex customer service Dubai']
@@ -84,15 +86,15 @@ function HuntForm({
 function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void }) {
   const [busy, setBusy] = useState(false)
   const [items, setItems] = useState<SearchHit[] | null>(null)
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<StringKey | null>(null)
 
   const run = async (q: string) => {
     setBusy(true)
-    setFailed(false)
+    setFailed(null)
     try {
       setItems(await consoleApi.huntSearch(q))
-    } catch {
-      setFailed(true)
+    } catch (e) {
+      setFailed(huntError(e))
     } finally {
       setBusy(false)
     }
@@ -110,7 +112,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
       />
       {failed && (
         <div className="px-4 pb-4">
-          <ErrorState message="huntFailed" />
+          <ErrorState message={failed} />
         </div>
       )}
       {items && !failed && (
@@ -210,17 +212,17 @@ function FitAll({ points }: { points: [number, number][] }) {
 function MapsHunter() {
   const [busy, setBusy] = useState(false)
   const [items, setItems] = useState<MapsHit[] | null>(null)
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<StringKey | null>(null)
   const [focus, setFocus] = useState<[number, number] | null>(null)
 
   const run = async (q: string) => {
     setBusy(true)
-    setFailed(false)
+    setFailed(null)
     setFocus(null)
     try {
       setItems(await consoleApi.huntMaps(q))
-    } catch {
-      setFailed(true)
+    } catch (e) {
+      setFailed(huntError(e))
     } finally {
       setBusy(false)
     }
@@ -244,7 +246,7 @@ function MapsHunter() {
       />
       {failed && (
         <div className="px-4 pb-4">
-          <ErrorState message="huntFailed" />
+          <ErrorState message={failed} />
         </div>
       )}
       <div className="grid border-t border-line xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">

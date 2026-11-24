@@ -4,6 +4,8 @@ from __future__ import annotations
 import asyncio
 import base64
 import logging
+import time
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -14,6 +16,9 @@ log = logging.getLogger(__name__)
 
 SB_ENDPOINT = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
 _sb_cache: dict[str, list[str]] = {}
+VT_PER_MINUTE = 4
+_vt_calls: deque[float] = deque()
+_vt_cache: dict[str, dict[str, int] | None] = {}
 
 
 @dataclass
@@ -64,22 +69,37 @@ async def _safe_browsing_one(url: str) -> dict[str, list[str]]:
     return hits
 
 
+def _vt_slot() -> bool:
+    """Free VirusTotal keys allow 4 lookups a minute; skip the lookup instead of queueing when the budget is spent."""
+    now = time.monotonic()
+    while _vt_calls and now - _vt_calls[0] > 60:
+        _vt_calls.popleft()
+    if len(_vt_calls) >= VT_PER_MINUTE:
+        return False
+    _vt_calls.append(now)
+    return True
+
+
+async def _vt_stats(path: str) -> dict[str, int] | None:
+    if path in _vt_cache:
+        return _vt_cache[path]
+    if not _vt_slot():
+        raise RuntimeError("VirusTotal rate limit")
+    r = await client().get(f"https://www.virustotal.com/api/v3/{path}", headers={"x-apikey": get_settings().virustotal_key}, timeout=8.0)
+    if r.status_code == 429:
+        _vt_calls.extend([time.monotonic()] * VT_PER_MINUTE)
+        raise RuntimeError("VirusTotal rate limit")
+    stats = r.json()["data"]["attributes"].get("last_analysis_stats") if r.status_code == 200 else None
+    if r.status_code in (200, 404):
+        _vt_cache[path] = stats
+    return stats
+
+
 async def _virustotal(url: str, domain: str) -> tuple[dict[str, int] | None, dict[str, int] | None]:
-    key = get_settings().virustotal_key
-    if not key:
+    if not get_settings().virustotal_key:
         return None, None
-    headers = {"x-apikey": key}
     url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
-    u_stats = d_stats = None
-    r = await client().get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers, timeout=8.0)
-    if r.status_code == 200:
-        u_stats = r.json()["data"]["attributes"].get("last_analysis_stats")
-    elif r.status_code == 404:
-        await client().post("https://www.virustotal.com/api/v3/urls", headers=headers, data={"url": url}, timeout=8.0)
-    r = await client().get(f"https://www.virustotal.com/api/v3/domains/{domain}", headers=headers, timeout=8.0)
-    if r.status_code == 200:
-        d_stats = r.json()["data"]["attributes"].get("last_analysis_stats")
-    return u_stats, d_stats
+    return await _vt_stats(f"urls/{url_id}"), await _vt_stats(f"domains/{domain}")
 
 
 async def _urlhaus(url: str) -> str | None:

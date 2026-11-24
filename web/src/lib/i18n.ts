@@ -479,6 +479,7 @@ export const S = {
   position: { en: 'Pos.', ar: 'الترتيب' },
   noResults: { en: 'No results.', ar: 'لا توجد نتائج.' },
   huntFailed: { en: 'The hunt failed. Check the backend and try again.', ar: 'فشل التعقّب. تحقّق من الخادم وحاول مرة أخرى.' },
+  huntQuota: { en: 'This month\'s SerpAPI searches are used up. Earlier results stay cached; new hunts resume next month or with a paid key.', ar: 'نفدت عمليات بحث SerpAPI لهذا الشهر. تبقى النتائج السابقة محفوظة، وتُستأنف عمليات التعقّب الجديدة الشهر القادم أو بمفتاح مدفوع.' },
 
   batchTitle: { en: 'Upload your test set', ar: 'ارفع مجموعة الاختبار' },
   batchSub: {

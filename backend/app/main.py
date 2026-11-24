@@ -67,7 +67,7 @@ async def lifespan(_: FastAPI):
             asyncio.create_task(ct.run()),
             asyncio.create_task(_every(6 * 3600, typosquat.sweep_typosquats, initial_delay=120)),
             asyncio.create_task(_every(12 * 3600, typosquat.sweep_nrd, initial_delay=300)),
-            asyncio.create_task(_every(6 * 3600, serp.sweep, initial_delay=600)),
+            asyncio.create_task(_every(8 * 3600, serp.sweep, initial_delay=600)),
             asyncio.create_task(_every(3 * 3600, feedwatch.sweep, initial_delay=90)),
         ]
     yield
@@ -482,12 +482,18 @@ async def console_batch_results(job_id: str, token: str = "") -> FileResponse:
 
 @app.post("/api/console/hunt/search", dependencies=[Depends(require_console)])
 async def console_hunt_search(body: QueryIn) -> dict[str, Any]:
-    return {"items": await serp.hunt_search(body.query)}
+    try:
+        return {"items": await serp.hunt_search(body.query), "searches_left": await serp.searches_left()}
+    except serp.QuotaExhausted as exc:
+        raise HTTPException(429, str(exc)) from exc
 
 
 @app.post("/api/console/hunt/maps", dependencies=[Depends(require_console)])
 async def console_hunt_maps(body: QueryIn) -> dict[str, Any]:
-    return {"items": await serp.hunt_maps(body.query)}
+    try:
+        return {"items": await serp.hunt_maps(body.query), "searches_left": await serp.searches_left()}
+    except serp.QuotaExhausted as exc:
+        raise HTTPException(429, str(exc)) from exc
 
 
 @app.get("/api/console/metrics", dependencies=[Depends(require_console)])

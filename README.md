@@ -168,7 +168,8 @@ uv run python ../ml/build_dataset.py && uv run python ../ml/train_url_model.py &
 - DNS blocking works per domain. A scam hidden in a *path* on a shared host is caught by link checks and the extension, not by DNS.
 - On Android, system-wide blocking needs a DoH client app (Intra/RethinkDNS) until a native app ships or telcos consume our RPZ feed.
 - Phishing kits that geofence to UAE IP addresses need a UAE egress proxy in production.
-- Search and Maps hunting depends on SerpAPI quotas. A pilot would use direct Google APIs.
+- Search and Maps hunting depends on SerpAPI quotas (the free plan has 250 searches a month). Background hunts rotate through the queries and pause when 100 searches are left, so console hunts keep working. A pilot would use direct Google APIs.
+- Free VirusTotal keys allow 4 lookups a minute. Lookups beyond that are skipped, not queued, so a big batch gets VirusTotal evidence only for some URLs.
 - The AI judges add cost and latency, so they run only on deep scans of non-official sites.
 
 ## 9. Pilot route with Abu Dhabi Police
