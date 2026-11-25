@@ -552,6 +552,7 @@ function SosModal({ open, onClose, deviceId }: { open: boolean; onClose: () => v
         </div>
       ) : (
         <div>
+          <img src="/illustrations/scam-response.webp" alt="" loading="lazy" className="mb-5 w-full rounded-2xl bg-ink-900" />
           <ol className="space-y-4">
             {(['sosStep1', 'sosStep2', 'sosStep3'] as StringKey[]).map((k, i) => (
               <li key={k} className="flex gap-4">
@@ -710,6 +711,7 @@ function CreateFamily({ deviceId, onCreated }: { deviceId: string; onCreated: (s
             </StaggerItem>
           ))}
         </Stagger>
+        <img src="/illustrations/family-shield.webp" alt="A guardian's phone linked to a parent, a child and a helper, with Keep blocked and Allow buttons" loading="lazy" className="mt-4 w-full rounded-[2rem]" />
       </Reveal>
       <Reveal className="col-span-4 sm:col-span-8 lg:col-span-5 lg:col-start-8" delay={0.1}>
         {!installed && <SignInLink />}

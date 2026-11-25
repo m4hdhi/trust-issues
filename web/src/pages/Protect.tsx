@@ -1,9 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { BellRing, ChevronRight, Download, ExternalLink, RefreshCw, Settings, ShieldCheck } from 'lucide-react'
+import { BellRing, Download, ExternalLink, RefreshCw, ShieldCheck } from 'lucide-react'
 import { siGoogleplay } from 'simple-icons'
-import { ProtectIllustration } from '../components/ProtectIllustration'
 import { CopyButton } from '../components/CopyButton'
 import { BrandMark } from '../components/BrandMark'
 import { Spinner, ErrorState } from '../components/States'
@@ -31,55 +30,11 @@ function Step({ n, title, body, art }: { n: number; title: StringKey; body: Stri
   )
 }
 
-function IosRow({ children, accent }: { children: ReactNode; accent?: boolean }) {
-  return (
-    <div className={`flex items-center gap-3 rounded-lg bg-white px-3 py-2 text-sm text-ink-900 ${accent ? 'ring-2 ring-gold' : ''}`} dir="ltr">
-      {children}
-    </div>
-  )
+/** A real screenshot from an iPhone, cropped to the system dialog. */
+function Shot({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
+  return <img src={`/setup/${src}.webp`} alt={alt} loading="lazy" dir="ltr" className={`block w-full max-w-[320px] rounded-xl shadow-[0_14px_30px_-16px_rgb(21_20_60/0.55)] ${className}`} />
 }
 
-const IOS_ART = {
-  settings: (
-    <div className="inline-flex items-center gap-3 rounded-xl bg-ink-850 p-3" dir="ltr" aria-hidden="true">
-      <span className="grid size-12 place-items-center rounded-xl bg-[#8e8e93] text-white">
-        <Settings className="size-7" />
-      </span>
-      <span className="text-sm text-paper-2">Settings</span>
-    </div>
-  ),
-  downloaded: (
-    <div className="max-w-xs space-y-1 rounded-xl bg-[#f2f2f7] p-2" aria-hidden="true">
-      <IosRow>
-        <span className="size-7 rounded-full bg-[#c7c7cc]" />
-        <span className="flex-1 font-medium">Apple Account</span>
-        <ChevronRight className="size-4 text-[#c7c7cc]" />
-      </IosRow>
-      <IosRow accent>
-        <span className="flex-1 font-medium">Profile Downloaded</span>
-        <ChevronRight className="size-4 text-[#8e8e93]" />
-      </IosRow>
-    </div>
-  ),
-  install: (
-    <div className="max-w-xs rounded-xl bg-[#f2f2f7] p-3" dir="ltr" aria-hidden="true">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-[#007aff]">Cancel</span>
-        <span className="font-medium text-ink-900">Install Profile</span>
-        <span className="rounded-md px-1 font-medium text-[#007aff] ring-2 ring-gold">Install</span>
-      </div>
-      <div className="mt-3 flex items-center gap-3 rounded-lg bg-white p-3">
-        <span className="grid size-10 place-items-center rounded-lg bg-ink-900">
-          <ShieldCheck className="size-6 text-gold" />
-        </span>
-        <div className="text-xs text-ink-900">
-          <p className="font-medium">Trust Issues Scam Shield</p>
-          <p className="text-[#8e8e93]">DNS Settings</p>
-        </div>
-      </div>
-    </div>
-  ),
-}
 
 export function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
   return (
@@ -89,9 +44,33 @@ export function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
         <T k="downloadProfile" />
       </a>
       <ol className="mt-8">
-        <Step n={1} title="iosStep1" body="iosStep1d" art={IOS_ART.settings} />
-        <Step n={2} title="iosStep2" body="iosStep2d" art={IOS_ART.downloaded} />
-        <Step n={3} title="iosStep3" body="iosStep3d" art={IOS_ART.install} />
+        <Step
+          n={1}
+          title="iosAllow"
+          body="iosAllowD"
+          art={
+            <div className="space-y-3">
+              <Shot src="ios-allow" alt="Safari asking to allow the configuration profile download" />
+              <Shot src="ios-allow-chrome" alt="Chrome asking to continue downloading the configuration profile" className="max-w-[260px]!" />
+            </div>
+          }
+        />
+        <Step n={2} title="iosStep1" body="iosStep1d" />
+        <Step n={3} title="iosStep2" body="iosStep2d" art={<Shot src="ios-profile-downloaded" alt="The Profile Downloaded row in iPhone Settings" />} />
+        <Step
+          n={4}
+          title="iosStep3"
+          body="iosStep3d"
+          art={
+            <div className="space-y-3">
+              <Shot src="ios-install" alt="The Install Profile screen showing Trust Issues Scam Shield" />
+              <Tx k="iosUnsigned" className="max-w-[44ch] text-sm text-paper-3" />
+              <Shot src="ios-warning" alt="The iPhone warning about DNS settings and an unsigned profile" />
+              <Tx k="iosDone" className="text-sm text-safe" />
+              <Shot src="ios-installed" alt="The Profile Installed confirmation" />
+            </div>
+          }
+        />
       </ol>
     </div>
   )
@@ -301,8 +280,17 @@ export function Protect() {
           <Tx k="privacyNote" className="mt-6 text-sm text-paper-3" split="stack" />
         </Reveal>
         <div className="col-span-4 sm:col-span-8 lg:col-span-4 lg:col-start-9">
-          <ProtectIllustration />
+          <img src="/illustrations/protect-hero.webp" alt="" className="w-full rounded-[2rem]" />
         </div>
+      </section>
+
+      <section className="shell pb-8 lg:pb-10">
+        <img
+          src="/illustrations/how-protection-works.webp"
+          alt="A link arrives in any app, our shield checks the website name, the real site opens or the scam site is blocked, and your family is alerted"
+          loading="lazy"
+          className="w-full rounded-[2rem] bg-ink-850"
+        />
       </section>
 
       <section className="border-t border-line bg-ink-850">

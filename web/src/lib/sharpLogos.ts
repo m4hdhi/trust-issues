@@ -1,0 +1,2 @@
+/** Brands with a logo of 120 px or more in /brand-logos, fetched from their official sites. */
+export const SHARP_LOGOS = new Set<string>(['adcb', 'adib', 'adnoc_distribution', 'careem', 'dewa', 'dubai_municipality', 'dubizzle', 'emirates', 'emiratesislamic', 'emiratesnbd', 'etihad', 'etisalat', 'icp', 'lulu', 'mashreq', 'mohap', 'mohre', 'noon', 'parkin', 'salik', 'sewa', 'tamm', 'taqa_distribution'])

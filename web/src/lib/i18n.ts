@@ -319,6 +319,13 @@ export const S = {
   iosStep2: { en: 'Tap “Profile Downloaded”', ar: 'اضغط «تم تنزيل ملف التعريف»' },
   iosStep2d: { en: 'It appears near the top, under your name.', ar: 'يظهر في الأعلى، أسفل اسمك.' },
   iosStep3: { en: 'Tap Install', ar: 'اضغط «تثبيت»' },
+  iosAllow: { en: 'Tap Allow', ar: 'اضغط «سماح»' },
+  iosAllowD: { en: 'Your browser asks before it downloads the profile. Safari says Allow, Chrome says Continue.', ar: 'يسألك المتصفح قبل تنزيل ملف التعريف. في Safari اضغط «سماح»، وفي Chrome اضغط «متابعة».' },
+  iosUnsigned: {
+    en: 'iPhone shows “Not Signed” in red and a warning that a DNS server may filter traffic. Both are expected: the profile only points your phone at our scam filter, and you can remove it any time in Settings.',
+    ar: 'يعرض آيفون عبارة «غير موقّع» بالأحمر وتحذيرًا بأن خادم DNS قد يرشّح الاتصال. كلاهما متوقّع: ملف التعريف يوجّه هاتفك إلى مرشّح الاحتيال فقط، ويمكنك حذفه في أي وقت من «الإعدادات».',
+  },
+  iosDone: { en: 'When you see “Profile Installed”, you’re protected.', ar: 'عند ظهور «تم تثبيت ملف التعريف» تكون محميًا.' },
   iosStep3d: { en: 'Enter your passcode and tap Install again. You’re protected.', ar: 'أدخل رمز الدخول ثم اضغط «تثبيت» مرة أخرى. أصبحت محميًا.' },
   androidStep1: { en: 'Install Intra or RethinkDNS', ar: 'ثبّت تطبيق Intra أو RethinkDNS' },
   androidStep1d: { en: 'Both are free on Google Play.', ar: 'كلاهما مجاني على Google Play.' },

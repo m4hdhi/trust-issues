@@ -6,7 +6,7 @@ import { Composer } from '../components/Composer'
 import { LiveRadar, LiveStrip } from '../components/LiveRadar'
 import { ProtectIllustration } from '../components/ProtectIllustration'
 import { TrendingRow } from '../components/TrendingCard'
-import { BrandMark } from '../components/BrandMark'
+import { SHARP_LOGOS } from '../lib/sharpLogos'
 import { Reveal, Stagger, StaggerItem } from '../components/motion'
 import { SectionHead, btn } from '../components/ui'
 import { Skeleton } from '../components/States'
@@ -94,8 +94,13 @@ function BrandWall({ brands }: { brands: BrandRef[] }) {
         {row ? (
           <div className="marquee-track" style={{ animationDuration: `${row.length * 2.2}s` }}>
             {[...row, ...row].map((b, i) => (
-              <div key={`${b.id}-${i}`} className="w-20 shrink-0 sm:w-24" title={b.name_en} aria-hidden={i >= row.length}>
-                <BrandMark brand={b} className="aspect-square w-full p-3" />
+              <div key={`${b.id}-${i}`} className="grid size-20 shrink-0 place-items-center rounded-2xl bg-sheet shadow-[0_10px_24px_-18px_rgb(54_40_160/0.5)]" title={b.name_en} aria-hidden={i >= row.length}>
+                {/* A 64 px source icon is drawn at 32 px, exactly its size on a phone screen, so none is stretched into a blur. */}
+                {SHARP_LOGOS.has(b.id) ? (
+                  <img src={`/brand-logos/${b.id}.png`} alt={i < row.length ? b.name_en : ''} loading="lazy" className="size-12 object-contain" />
+                ) : (
+                  <img src={b.logo_url ?? ''} alt={i < row.length ? b.name_en : ''} loading="lazy" className="size-8 object-contain" />
+                )}
               </div>
             ))}
           </div>
