@@ -32,7 +32,7 @@ function Step({ n, title, body, art }: { n: number; title: StringKey; body: Stri
 
 /** A real screenshot from an iPhone, cropped to the system dialog. */
 function Shot({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  return <img src={`/setup/${src}.webp`} alt={alt} loading="lazy" dir="ltr" className={`block w-full max-w-[320px] rounded-xl shadow-[0_14px_30px_-16px_rgb(21_20_60/0.55)] ${className}`} />
+  return <img src={`/setup/${src}.webp`} alt={alt} loading="lazy" dir="ltr" className={`block w-full max-w-[340px] rounded-xl shadow-[0_14px_30px_-16px_rgb(21_20_60/0.55)] ${className}`} />
 }
 
 
@@ -49,9 +49,9 @@ export function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
           title="iosAllow"
           body="iosAllowD"
           art={
-            <div className="space-y-3">
+            <div className="grid items-start gap-3 sm:grid-cols-2">
               <Shot src="ios-allow" alt="Safari asking to allow the configuration profile download" />
-              <Shot src="ios-allow-chrome" alt="Chrome asking to continue downloading the configuration profile" className="max-w-[260px]!" />
+              <Shot src="ios-allow-chrome" alt="Chrome asking to continue downloading the configuration profile" />
             </div>
           }
         />
@@ -62,12 +62,14 @@ export function IphoneSetup({ reg }: { reg: DeviceRegistration }) {
           title="iosStep3"
           body="iosStep3d"
           art={
-            <div className="space-y-3">
-              <Shot src="ios-install" alt="The Install Profile screen showing Trust Issues Scam Shield" />
-              <Tx k="iosUnsigned" className="max-w-[44ch] text-sm text-paper-3" />
-              <Shot src="ios-warning" alt="The iPhone warning about DNS settings and an unsigned profile" />
-              <Tx k="iosDone" className="text-sm text-safe" />
-              <Shot src="ios-installed" alt="The Profile Installed confirmation" />
+            <div>
+              <div className="grid items-start gap-3 sm:grid-cols-3">
+                <Shot src="ios-install" alt="The Install Profile screen showing Trust Issues Scam Shield" />
+                <Shot src="ios-warning" alt="The iPhone warning about DNS settings and an unsigned profile" />
+                <Shot src="ios-installed" alt="The Profile Installed confirmation" />
+              </div>
+              <Tx k="iosUnsigned" className="mt-4 max-w-[62ch] text-sm text-paper-3" />
+              <Tx k="iosDone" className="mt-2 text-sm text-safe" />
             </div>
           }
         />
