@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trust Issues | أزمة ثقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f1fc;--ink:#15143c;--ink2:#474770;--ink3:#7775a0;--violet:#5a48f2;--magenta:#c64fd8;--coral:#ff7a59;--line:rgba(27,24,80,.1);--scam:#e2434b;--warn:#d27706;--safe:#0c9c6c;--ease:cubic-bezier(.23,1,.32,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e9e7fa;color:var(--ink);overflow:hidden}
+body{font-family:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;display:grid;place-items:center}
+.deck{width:1920px;height:1080px;position:relative;transform-origin:center}
+.slide{position:absolute;inset:0;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .5s var(--ease);direction:ltr;
+  background:radial-gradient(900px 620px at 100% 0%,rgba(122,104,255,.34),transparent 68%),radial-gradient(760px 560px at 0% 6%,rgba(255,138,180,.28),transparent 70%),radial-gradient(900px 600px at 18% 104%,rgba(255,190,140,.3),transparent 70%),var(--bg)}
+.slide.on{opacity:1;pointer-events:auto}
+.static .slide{transition:none!important}
+.pad{position:absolute;inset:64px 104px 86px;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:12px;height:50px;padding:0 24px;border-radius:99px;background:#15143c;color:#fff;font:700 23px 'Alexandria','Bricolage Grotesque',sans-serif}
+.chip b{font:700 21px 'Bricolage Grotesque';color:#b3a6ff}
+.top img{height:52px}
+h1{font:800 66px/1.14 'Bricolage Grotesque','Alexandria',sans-serif;letter-spacing:-.03em;margin-top:26px}
+h1 em{font-style:normal;background:linear-gradient(90deg,#5a48f2,#c64fd8 55%,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font:500 31px/1.6 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:12px;max-width:1500px}
+.en{font-family:'Bricolage Grotesque',sans-serif;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;align-items:baseline}
+.kv span{font:600 24px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:#c9c7ec}
+.kv b{font:600 26px 'JetBrains Mono',monospace;direction:ltr;text-align:left;color:#fff}
+.card{background:rgba(255,255,255,.74);border-radius:36px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85),0 26px 60px -34px rgba(54,40,160,.5);padding:34px 38px}
+.card.dark{background:radial-gradient(520px 380px at 100% 0%,rgba(106,86,255,.6),transparent 62%),radial-gradient(420px 320px at 0% 100%,rgba(255,110,170,.36),transparent 60%),#100e33;color:#f5f4ff;box-shadow:0 26px 60px -30px rgba(16,12,60,.7)}
+.card h3{font:800 33px/1.25 'Bricolage Grotesque','Alexandria',sans-serif}
+.card p,.card li{font:500 25px/1.5 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2)}
+.card.dark p,.card.dark li{color:#c9c7ec}
+ul{list-style:none}
+li{position:relative;padding-inline-start:30px;margin-top:10px}
+li::before{content:'';position:absolute;inset-inline-start:0;top:.62em;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#5a48f2,#c64fd8)}
+.card.dark li::before{background:#b3a6ff}
+.grid{display:grid;gap:26px;margin-top:30px;flex:1;min-height:0}
+.big{font:800 84px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;direction:ltr;unicode-bidi:isolate;display:block}
+.big small{font-size:44px;color:var(--ink3);font-weight:700}
+.v{color:var(--violet)}.r{color:var(--scam)}.g{color:var(--safe)}
+.lab{font:600 25px/1.5 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:10px}
+.bars{display:grid;gap:22px;margin-top:22px}
+.row{display:grid;grid-template-columns:1fr 104px;align-items:center;gap:18px}
+.row .t{font:600 25px/1.45 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink);grid-column:1/-1;margin-bottom:-8px}
+.track{height:26px;border-radius:99px;background:#e4e1f8;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:linear-gradient(270deg,#5a48f2,#c64fd8)}
+.track i.red{background:linear-gradient(270deg,#e2434b,#ff7a59)}.track i.green{background:linear-gradient(270deg,#0c9c6c,#4ad9a4)}
+.row b{font:800 34px 'Bricolage Grotesque';direction:ltr;text-align:right}
+.src{font:500 18px/1.6 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink3);margin-top:16px}
+.foot{position:absolute;left:104px;right:104px;bottom:32px;display:flex;justify-content:space-between;font:600 17px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:var(--ink3)}
+.phone{border-radius:54px;border:10px solid #15143c;overflow:hidden;box-shadow:0 40px 80px -30px rgba(54,40,160,.6);background:#fff}
+.phone img{display:block;width:100%}
+.shot{border-radius:26px;overflow:hidden;box-shadow:0 30px 70px -30px rgba(54,40,160,.55),0 0 0 1.5px rgba(255,255,255,.9)}
+.shot img{display:block;width:100%}
+.n{display:grid;place-items:center;flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#5a48f2,#c64fd8);color:#fff;font:800 28px 'Bricolage Grotesque'}
+.step{display:flex;gap:22px;align-items:flex-start}
+.step h3{font:800 30px/1.3 'Bricolage Grotesque','Alexandria',sans-serif}
+.step p{font:500 24px/1.45 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:2px}
+.pill{display:inline-flex;align-items:center;height:46px;padding:0 20px;gap:8px;border-radius:99px;background:#e9e7fa;font:700 22px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:var(--ink);margin:0 8px 10px 0}
+.pill.w{background:rgba(255,255,255,.14);color:#fff}
+.mono{font-family:'JetBrains Mono',monospace;direction:ltr;unicode-bidi:isolate}
+.qr{width:150px;height:150px;border-radius:20px;background:#fff;padding:12px;flex:none}.qr svg{width:100%;height:100%}
+#bar{position:fixed;left:0;bottom:0;height:3px;background:var(--violet);transition:width .5s var(--ease);z-index:5}
+#count{position:fixed;right:24px;bottom:14px;font:600 13px 'JetBrains Mono',monospace;color:var(--ink3);z-index:5}
+.static #bar,.static #count{display:none}
+</style>
+</head>
+<body>
+<div id="stage"><div class="deck" id="deck">
+<section class="slide" data-notes="Open with the tagline. One sentence: we guard the family and help the police find scammers early.">
+<div class="pad" style="inset:70px 104px 86px">
+  <div style="display:grid;grid-template-columns:1fr 430px;gap:70px;align-items:center;flex:1">
+    <div>
+      <img src="../brand/logo-english.png" alt="Trust Issues" style="height:150px">
+      <h1 style="font-size:104px;line-height:1.02;margin-top:26px">We have trust issues.<br><em>So you don't have to.</em></h1>
+      <p class="sub" style="font-size:34px;margin-top:26px">We protect families from scam links, messages and phone numbers, and help the police find and track scammers early.</p>
+      <p style="margin-top:34px"><span class="pill">Family Shield</span><span class="pill">Police Console</span><span class="pill">An AI model we trained ourselves</span></p>
+      <p class="src" style="font-size:22px;margin-top:22px">Faisal Baras · Saifudin Mamaev · Martin Mustonen · Mahdhi Muzammil &nbsp;|&nbsp; ScamShield AI Hackathon · 42 Abu Dhabi × Abu Dhabi Police</p>
+    </div>
+    <div class="phone"><img src="../screens/mobile_verdict.png" alt=""></div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>01 / 10</span></div>
+</section>
+<section class="slide" data-notes="Real figures, with sources on the slide. GASA surveyed 1,000 UAE residents. Abu Dhabi Police announced 15,642 online fraud cases and AED 140 million recovered over two years, in October 2025.">
+<div class="pad"><div class="top"><span class="chip"><b>01</b>The problem in numbers</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>Scams reach <em>7 in 10</em> UAE residents</h1>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr">
+    <div class="card">
+      <h3>What UAE residents report</h3>
+      <div class="bars"><div class="row"><span class="t">Have encountered a scam</span><div class="track"><i class="red" style="width:70%"></i></div><b>70%</b></div><div class="row"><span class="t">Lost money to a scam within one year (1 in 3)</span><div class="track"><i class="red" style="width:33%"></i></div><b>33%</b></div><div class="row"><span class="t">Of those who lost money, recovered all of it</span><div class="track"><i class="" style="width:9%"></i></div><b>9%</b></div>
+      </div>
+      <p class="lab" style="margin-top:22px">On average a resident meets a scam attempt <b>every 3 days</b>, and the average loss per victim is <b>$2,194</b>.</p>
+    </div>
+    <div style="display:grid;gap:22px;grid-template-rows:1fr 1fr 1fr">
+      <div class="card" style="padding:24px 36px"><span class="big v">15,642</span><p class="lab">online fraud cases received by Abu Dhabi Police in two years</p></div>
+      <div class="card" style="padding:24px 36px"><span class="big g">AED 140 <small>million</small></span><p class="lab">recovered for victims by Abu Dhabi Police in the same period</p></div>
+      <div class="card" style="padding:24px 36px"><span class="big r">75%+</span><p class="lab">of breaches start with a phishing message</p></div>
+    </div>
+  </div>
+  <p class="src">Sources: GASA, State of Scams in the UAE (survey of 1,000 residents) · GASA + BioCatch, Nov 2024 (recovery rate and average loss) · Abu Dhabi Police, Oct 2025 (The National, Gulf News) · UAE Cyber Security Council (WAM)</p>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>02 / 10</span></div>
+</section>
+<section class="slide" data-notes="The gap. A scanner only helps someone already suspicious, and the people targeted most are the least suspicious. For police, the report arrives after the money is gone.">
+<div class="pad"><div class="top"><span class="chip"><b>02</b>The gap</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>Scanners need a <em>suspicious</em> victim. The targets are not.</h1>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <h3>The family's problem</h3>
+      <ul>
+        <li>The most targeted are the least suspicious: <b>parents and elders, children, household helpers</b>.</li>
+        <li>None of them will open an app to check a link that arrived by WhatsApp or SMS.</li>
+        <li>The message looks official: a traffic fine, Salik, UAE PASS, or "your bank account is suspended".</li>
+        <li>Nobody in the family knows until the money has been paid.</li>
+      </ul>
+    </div>
+    <div class="card dark">
+      <h3>The police's problem</h3>
+      <ul>
+        <li>The report arrives <b style="color:#fff">after</b> the harm, and recovery is hard.</li>
+        <li>A fake site lives for hours, then moves to a new name.</li>
+        <li>Each site is part of a <b style="color:#fff">network</b>: the same server, the same template, the same phone number.</li>
+        <li>Collecting evidence and asking for a takedown, site by site, costs precious time.</li>
+      </ul>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>03 / 10</span></div>
+</section>
+<section class="slide" data-notes="The solution in one picture: one engine with two faces. What a family reports becomes a police case, and what police confirm is blocked on every protected phone.">
+<div class="pad"><div class="top"><span class="chip"><b>03</b>The solution</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>One engine that <em>guards the family</em> and <em>serves the police</em></h1>
+  <div class="grid" style="grid-template-columns:1fr 360px 1fr;align-items:stretch">
+    <div class="card">
+      <h3>For the family · Family Shield</h3>
+      <ul>
+        <li>A guardian links parents' and children's phones with one QR code.</li>
+        <li>Scam sites are blocked in <b>every app</b>.</li>
+        <li>A risky site waits for the guardian's OK, with <b>our verdict and risk score</b>.</li>
+        <li>An SOS button alerts the guardian at once.</li>
+        <li>Check any link, message, QR code, phone number or file.</li>
+      </ul>
+    </div>
+    <div class="card dark" style="display:flex;flex-direction:column;justify-content:center;text-align:center;padding:30px 26px">
+      <img src="../brand/symbol-white.png" alt="" style="height:110px;margin:0 auto 18px">
+      <h3 style="font-size:30px">Detection engine</h3>
+      <p style="font-size:23px;margin-top:10px">Our trained model + a sandbox browser + two AI judges</p>
+      <p style="font-size:23px;margin-top:18px;color:#fff">A family's report becomes a police case.</p>
+      <p style="font-size:23px;margin-top:8px;color:#fff">A police confirmation blocks the site on every phone.</p>
+    </div>
+    <div class="card">
+      <h3>For the police · Police Console</h3>
+      <ul>
+        <li><b>Live radar</b>: scam sites as they appear.</li>
+        <li><b>Cases</b>: one confirmation blocks a site for everyone.</li>
+        <li><b>Network</b>: one site reveals the group behind it.</li>
+        <li><b>Evidence pack</b> as a PDF, with a takedown draft.</li>
+        <li>RPZ and STIX blocklists for telecom operators.</li>
+      </ul>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>04 / 10</span></div>
+</section>
+<section class="slide" data-notes="Family Shield in four steps. The guardian sees our verdict and score before he decides. Point at the two phones: the approval card and the SOS button.">
+<div class="pad"><div class="top"><span class="chip"><b>04</b>Family Shield</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>The guardian sees <em>our verdict</em> before approving</h1>
+  <div style="display:grid;grid-template-columns:330px 330px 1fr;gap:44px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div class="phone"><img src="../screens/family_guardian.png" alt=""></div>
+    <div class="phone" style="margin-top:44px"><img src="../screens/family_member.png" alt=""></div>
+    <div class="card" style="display:grid;gap:26px"><div class="step"><span class="n">1</span><div><h3>One QR code links the phone</h3><p>The guardian starts a Family Shield and adds a parent or child. They scan the code and join.</p></div></div><div class="step"><span class="n">2</span><div><h3>Blocked in every app</h3><p>Scam sites fail to open in WhatsApp, SMS, Safari and Instagram.</p></div></div><div class="step"><span class="n">3</span><div><h3>A risky site waits for approval</h3><p>“Dad tried to open rtafines.com: Suspicious 62.” Then Keep blocked or Allow, in one tap.</p></div></div><div class="step"><span class="n">4</span><div><h3>The SOS button</h3><p>Alerts the guardian and shows 999, Aman 8002626 and verified bank numbers.</p></div></div>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>05 / 10</span></div>
+</section>
+<section class="slide" data-notes="For the police: early detection sources and the console. The console is open to the judges with the passcode on the slide.">
+<div class="pad"><div class="top"><span class="chip"><b>05</b>Police Console</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>Caught <em>before the first message</em>, with the network behind it</h1>
+  <div style="display:grid;grid-template-columns:880px 1fr;gap:36px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div>
+      <div class="shot"><img src="../screens/radar.png" alt=""></div>
+      <div class="card dark" style="margin-top:22px;padding:22px 30px"><div class="kv"><span>Try it now</span><b>trust-issues-xlzv.onrender.com/console</b><span>Passcode</span><b style="color:#b3a6ff">trust-issues</b></div></div>
+    </div>
+    <div class="card" style="display:grid;gap:20px"><div class="step"><span class="n">1</span><div><h3>Early detection</h3><p>New HTTPS certificates (CT logs), newly registered domains, look-alikes of <b>49 UAE brands</b>, Google Search ads and fake numbers on Google Maps.</p></div></div><div class="step"><span class="n">2</span><div><h3>One confirmation protects everyone</h3><p>A confirmed case is blocked on every protected phone within seconds.</p></div></div><div class="step"><span class="n">3</span><div><h3>Track the network</h3><p>Sites linked by server, name servers, page template, phone numbers and Telegram bots.</p></div></div><div class="step"><span class="n">4</span><div><h3>Evidence, ready to use</h3><p>A PDF in Arabic and English: SHA-256, WHOIS, a screenshot and a takedown draft.</p></div></div>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>06 / 10</span></div>
+</section>
+<section class="slide" data-notes="How one check works: cheap layers first, expensive ones only when needed. Every verdict explains itself in Arabic and English.">
+<div class="pad"><div class="top"><span class="chip"><b>06</b>How a check works</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>Six layers, fastest first. <em>Every verdict explains itself.</em></h1>
+  <div style="display:grid;grid-template-columns:800px 1fr;gap:36px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div>
+      <div class="shot"><img src="../screens/verdict.png" alt=""></div>
+      <p style="margin-top:22px"><span class="pill">Link</span><span class="pill">Whole message</span><span class="pill">QR code</span><span class="pill">Phone number</span><span class="pill">PDF / Word file</span></p>
+      <p class="lab">A score from 0 to 100, with the reasons in Arabic and English and an evidence file.</p>
+    </div>
+    <div class="card" style="display:grid;gap:16px"><div class="step"><span class="n">1</span><div><h3>Official sites</h3><p>49 UAE banks and government bodies: no false alarms on them.</p></div></div><div class="step"><span class="n">2</span><div><h3>Known scam lists and resident reports</h3></div></div><div class="step"><span class="n">3</span><div><h3>Our trained model (AI link model)</h3><p>Reads the link in a quarter of a millisecond.</p></div></div><div class="step"><span class="n">4</span><div><h3>Domain facts</h3><p>Age, owner, where it is hosted.</p></div></div><div class="step"><span class="n">5</span><div><h3>Sandbox browser</h3><p>Opens the page for you and exposes cloaking and where typed data goes.</p></div></div><div class="step"><span class="n">6</span><div><h3>Two AI judges</h3><p>Claude and GPT review the evidence as a second opinion.</p></div></div>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>07 / 10</span></div>
+</section>
+<section class="slide" data-notes="Our own model. Say the number: 589,687 real URLs. Explain the honest test: phishing first seen after the training cutoff, no domain shared between training and test.">
+<div class="pad"><div class="top"><span class="chip"><b>07</b>Our model</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>We trained our own model on <em>589,687</em> real URLs</h1>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr">
+    <div class="card">
+      <h3>Training data</h3>
+      <div style="display:flex;height:64px;border-radius:99px;overflow:hidden;margin-top:20px;font:800 25px 'Bricolage Grotesque';color:#fff">
+        <div style="width:57.6%;background:linear-gradient(90deg,#e2434b,#ff7a59);display:grid;place-items:center">339,710 scam</div>
+        <div style="width:42.4%;background:linear-gradient(90deg,#0c9c6c,#4ad9a4);display:grid;place-items:center">249,977 legitimate</div>
+      </div>
+      <div class="bars" style="gap:13px;margin-top:22px"><div class="row"><span class="t">Phishing.Database</span><div class="track"><i class="red" style="width:66.6%"></i></div><b style="font-size:24px">128,105</b></div><div class="row"><span class="t">OpenPhish</span><div class="track"><i class="red" style="width:65.7%"></i></div><b style="font-size:24px">126,395</b></div><div class="row"><span class="t">PhiUSIIL (UCI): scam and legitimate</span><div class="track"><i class="" style="width:100%"></i></div><b style="font-size:24px">192,453</b></div><div class="row"><span class="t">Pages of legitimate sites and Tranco</span><div class="track"><i class="green" style="width:74.1%"></i></div><b style="font-size:24px">142,610</b></div>
+      </div>
+      <p class="src" style="font-size:20px">This includes 124 official UAE bank and government sites.</p>
+    </div>
+    <div class="card dark">
+      <h3>How we trained it</h3>
+      <ul>
+        <li>LightGBM on <b style="color:#fff">73 features</b> of the link, stacked with a character n-gram model and calibrated.</li>
+        <li><b style="color:#fff">An honest test</b> (time-split): scam links first seen after the training date, and no domain shared between training and test.</li>
+        <li>Tested on <b style="color:#fff">33,519</b> more URLs.</li>
+        <li>Runs on our own server: <b style="color:#fff">0.26 ms</b> per link, with no outside service.</li>
+        <li>A second, domain-only model powers phone protection through DNS.</li>
+      </ul>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>08 / 10</span></div>
+</section>
+<section class="slide" data-notes="Honest numbers. Tested with the sandbox and both AI judges on, and outside threat feeds switched off, so this is what our own engine catches.">
+<div class="pad"><div class="top"><span class="chip"><b>08</b>Accuracy</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1><em>Zero</em> false alarms on 411 official UAE sites</h1>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;flex:none;gap:22px;margin-top:22px">
+    <div class="card" style="padding:24px 30px"><span class="big g" style="font-size:72px">0 <small>/ 411</small></span><p class="lab">false alarms on official UAE sites</p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">99.3%</span><p class="lab">of 150 live scam sites caught (recall)</p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">100%</span><p class="lab">precision in the same test</p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">0.99</span><p class="lab">AUC of the model alone, time-split test</p></div>
+    <div class="card" style="grid-column:span 2;padding:24px 34px">
+      <h3>500 real URLs the system had never seen</h3>
+      <div class="bars" style="gap:10px;margin-top:10px"><div class="row"><span class="t">Precision</span><div class="track"><i class="" style="width:99.2%"></i></div><b>99.2%</b></div><div class="row"><span class="t">Recall</span><div class="track"><i class="" style="width:94.4%"></i></div><b>94.4%</b></div><div class="row"><span class="t">F1</span><div class="track"><i class="" style="width:96.7%"></i></div><b>96.7%</b></div>
+      </div>
+    </div>
+    <div class="card" style="grid-column:span 2;padding:24px 34px">
+      <h3>Speed</h3>
+      <div class="bars" style="gap:10px;margin-top:10px"><div class="row"><span class="t">Instant check (model alone)</span><div class="track"><i class="green" style="width:3%"></i></div><b style="font-size:24px">0.2 ms</b></div><div class="row"><span class="t">Fast check</span><div class="track"><i class="green" style="width:14%"></i></div><b style="font-size:24px">~2 s</b></div><div class="row"><span class="t">Deep check with sandbox and AI</span><div class="track"><i class="" style="width:70%"></i></div><b style="font-size:24px">~15 s</b></div>
+      </div>
+    </div>
+  </div>
+  <p class="src">Tested with the sandbox browser and both AI judges on, and outside threat feeds switched off, to measure what our own engine catches. Full numbers are in ml/metrics.json.</p>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>09 / 10</span></div>
+</section>
+<section class="slide" data-notes="Close: the route to a pilot, the honest limits, and where to try it. The console passcode is on the slide.">
+<div class="pad"><div class="top"><span class="chip"><b>09</b>Next step</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>Ready for a pilot with <em>Abu Dhabi Police</em></h1>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr">
+    <div class="card" style="display:grid;gap:18px"><div class="step"><span class="n">1</span><div><h3>The cybercrime unit uses the console</h3><p>On reports and radar hits, from day one.</p></div></div><div class="step"><span class="n">2</span><div><h3>RPZ feeds to e&amp;, du and TDRA</h3><p>Every phone in the country protected, with no app.</p></div></div><div class="step"><span class="n">3</span><div><h3>Bank fraud teams</h3><p>An alert whenever a site copies their brand.</p></div></div><div class="step"><span class="n">4</span><div><h3>Families</h3><p>A web app today, then a native Android app.</p></div></div>
+      <p class="src" style="font-size:20px;margin-top:0">Honest limits: DNS sees the site name, not the page · Android needs a free DNS app · we do not screen calls, we check a number when it is typed in.</p>
+    </div>
+    <div style="display:grid;gap:22px;grid-template-rows:auto auto 1fr">
+      <div class="card" style="display:flex;gap:26px;align-items:center;padding:26px 30px"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h3m2 0h1m2 0h5m1 0h7M0 1.5h1m5 0h1m1 0h2m3 0h1m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m6 0h4m2 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m2 0h5m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h4m1 0h2m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m2 0h1m2 0h3m1 0h2m1 0h2m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h2m1 0h1m3 0h3M0 8.5h1m1 0h2m1 0h3m1 0h2m1 0h2m1 0h4m3 0h1m2 0h1m1 0h2M0 9.5h1m2 0h2m8 0h1m5 0h1m2 0h3m3 0h1M0 10.5h1m1 0h1m1 0h5m1 0h1m2 0h1m4 0h1m2 0h1m2 0h1m1 0h2M2 11.5h1m6 0h3m3 0h2m5 0h1m5 0h1M0 12.5h1m1 0h2m1 0h4m1 0h3m1 0h5m1 0h2m1 0h1m1 0h2M0 13.5h3m2 0h1m2 0h2m1 0h2m1 0h3m2 0h1m2 0h1m3 0h3M0 14.5h4m2 0h4m1 0h3m3 0h5m1 0h1m2 0h3M1 15.5h1m1 0h1m4 0h2m1 0h1m2 0h3m1 0h1m1 0h1m2 0h2m2 0h1M1 16.5h1m2 0h1m1 0h1m3 0h2m2 0h1m3 0h1m1 0h2m2 0h2m1 0h1M3 17.5h1m3 0h1m1 0h2m1 0h1m1 0h2m1 0h1m2 0h1m2 0h1m1 0h3M0 18.5h1m1 0h3m1 0h1m1 0h3m2 0h3m1 0h1m2 0h3m3 0h1M2 19.5h1m1 0h1m2 0h2m1 0h1m2 0h2m1 0h3m2 0h1m1 0h1m2 0h1M1 20.5h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h2m1 0h11M8 21.5h1m7 0h5m3 0h5M0 22.5h7m1 0h2m4 0h1m3 0h3m1 0h1m1 0h2m1 0h1M0 23.5h1m5 0h1m1 0h2m1 0h1m1 0h3m4 0h1m3 0h2M0 24.5h1m1 0h3m1 0h1m2 0h2m1 0h1m4 0h1m2 0h5m1 0h1M0 25.5h1m1 0h3m1 0h1m1 0h4m3 0h5m1 0h1m2 0h2m2 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m3 0h2m3 0h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1M0 27.5h1m5 0h1m2 0h8m1 0h4m2 0h2m1 0h1M0 28.5h7m1 0h1m1 0h2m2 0h1m3 0h5m2 0h1m1 0h1"/></svg>
+</div><div><p class="lab" style="margin:0">Try it now, on your phone too</p><p class="mono" style="font:600 27px 'JetBrains Mono';margin-top:6px">trust-issues-xlzv.onrender.com</p></div></div>
+      <div class="card" style="display:flex;gap:26px;align-items:center;padding:26px 30px"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h1m1 0h2m1 0h2m2 0h2m3 0h7M0 1.5h1m5 0h1m2 0h4m1 0h1m1 0h1m1 0h1m3 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h2m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m2 0h3m1 0h2m1 0h4m2 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h1m4 0h1m3 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h6m2 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 7.5h1m4 0h2m4 0h1M0 8.5h1m1 0h1m3 0h2m1 0h1m2 0h4m3 0h1m3 0h1m2 0h1m1 0h1M1 9.5h2m2 0h1m1 0h1m1 0h2m2 0h1m1 0h3m1 0h1m1 0h3m3 0h2M3 10.5h1m1 0h2m4 0h1m3 0h1m1 0h3m2 0h5m1 0h1M0 11.5h1m2 0h1m4 0h1m2 0h3m1 0h1m2 0h1m1 0h2m2 0h2M0 12.5h2m1 0h2m1 0h2m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h2m4 0h1M1 13.5h2m1 0h1m4 0h1m5 0h3m1 0h2m1 0h2m3 0h2M0 14.5h2m2 0h3m1 0h1m1 0h6m3 0h1m1 0h4m3 0h1M3 15.5h2m4 0h1m1 0h2m1 0h1m3 0h3m1 0h2M0 16.5h1m3 0h3m1 0h1m4 0h2m1 0h1m3 0h3m5 0h1M1 17.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m2 0h2m2 0h3M0 18.5h2m1 0h2m1 0h4m5 0h1m1 0h1m1 0h1m4 0h2m2 0h1M2 19.5h4m2 0h1m2 0h1m1 0h1m2 0h1m3 0h1m1 0h1m1 0h1M0 20.5h2m1 0h1m1 0h3m2 0h2m1 0h1m2 0h1m3 0h6m1 0h1M8 21.5h1m1 0h2m3 0h1m2 0h1m1 0h1m3 0h3m1 0h1M0 22.5h7m1 0h3m1 0h5m1 0h1m1 0h1m1 0h1m1 0h1m3 0h1M0 23.5h1m5 0h1m7 0h1m1 0h1m2 0h2m3 0h1m3 0h1M0 24.5h1m1 0h3m1 0h1m3 0h2m1 0h3m3 0h7m2 0h1M0 25.5h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h3m1 0h4m2 0h3m1 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h1m2 0h1m2 0h2M0 27.5h1m5 0h1m3 0h3m2 0h1m2 0h1m1 0h1m2 0h3M0 28.5h7m1 0h2m2 0h1m2 0h1m4 0h1m3 0h2m2 0h1"/></svg>
+</div><div><p class="lab" style="margin:0">Code, data and how to run it</p><p class="mono" style="font:600 27px 'JetBrains Mono';margin-top:6px">github.com/m4hdhi/trust-issues</p></div></div>
+      <div class="card dark" style="display:flex;flex-direction:column;justify-content:center"><div class="kv"><span>Police console</span><b>/console</b><span>Passcode</span><b style="color:#b3a6ff">trust-issues</b></div><p style="font:800 54px 'Bricolage Grotesque';color:#fff;margin-top:16px">Thank you</p></div>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span>10 / 10</span></div>
+</section>
+</div></div>
+<div id="bar"></div><div id="count"></div>
+<script>
+(function(){
+  const params = new URLSearchParams(location.search);
+  const isStatic = params.has('static');
+  if (isStatic) document.documentElement.classList.add('static');
+  const slides = [...document.querySelectorAll('.slide')];
+  let i = Math.max(0, Math.min(slides.length - 1, (parseInt(params.get('slide') || location.hash.slice(1) || '1', 10) || 1) - 1));
+  const fit = () => { const s = Math.min(innerWidth / 1920, innerHeight / 1080); document.getElementById('deck').style.transform = `scale(${s})`; };
+  const fmt = n => n.toLocaleString('en-US');
+  const count = el => {
+    const target = +el.dataset.count;
+    if (isStatic || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = fmt(target) + '+'; return; }
+    const t0 = performance.now(), d = 1400;
+    const step = t => { const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 4); el.textContent = fmt(Math.round(target * e)) + (p === 1 ? '+' : ''); if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  const show = n => {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('on', k === i));
+    slides[i].querySelectorAll('[data-count]').forEach(count);
+    document.getElementById('bar').style.width = ((i + 1) / slides.length * 100) + '%';
+    document.getElementById('count').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+    if (!isStatic) history.replaceState(null, '', '#' + (i + 1));
+  };
+  addEventListener('resize', fit);
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) show(i + 1);
+    if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) show(i - 1);
+  });
+  addEventListener('click', e => { if (!e.target.closest('a')) show(e.clientX > innerWidth / 3 ? i + 1 : i - 1); });
+  fit(); show(i);
+})();
+</script>
+</body>
+</html>
