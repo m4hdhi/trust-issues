@@ -4,11 +4,28 @@
 
 > **We have trust issues, so you don't have to.** · **نحن نشكّ… لتطمئن أنت**
 
-Early detection of fraudulent links and websites targeting the UAE: on the open web, in **Google Search results & ads**, and in **Google Maps listings**. Built in 24 hours for the **ScamShield AI Hackathon** (42 Abu Dhabi × Abu Dhabi Police).
+Scam protection for the UAE: it checks **links, messages, QR codes, phone numbers and files**, blocks scam sites on a family's phones in every app, and finds new scam sites early on the open web, in **Google Search results & ads** and in **Google Maps listings**. Built in 24 hours for the **ScamShield AI Hackathon** (42 Abu Dhabi × Abu Dhabi Police).
 
 **Team Trust Issues | أزمة ثقة:** Faisal Baras · Saifudin Mamaev · Martin Mustonen · Mahdhi Muzammil
 
-**Try it live:** https://trust-issues-xlzv.onrender.com · police console: [`/console`](https://trust-issues-xlzv.onrender.com/console) (passcode on request) · phone protection: open the site on your phone and tap **Protect**.
+## For the judges: test it in five minutes
+
+| What | Where |
+|---|---|
+| **Live app** | https://trust-issues-xlzv.onrender.com (works on a phone too) |
+| **Police console** | https://trust-issues-xlzv.onrender.com/console, passcode **`trust-issues`** |
+| **Test data** | [`demo-kit/`](demo-kit/): scam and safe links, messages, QR codes, phone numbers and files, with the result each should give |
+| **1-minute video** | [`docs/Trust-Issues-Demo.mp4`](docs/Trust-Issues-Demo.mp4) |
+| **Slides** | [`docs/Trust-Issues-ScamShield.pptx`](docs/Trust-Issues-ScamShield.pptx) or [PDF](docs/Trust-Issues-ScamShield.pdf) |
+
+1. Open the live app and paste `https://etisallat.com` (a real look-alike of e&). You get a SCAM verdict with the evidence.
+2. Tap **Phone number** and check `8002626`: it is recognised as Abu Dhabi Police. Tap **File** and choose a file from `demo-kit/files/`.
+3. Open **Family**, create a Family Shield and add a member: the QR code links a second phone. On that phone, risky sites wait for the guardian's OK.
+4. Open the console with the passcode above: Radar, Cases, Network, Hunt, Batch test, Feeds, Metrics. Upload `demo-kit/links/links.csv` in **Batch test** to score your own list.
+
+**Our main focus** is the gap every scanner leaves: a scanner only helps someone who is already suspicious. Family Shield lets one trusted person protect parents, children and household helpers, with our verdict shown before every decision.
+
+**No API keys are needed to try it.** The live site already runs with every key. A fresh clone also runs with no keys at all, on our own trained model and checks. Keys are never committed to this repository: a public key is copied and switched off by its provider within minutes. To add your own, copy `.env.example` to `.env`.
 
 ---
 
@@ -93,7 +110,26 @@ flowchart LR
 - **Phone number check.** The number is parsed with Google's libphonenumber (country, carrier, line type), then matched against the verified helplines of the 49 UAE brands, numbers printed on scam pages we already caught, and reports from residents. Two reports from different phones mark a number as a scam; official numbers cannot be reported. Line type alone never marks a number as a scam, and "unknown" is shown as unknown, not as safe.
 - **File check.** A file up to 10 MB is read in memory and never stored. We look for what attackers rely on (a program named like a document, PDF scripts and auto-run actions, Office macros, sign-in pages sent as attachments, programs inside ZIPs), look up the file's SHA-256 on VirusTotal (only the hash leaves the server), run the scam-message analysis on its text and send up to five links found inside through the full link check.
 
-## 4. Accuracy (measured on real, unseen data)
+## 4. Our trained model and its accuracy
+
+We trained our own models; they run on the server with no outside service.
+
+- **Link model:** LightGBM on 73 features of the address, stacked with a character n-gram logistic regression and calibrated. It scores a link in 0.26 ms, even when the site is already offline.
+- **Domain model:** LightGBM on the hostname only (0.1 ms). It powers the phone protection and Family Shield holds.
+- **Training data: 589,687 real URLs.** Tested on 33,519 more, with phishing first seen after the training cutoff and no domain shared between training and test.
+
+| Source | Kind | URLs |
+|---|---|---|
+| Phishing.Database | scam | 128,105 |
+| OpenPhish history | scam | 126,395 |
+| PhiUSIIL (UCI) | scam | 85,210 |
+| PhiUSIIL (UCI) | legitimate | 107,243 |
+| Crawled pages of legitimate sites | legitimate | 106,459 |
+| Tranco top sites | legitimate | 28,436 |
+| Curated lists and Common Crawl | legitimate | 7,715 |
+| Official UAE bank and government domains | legitimate | 124 |
+
+On the time-split test the link model alone reaches 98.1% precision, 87.7% recall and a ROC AUC of 0.99 ([`ml/metrics.json`](ml/metrics.json)). The numbers below are for the whole system.
 
 The URL model was trained on data with a time cutoff. It was then tested on **phishing URLs first seen after the training cutoff** (OpenPhish / Phishing.Database) and on legitimate URLs from unseen domains. Domains never overlap between train and test. Full numbers are in [`ml/metrics.json`](ml/metrics.json).
 
@@ -129,7 +165,8 @@ One of the two remaining "false positives" (`dapurmiemicin.com`) is a hijacked d
 | Notifications | Web Push (VAPID) via pywebpush |
 | Evidence | ReportLab PDF and Pillow warning cards with Arabic shaping (arabic-reshaper + python-bidi), IBM Plex Sans Arabic (OFL) |
 | Graph | networkx connected components → Cytoscape.js |
-| Front-end | React + TypeScript + Vite PWA, Tailwind, framer-motion, Cytoscape.js, Leaflet; Arabic / English / side-by-side modes with RTL |
+| Front-end | React + TypeScript + Vite PWA, Tailwind, framer-motion, Cytoscape.js, Leaflet; Arabic and English with RTL |
+| Phone numbers and files | Google libphonenumber (`phonenumbers`), `pypdf`, VirusTotal file lookup by hash |
 | Deploy | One Docker image (Python slim + headless Chromium, 754 MB) on Render with PostgreSQL (`render.yaml` blueprint) |
 
 ## 6. Build and run
@@ -140,7 +177,7 @@ cp .env.example .env   # add your API keys (all optional; more keys = more intel
 docker build -t trust-issues .
 docker run --env-file .env -p 8000:8000 trust-issues
 ```
-Open http://localhost:8000. The police console is at `/console` and uses `CONSOLE_PASSWORD`.
+Open http://localhost:8000. The police console is at `/console` and uses `CONSOLE_PASSWORD` from `.env` (`change-me` in the example file, accepted on localhost only).
 
 ### Option B: local development
 ```bash
