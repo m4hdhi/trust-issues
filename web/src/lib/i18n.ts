@@ -319,6 +319,13 @@ export const S = {
   iosStep2: { en: 'Tap “Profile Downloaded”', ar: 'اضغط «تم تنزيل ملف التعريف»' },
   iosStep2d: { en: 'It appears near the top, under your name.', ar: 'يظهر في الأعلى، أسفل اسمك.' },
   iosStep3: { en: 'Tap Install', ar: 'اضغط «تثبيت»' },
+  trToday: { en: 'reports today', ar: 'بلاغات اليوم' },
+  trTotal: { en: 'reports in total', ar: 'إجمالي البلاغات' },
+  trRisk: { en: 'risk score', ar: 'درجة الخطورة' },
+  trSeen: { en: 'first seen', ar: 'أول ظهور' },
+  trVia: { en: 'Arrives by', ar: 'يصل عبر' },
+  trOpen: { en: 'See the evidence', ar: 'اعرض الأدلة' },
+  trHunted: { en: 'Caught by our monitors before anyone reported it', ar: 'رصدته أنظمتنا قبل أن يبلّغ عنه أحد' },
   iosAllow: { en: 'Tap Allow', ar: 'اضغط «سماح»' },
   iosAllowD: { en: 'Your browser asks before it downloads the profile. Safari says Allow, Chrome says Continue.', ar: 'يسألك المتصفح قبل تنزيل ملف التعريف. في Safari اضغط «سماح»، وفي Chrome اضغط «متابعة».' },
   iosUnsigned: {

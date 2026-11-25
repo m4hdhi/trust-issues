@@ -1,12 +1,15 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { ArrowRight, Radar } from 'lucide-react'
 import { motion } from 'motion/react'
 import { BrandMark, brandName } from './BrandMark'
 import { ChannelIcon, channelColor, isChannel } from './ChannelIcon'
 import { T, Tx } from '../lib/lang'
-import { defang, timeAgo } from '../lib/format'
+import { defang, shortAgo } from '../lib/format'
 import { T_LAYOUT } from '../lib/motion'
+import type { StringKey } from '../lib/i18n'
 import type { TrendingItem } from '../lib/types'
-import { VERDICT_COLOR } from '../lib/verdict'
+import { VERDICT_COLOR, VERDICT_LABEL } from '../lib/verdict'
 
 export function ChannelBar({ channels }: { channels: Record<string, number> }) {
   const entries = Object.entries(channels)
@@ -72,41 +75,73 @@ export function TrendingRow({ item, rank }: { item: TrendingItem; rank?: number 
   )
 }
 
+function Fact({ value, label, tone = 'text-paper' }: { value: ReactNode; label: StringKey; tone?: string }) {
+  return (
+    <div className="min-w-0 rounded-xl bg-ink-900 px-3 py-3">
+      <p className={`display num truncate text-2xl leading-none ${tone}`}>{value}</p>
+      <p className="mt-1.5 text-xs text-paper-3">
+        <T k={label} />
+      </p>
+    </div>
+  )
+}
+
+/** One scam as a card: who it copies, the address, how many people met it, and how it reaches them. */
 export function TrendingFeature({ item, rank }: { item: TrendingItem; rank: number }) {
   const name = brandName(item.brand)
   const color = VERDICT_COLOR[item.verdict]
+  const channels = Object.entries(item.channels)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1])
   return (
-    <motion.li layout transition={T_LAYOUT} className="border-t border-line">
-      <Link to={itemLink(item)} className="group grid-12 gap-y-4 py-8">
-        <span className="evidence num col-span-4 text-sm text-gold sm:col-span-1">{String(rank).padStart(2, '0')}</span>
-        <div className="col-span-4 flex items-start gap-4 sm:col-span-7 lg:col-span-6">
-          <BrandMark brand={item.brand} className="size-12" />
-          <div className="min-w-0">
-            {name && (
-              <p className="text-sm text-paper-3">
-                <T text={name} />
-              </p>
-            )}
-            <Tx text={item.headline} as="h3" className="display mt-1 max-w-[40ch] text-xl text-paper transition-colors group-hover:text-gold" arClassName="text-lg" split="stack" />
-            <p className="evidence mt-2 truncate text-sm" style={{ color }}>
-              {defang(item.domain)}
-            </p>
-          </div>
+    <motion.li layout transition={T_LAYOUT}>
+      <Link to={itemLink(item)} className="hover-lift group flex h-full flex-col rounded-2xl bg-ink-850 p-5 sm:p-6">
+        <div className="flex items-center gap-3">
+          <span className="display num grid size-9 shrink-0 place-items-center rounded-full bg-paper text-sm text-ink-950">{rank}</span>
+          <BrandMark brand={item.brand} className="size-11" />
+          <p className="min-w-0 flex-1 truncate text-sm text-paper-2">{name && <T text={name} />}</p>
+          <span className="shrink-0 rounded-full px-3 py-1 text-xs text-white" style={{ background: color }}>
+            <T k={VERDICT_LABEL[item.verdict]} />
+          </span>
         </div>
-        <div className="col-span-4 sm:col-span-5 sm:col-start-2 lg:col-span-3 lg:col-start-auto">
-          <ChannelBar channels={item.channels} />
+
+        <Tx text={item.headline} as="h3" className="display mt-4 text-xl text-paper transition-colors group-hover:text-gold sm:text-2xl" />
+        <p className="evidence mt-3 self-start rounded-lg bg-scam/10 px-3 py-1.5 text-sm break-all text-scam" dir="ltr">
+          {defang(item.domain)}
+        </p>
+
+        <div className="mt-5 grid grid-cols-3 gap-2">
+          <Fact value={item.score} label="trRisk" tone="text-scam" />
+          <Fact value={item.reports_24h} label="trToday" />
+          <Fact value={shortAgo(item.first_seen)} label="trSeen" />
         </div>
-        <div className="col-span-4 flex items-baseline gap-6 sm:col-span-3 lg:col-span-2 lg:flex-col lg:items-end lg:gap-1 lg:text-end">
-          <span>
-            <span className="evidence num text-2xl text-scam">{item.reports_24h}</span>
-            <span className="ms-2 text-sm text-paper-3 lg:ms-0 lg:block">
-              <T k="reports24h" />
+
+        <div className="mt-4 flex flex-1 flex-wrap items-center gap-2 text-sm">
+          {channels.length > 0 ? (
+            <>
+              <span className="text-paper-3">
+                <T k="trVia" />
+              </span>
+              {channels.map(([ch, n]) => (
+                <span key={ch} className="inline-flex items-center gap-1.5 rounded-full bg-ink-800 px-3 py-1 text-paper">
+                  {isChannel(ch) && <ChannelIcon channel={ch} className="size-4" />}
+                  {isChannel(ch) ? <T k={`ch_${ch}`} /> : ch}
+                  <span className="num text-paper-3">{n}</span>
+                </span>
+              ))}
+            </>
+          ) : (
+            <span className="inline-flex items-center gap-2 text-paper-3">
+              <Radar className="size-4 shrink-0 text-gold" aria-hidden="true" />
+              <T k="trHunted" />
             </span>
-          </span>
-          <span className="text-xs text-paper-3">
-            <T k="firstSeen" /> <T text={timeAgo(item.first_seen)} />
-          </span>
+          )}
         </div>
+
+        <span className="mt-5 inline-flex items-center gap-2 border-t border-line pt-4 text-sm text-gold">
+          <T k="trOpen" />
+          <ArrowRight className="size-4 transition-transform group-hover:translate-x-1 rtl:rotate-180" aria-hidden="true" />
+        </span>
       </Link>
     </motion.li>
   )

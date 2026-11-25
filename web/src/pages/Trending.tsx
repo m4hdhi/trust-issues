@@ -27,9 +27,9 @@ export function Trending() {
       </Reveal>
       <div className="mt-8">
         {loading ? (
-          <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-2">
             {Array.from({ length: 4 }, (_, i) => (
-              <Skeleton key={i} className="h-28" />
+              <Skeleton key={i} className="h-72 rounded-2xl" />
             ))}
           </div>
         ) : error ? (
@@ -37,7 +37,7 @@ export function Trending() {
         ) : !data?.length ? (
           <EmptyState message="trendingEmpty" />
         ) : (
-          <ul className="border-b border-line">
+          <ul className="grid gap-4 lg:grid-cols-2">
             {data.map((item, i) => (
               <TrendingFeature key={item.domain} item={item} rank={i + 1} />
             ))}

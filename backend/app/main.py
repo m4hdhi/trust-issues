@@ -8,6 +8,7 @@ import io
 import json
 import re
 import logging
+import mimetypes
 import time
 from contextlib import asynccontextmanager
 from datetime import timedelta
@@ -85,6 +86,9 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 app.mount("/media/brands", StaticFiles(directory=str(BRANDS_DIR / "assets"), check_dir=False), name="brands")
 app.mount("/media/refs", StaticFiles(directory=str(BRANDS_DIR / "refs"), check_dir=False), name="refs")
 app.mount("/media", StaticFiles(directory=str(settings.media_dir)), name="media")
+
+
+mimetypes.add_type("image/webp", ".webp")  # the slim base image has no system mime table
 
 
 class ScanIn(BaseModel):
