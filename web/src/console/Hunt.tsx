@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { BadgeCheck, Crosshair, ExternalLink, Globe, PanelRightOpen, Phone, Star } from 'lucide-react'
-import { PageHeader, Panel } from './ui'
+import { PageHeader, Pager, Panel, SearchBox, usePaged } from './ui'
 import { btn } from '../components/ui'
 import { ScanDrawer } from './ScanDrawer'
 import { brandName } from '../components/BrandMark'
@@ -86,6 +86,12 @@ function HuntForm({
 function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void }) {
   const [busy, setBusy] = useState(false)
   const [items, setItems] = useState<SearchHit[] | null>(null)
+  const [query, setQuery] = useState('')
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return (items ?? []).filter((h) => !q || `${h.title} ${h.domain} ${h.url}`.toLowerCase().includes(q))
+  }, [items, query])
+  const paged = usePaged(shown, query)
   const [failed, setFailed] = useState<StringKey | null>(null)
 
   const run = async (q: string) => {
@@ -122,7 +128,16 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
               <EmptyState message="noResults" />
             </div>
           ) : (
-            <div className="scrollbar-thin overflow-x-auto">
+            <>
+            <div className="px-4 pt-4">
+              <SearchBox value={query} onChange={setQuery} />
+            </div>
+            {!shown.length && (
+              <div className="p-4">
+                <EmptyState message="noMatch" />
+              </div>
+            )}
+            <div className={`scrollbar-thin overflow-x-auto ${shown.length ? '' : 'hidden'}`}>
               <table className="w-full min-w-[720px] text-sm">
                 <thead className="text-xs text-paper-3">
                   <tr>
@@ -139,7 +154,7 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
-                  {items.map((h) => (
+                  {paged.rows.map((h) => (
                     <tr key={`${h.position}-${h.url}`} className={h.verdict === 'scam' ? 'bg-scam/[0.05]' : ''}>
                       <td className="px-4 py-3">
                         <span className="num font-mono text-paper-2">#{h.position}</span>
@@ -185,6 +200,10 @@ function SearchHunter({ onOpen }: { onOpen: (id: string, title: string) => void 
                 </tbody>
               </table>
             </div>
+            <div className="px-4 pb-4">
+              <Pager p={paged} />
+            </div>
+            </>
           )}
         </div>
       )}
@@ -212,6 +231,12 @@ function FitAll({ points }: { points: [number, number][] }) {
 function MapsHunter() {
   const [busy, setBusy] = useState(false)
   const [items, setItems] = useState<MapsHit[] | null>(null)
+  const [query, setQuery] = useState('')
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return (items ?? []).filter((h) => !q || `${h.title} ${h.phone ?? ''} ${h.website ?? ''} ${h.address ?? ''}`.toLowerCase().includes(q))
+  }, [items, query])
+  const paged = usePaged(shown, query)
   const [failed, setFailed] = useState<StringKey | null>(null)
   const [focus, setFocus] = useState<[number, number] | null>(null)
 
@@ -250,13 +275,20 @@ function MapsHunter() {
         </div>
       )}
       <div className="grid border-t border-line xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="scrollbar-thin max-h-[560px] divide-y divide-line overflow-y-auto">
+        <div className="scrollbar-thin max-h-[640px] divide-y divide-line overflow-y-auto">
           {items && items.length === 0 && (
             <div className="p-4">
               <EmptyState message="noResults" />
             </div>
           )}
-          {(items ?? []).map((h, i) => {
+          {items && items.length > 0 && (
+            <div className="p-4">
+              <SearchBox value={query} onChange={setQuery} />
+              {!shown.length && <EmptyState message="noMatch" />}
+              <Pager p={paged} />
+            </div>
+          )}
+          {paged.rows.map((h, i) => {
             const brand = brandName(h.brand)
             return (
               <button

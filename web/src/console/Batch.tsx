@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CheckCircle2, Download, FileSpreadsheet, FileUp, RotateCcw, XCircle } from 'lucide-react'
-import { PageHeader, Panel } from './ui'
+import { PageHeader, Pager, Panel, SearchBox, usePaged } from './ui'
 import { Confusion } from './Confusion'
 import { VerdictChip } from '../components/VerdictChip'
 import { Spinner } from '../components/States'
@@ -92,6 +92,13 @@ export function Batch() {
   const done = status?.status === 'done'
   const progress = status && status.total ? status.done / status.total : 0
   const rows = status?.rows_preview ?? []
+  const [query, setQuery] = useState('')
+  const shownRows = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return q ? rows.filter((r) => Object.values(r).some((v) => String(v ?? '').toLowerCase().includes(q))) : rows
+  }, [rows, query])
+  const paged = usePaged(shownRows, query)
+
   const columns = rows.length ? Object.keys(rows[0]).filter((c) => c !== 'scan_id') : []
 
   return (
@@ -221,7 +228,10 @@ export function Batch() {
                 <T k="preview" />
                 <span className="num ms-2 text-xs font-medium text-paper-3">{rows.length}</span>
               </p>
-              <div className="scrollbar-thin max-h-[520px] overflow-auto">
+              <div className="px-5 pt-4">
+                <SearchBox value={query} onChange={setQuery} />
+              </div>
+              <div className="scrollbar-thin mt-3 overflow-auto">
                 <table className="w-full min-w-[720px] text-sm" dir="ltr">
                   <thead className="sticky top-0 bg-ink-850 text-xs text-paper-3">
                     <tr>
@@ -233,7 +243,7 @@ export function Batch() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line">
-                    {rows.map((r, i) => (
+                    {paged.rows.map((r, i) => (
                       <tr key={i}>
                         {columns.map((c) => (
                           <td key={c} className={`max-w-[360px] truncate px-4 py-3 ${c === 'url' ? 'font-mono text-xs text-paper' : 'text-paper'}`}>
@@ -244,6 +254,9 @@ export function Batch() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="px-5 pb-5">
+                <Pager p={paged} />
               </div>
             </Panel>
           )}
