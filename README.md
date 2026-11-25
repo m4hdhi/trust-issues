@@ -15,7 +15,7 @@ Scam protection for the UAE: it checks **links, messages, QR codes, phone number
 | **Live app** | https://trust-issues-xlzv.onrender.com (works on a phone too) |
 | **Police console** | https://trust-issues-xlzv.onrender.com/console, passcode **`trust-issues`** |
 | **Test data** | [`demo-kit/`](demo-kit/): scam and safe links, messages, QR codes, phone numbers and files, with the result each should give |
-| **1-minute video** | [`docs/Trust-Issues-Demo.mp4`](docs/Trust-Issues-Demo.mp4) |
+| **1-minute video** | [`docs/Trust-Issues-Demo-Arabic.mp4`](docs/Trust-Issues-Demo-Arabic.mp4) (Arabic, narrated by the team) |
 | **Slides** | [`docs/Trust-Issues-ScamShield.pptx`](docs/Trust-Issues-ScamShield.pptx) or [PDF](docs/Trust-Issues-ScamShield.pdf) |
 
 1. Open the live app and paste `https://etisallat.com` (a real look-alike of e&). You get a SCAM verdict with the evidence.

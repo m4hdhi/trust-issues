@@ -9,7 +9,7 @@ Copy each value into the matching field on the submission form. Deadline: 25 Nov
 | **Presentation Link** | https://github.com/m4hdhi/trust-issues/blob/master/docs/Trust-Issues-ScamShield.pdf |
 | **Upload Presentation File** | `docs/Trust-Issues-ScamShield.pptx` (4.8 MB) |
 | **Upload Document File** | `docs/Trust-Issues-Project-Description.pdf` |
-| **Demo Video URL** | Upload `docs/Trust-Issues-Demo.mp4` to YouTube as Unlisted (or Google Drive, "Anyone with the link") and paste that link |
+| **Demo Video URL** | Upload `docs/Trust-Issues-Demo-Arabic.mp4` (Arabic captions, narrated by a team member, 59 seconds) to YouTube as Unlisted (or Google Drive, "Anyone with the link") and paste that link |
 | **Deployed Solution (Live URL)** | https://trust-issues-xlzv.onrender.com |
 
 ## Brief Description (525 of 600 characters)
@@ -27,7 +27,7 @@ Python, FastAPI, PostgreSQL, React, TypeScript, Tailwind CSS, Playwright, LightG
 
 ## About the video
 
-The form says AI-generated video is not accepted. `Trust-Issues-Demo.mp4` is a screen recording of the real live app, edited with captions. Two things in it are not recordings: the narration is a computer voice, and the SMS and the alert banner shown over the phones are drawn (the alert uses the exact text the server sends). `Trust-Issues-Demo-no-voice.mp4` is the same video without the computer voice, ready for a team member to narrate.
+The form says AI-generated video is not accepted. The submission video is `Trust-Issues-Demo-Arabic.mp4`: a screen recording of the real live app with Arabic captions and a team member's own voice. The older `Trust-Issues-Demo.mp4` is a screen recording of the real live app, edited with captions. Two things in it are not recordings: the narration is a computer voice, and the SMS and the alert banner shown over the phones are drawn (the alert uses the exact text the server sends). `Trust-Issues-Demo-no-voice.mp4` is the same video without the computer voice, ready for a team member to narrate.
 
 ### Narration script (to read over the silent version)
 
