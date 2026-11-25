@@ -64,6 +64,7 @@ async def _every(seconds: float, fn, initial_delay: float = 0) -> None:
 async def lifespan(_: FastAPI):
     db.init_db()
     accounts.migrate()
+    family.migrate()
     webpush.keys()
     jobs = [asyncio.create_task(_every(3600, lambda: feeds.refresh(_protected))), asyncio.create_task(bot.run())]
     if settings.enable_hunters:
@@ -445,7 +446,16 @@ async def family_invite_qr(code: str) -> Response:
 
 @app.post("/api/join/{code}")
 async def family_join(code: str, body: JoinIn) -> dict[str, Any]:
-    return await _family(family.join, code, body.device_id, body.phone)
+    out = await _family(family.join, code, body.device_id, body.phone)
+    if "relink_device" in out:
+        return {"device": _registration(out["relink_device"])}
+    return out
+
+
+@app.post("/api/family/members/{member_id}/relink")
+async def family_relink(member_id: str, body: DeviceOnlyIn) -> dict[str, Any]:
+    """Guardian only: a one-time QR code that reconnects a member's phone to the family."""
+    return await _family(family.relink, body.device_id, member_id)
 
 
 @app.post("/api/family/requests/{request_id}")

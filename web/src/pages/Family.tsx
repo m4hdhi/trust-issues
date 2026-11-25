@@ -32,7 +32,7 @@ import { api } from '../lib/api'
 import { defang, timeAgo } from '../lib/format'
 import { EASE_OUT } from '../lib/motion'
 import { isAndroid, isStandalone } from '../lib/push'
-import { S, type StringKey } from '../lib/i18n'
+import { S, fill, type StringKey } from '../lib/i18n'
 import type { Bilingual, DeviceRegistration, FamilyEventItem, FamilyInviteResult, FamilyMember, FamilyRequest, FamilyRole, FamilyState, Helpline } from '../lib/types'
 import { Alerts, AndroidSetup, IphoneSetup, TestProtection } from './Protect'
 import { AccountLink, SignInLink } from './Account'
@@ -235,7 +235,7 @@ function RequestCard({ r, busy, onDecide }: { r: FamilyRequest; busy: boolean; o
   )
 }
 
-function MemberRow({ m, guardianView, onStrict, onRemove }: { m: FamilyMember; guardianView: boolean; onStrict: (v: boolean) => void; onRemove: () => void }) {
+function MemberRow({ m, guardianView, onStrict, onRemove, onReconnect }: { m: FamilyMember; guardianView: boolean; onStrict: (v: boolean) => void; onRemove: () => void; onReconnect?: () => void }) {
   const showStatus = !(m.role === 'guardian' && m.status !== 'protected')
   return (
     <li className="border-b border-line py-4">
@@ -277,16 +277,67 @@ function MemberRow({ m, guardianView, onStrict, onRemove }: { m: FamilyMember; g
               <Tx k="strictHint" as="span" className="block text-xs text-paper-3" split="stack" />
             </span>
           </label>
-          <button type="button" onClick={onRemove} className={`${btn.quiet} shrink-0`}>
-            <T k="famRemove" />
-          </button>
+          <div className="flex shrink-0 flex-col items-end">
+            {onReconnect && (
+              <button type="button" onClick={onReconnect} className={btn.quiet}>
+                <T k="famReconnect" />
+              </button>
+            )}
+            <button type="button" onClick={onRemove} className={btn.quiet}>
+              <T k="famRemove" />
+            </button>
+          </div>
         </div>
       )}
     </li>
   )
 }
 
-function InviteModal({ open, onClose, deviceId }: { open: boolean; onClose: () => void; deviceId: string }) {
+function RelinkModal({ member, onClose, deviceId }: { member: FamilyMember | null; onClose: () => void; deviceId: string }) {
+  const [code, setCode] = useState<FamilyInviteResult | null>(null)
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    setCode(null)
+    setFailed(false)
+    if (!member) return
+    api
+      .relinkMember(deviceId, member.device_id)
+      .then(setCode)
+      .catch(() => setFailed(true))
+  }, [member, deviceId])
+  return (
+    <Modal open={member != null} onClose={onClose} title={<T k="relinkTitle" />}>
+      <div className="text-center">
+        <Tx k="relinkScan" as="h3" className="display text-xl text-paper" />
+        <Tx k="relinkScanSub" className="mx-auto mt-2 max-w-[42ch] text-sm text-paper-2" />
+        {failed ? (
+          <Tx k="famFailed" className="mt-6 text-sm text-warn" />
+        ) : !code ? (
+          <div className="mt-6 flex justify-center">
+            <Spinner />
+          </div>
+        ) : (
+          <>
+            <img src={`/api/join/${code.code}/qr.svg`} alt={`QR code to reconnect: ${code.name}`} className="mx-auto mt-6 size-60 rounded-xl bg-white p-3" />
+            <p className="mt-4 inline-flex items-center gap-2 text-base text-paper">
+              <Avatar name={code.name} role={code.role} size="size-8" />
+              {code.name} · <T k={ROLE[code.role].k} />
+            </p>
+            <p className="evidence mt-3 break-all text-xs text-paper-3">{code.url}</p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <CopyButton value={code.url} className={btn.secondary} />
+              <button type="button" onClick={onClose} className={btn.primary}>
+                <T k="inviteDone" />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
+function InviteModal({ open, onClose, deviceId, members, onReconnect }: { open: boolean; onClose: () => void; deviceId: string; members: FamilyMember[]; onReconnect: (m: FamilyMember) => void }) {
   const { t } = useLang()
   const [name, setName] = useState('')
   const [role, setRole] = useState<FamilyRole>('elder')
@@ -294,6 +345,7 @@ function InviteModal({ open, onClose, deviceId }: { open: boolean; onClose: () =
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
   const [invite, setInvite] = useState<FamilyInviteResult | null>(null)
+  const sameName = members.find((m) => m.role !== 'guardian' && m.name.trim().toLowerCase() === name.trim().toLowerCase())
 
   useEffect(() => {
     if (open) {
@@ -371,6 +423,21 @@ function InviteModal({ open, onClose, deviceId }: { open: boolean; onClose: () =
               </span>
             </label>
           )}
+          {sameName && (
+            <div className="rounded-xl bg-warn/10 p-4 text-start">
+              <Tx text={fill(S.inviteSameName, { name: sameName.name })} className="text-sm text-paper" />
+              <button
+                type="button"
+                onClick={() => {
+                  onClose()
+                  onReconnect(sameName)
+                }}
+                className={`${btn.secondary} mt-3 w-full`}
+              >
+                <T k="famReconnect" />
+              </button>
+            </div>
+          )}
           {failed && <Tx k="famFailed" className="text-sm text-warn" split="stack" />}
           <button type="submit" disabled={busy} className={`${btn.primary} w-full`}>
             {busy ? <Spinner /> : <QrCode className="size-4" aria-hidden="true" />}
@@ -424,6 +491,7 @@ function Stat({ value, label, tone = 'text-paper' }: { value: number; label: Str
 
 function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceId: string; update: (s: FamilyState) => void }) {
   const [inviteOpen, setInviteOpen] = useState(false)
+  const [relinkFor, setRelinkFor] = useState<FamilyMember | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const pending = (state.requests ?? []).filter((r) => r.status === 'pending')
   const members = state.members ?? []
@@ -494,6 +562,7 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
                         guardianView
                         onStrict={(v) => void act(`s-${m.device_id}`, () => api.setStrict(deviceId, m.device_id, v))}
                         onRemove={() => void act(`r-${m.device_id}`, () => api.removeMember(deviceId, m.device_id))}
+                        onReconnect={() => setRelinkFor(m)}
                       />
                     </ul>
                   </StaggerItem>
@@ -510,7 +579,8 @@ function GuardianView({ state, deviceId, update }: { state: FamilyState; deviceI
           </div>
         </div>
       </section>
-      <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} deviceId={deviceId} />
+      <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} deviceId={deviceId} members={members} onReconnect={setRelinkFor} />
+      <RelinkModal member={relinkFor} onClose={() => setRelinkFor(null)} deviceId={deviceId} />
     </div>
   )
 }
@@ -645,6 +715,12 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
                   split="stack"
                 />
               )}
+              {me.status !== 'protected' && (
+                <a href="#setup" className={`${btn.primary} mt-4 w-full sm:w-auto`}>
+                  <ShieldCheck className="size-4" aria-hidden="true" />
+                  <T k="famTurnOn" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -667,7 +743,7 @@ function MemberView({ state, reg }: { state: FamilyState; reg: DeviceRegistratio
 
         <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
           {me.status !== 'protected' && (
-            <section>
+            <section id="setup" className="scroll-mt-28">
               {isAndroid() ? <AndroidSetup reg={reg} /> : <IphoneSetup reg={reg} />}
             </section>
           )}
@@ -783,7 +859,7 @@ export function Family() {
         // A failed background refresh keeps the page as it is; only a failed first load shows the error.
         .catch(() => alive && !loaded && setLoadFailed(true))
     void load()
-    const timer = window.setInterval(() => void load(), 8000)
+    const timer = window.setInterval(() => void load(), 3000)
     return () => {
       alive = false
       window.clearInterval(timer)

@@ -246,6 +246,19 @@ export const api = {
     return post<FamilyState>(`/api/join/${encodeURIComponent(code)}`, { device_id: deviceId })
   },
 
+  /** A reconnect code hands this screen the member's existing phone identity, so the installed profile and the family match again. */
+  async reconnect(code: string, deviceId: string): Promise<DeviceRegistration> {
+    const out = await post<{ device: DeviceRegistration }>(`/api/join/${encodeURIComponent(code)}`, { device_id: deviceId })
+    writeJson(DEVICE_KEY, out.device)
+    removeItem(ALERTS_KEY)
+    linkManifest()
+    return out.device
+  },
+
+  relinkMember(deviceId: string, memberId: string): Promise<FamilyInviteResult> {
+    return post<FamilyInviteResult>(`/api/family/members/${encodeURIComponent(memberId)}/relink`, { device_id: deviceId })
+  },
+
   decideRequest(deviceId: string, requestId: string, decision: 'allow' | 'block'): Promise<FamilyState> {
     return post<FamilyState>(`/api/family/requests/${encodeURIComponent(requestId)}`, { device_id: deviceId, decision })
   },

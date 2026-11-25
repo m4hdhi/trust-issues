@@ -544,6 +544,7 @@ export interface InviteInfo {
   role: FamilyRole
   strict: boolean
   used: boolean
+  relink: boolean
 }
 
 export interface Helpline {

@@ -26,9 +26,11 @@ STRICT_BY_DEFAULT = {"elder", "child", "helper"}
 INVITE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 LURE_WORDS = re.compile(
     r"fine|toll|recharge|parcel|deliver|refund|customs|visa|emiratesid|otp|verif|update|secure|login|signin|wallet|"
-    r"bonus|prize|winner|reward|pay|bill|invoice|kyc|account|police|gov|bank"
+    r"bonus|prize|winner|reward|pay|bill|invoice|kyc|account|police|gov|bank|"
+    r"win|won|gift|claim|free|cash|offer|lucky|track|shipment"
 )
-HOLD_SCORE = 0.85
+# Strict mode is for people who rarely spot scams, so an unknown site with money or delivery wording is held at a lower score.
+HOLD_SCORE = 0.5
 
 
 class Family(SQLModel, table=True):
@@ -56,6 +58,8 @@ class FamilyInvite(SQLModel, table=True):
     strict: bool = False
     created_at: datetime = Field(default_factory=db.utcnow)
     used_by: str | None = None
+    # Set when the guardian reconnects a member's phone: the code hands this existing identity to a new screen.
+    relink_device: str | None = None
 
 
 class ApprovalRequest(SQLModel, table=True):
@@ -281,6 +285,31 @@ def invite(device_id: str, name: str, role: str, strict: bool | None) -> dict[st
     return {"code": inv.code, "url": f"{get_settings().public_base_url.rstrip('/')}/join/{inv.code}", "name": inv.name, "role": inv.role}
 
 
+def migrate() -> None:
+    """Older databases have the invite table without the reconnect column."""
+    from sqlalchemy import inspect, text
+
+    if "relink_device" not in {c["name"] for c in inspect(db.engine).get_columns("familyinvite")}:
+        with db.engine.begin() as conn:
+            conn.execute(text("ALTER TABLE familyinvite ADD COLUMN relink_device VARCHAR"))
+
+
+RELINK_HOURS = 24
+
+
+def relink(device_id: str, member_id: str) -> dict[str, Any]:
+    """A one-time code that gives a member's phone its family back, when its browser forgot (another browser, Home Screen app, cleared data)."""
+    g = _require(device_id, guardian=True)
+    with db.session() as s:
+        m = s.get(FamilyMember, member_id)
+        if m is None or m.family_id != g.family_id or m.device_id == device_id:
+            raise FamilyError(404, "member not found")
+        inv = FamilyInvite(code=_code(), family_id=g.family_id, name=m.name, role=m.role, strict=m.strict, relink_device=m.device_id)
+        s.add(inv)
+        s.commit()
+    return {"code": inv.code, "url": f"{get_settings().public_base_url.rstrip('/')}/join/{inv.code}", "name": inv.name, "role": inv.role}
+
+
 def invite_info(code: str) -> dict[str, Any]:
     with db.session() as s:
         inv = s.get(FamilyInvite, code.upper())
@@ -288,8 +317,9 @@ def invite_info(code: str) -> dict[str, Any]:
             raise FamilyError(404, "invite not found")
         fam = s.get(Family, inv.family_id)
         guardians = [m.name for m in s.exec(select(FamilyMember).where(FamilyMember.family_id == inv.family_id, FamilyMember.role == "guardian"))]
+    expired = bool(inv.relink_device) and db.utcnow() - _aware(inv.created_at) > timedelta(hours=RELINK_HOURS)
     return {"code": inv.code, "family": fam.name if fam else "", "guardians": guardians, "name": inv.name, "role": inv.role,
-            "strict": inv.strict, "used": inv.used_by is not None}
+            "strict": inv.strict, "used": inv.used_by is not None or expired, "relink": bool(inv.relink_device)}
 
 
 def join(code: str, device_id: str, phone: str | None) -> dict[str, Any]:
@@ -299,6 +329,22 @@ def join(code: str, device_id: str, phone: str | None) -> dict[str, Any]:
             raise FamilyError(404, "invite not found")
         if inv.used_by and inv.used_by != device_id:
             raise FamilyError(409, "invite already used")
+        if inv.relink_device:
+            if db.utcnow() - _aware(inv.created_at) > timedelta(hours=RELINK_HOURS):
+                raise FamilyError(409, "invite already used")
+            member = s.get(FamilyMember, inv.relink_device)
+            if member is None or member.family_id != inv.family_id:
+                raise FamilyError(404, "member not found")
+            inv.used_by = device_id
+            s.add(inv)
+            # Earlier attempts to re-add the same person left extra entries that never turned on protection: drop them.
+            for extra in s.exec(select(FamilyMember).where(FamilyMember.family_id == inv.family_id, FamilyMember.role == member.role,
+                                                           FamilyMember.device_id != member.device_id, FamilyMember.last_seen.is_(None))):
+                if extra.name.strip().lower() == member.name.strip().lower():
+                    s.delete(extra)
+            s.commit()
+            invalidate()
+            return {"relink_device": inv.relink_device}
         if s.get(db.Device, device_id) is None:
             raise FamilyError(404, "unknown device")
         old = s.get(FamilyMember, device_id)

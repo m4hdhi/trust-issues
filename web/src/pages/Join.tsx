@@ -1,22 +1,19 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { useParams } from 'react-router'
+import { ShieldCheck } from 'lucide-react'
 import { Reveal } from '../components/motion'
 import { ErrorState, Spinner } from '../components/States'
 import { btn } from '../components/ui'
 import { T, Tx } from '../lib/lang'
 import { ApiError, api } from '../lib/api'
-import { isAndroid } from '../lib/push'
 import { useAsync } from '../lib/useAsync'
 import { Avatar, ROLE, iso } from './Family'
 import { useDevice } from '../lib/useDevice'
-import { Alerts, AndroidSetup, IphoneSetup, TestProtection } from './Protect'
 
 export function Join() {
   const { code = '' } = useParams()
   const { reg, failed: devFailed, retry } = useDevice()
   const { data: info, error, loading } = useAsync(() => api.inviteInfo(code), [code])
-  const [joined, setJoined] = useState(false)
   const [busy, setBusy] = useState(false)
   const [joinError, setJoinError] = useState<'used' | 'failed' | null>(null)
 
@@ -25,8 +22,15 @@ export function Join() {
     setBusy(true)
     setJoinError(null)
     try {
+      if (info?.relink) {
+        await api.reconnect(code, reg.device_id)
+        window.location.assign('/family')
+        return
+      }
       await api.joinFamily(code, reg.device_id)
-      setJoined(true)
+      // Straight to their own home screen: the SOS button, the tiles and the protection setup are all there.
+      window.location.assign('/family')
+      return
     } catch (e) {
       setJoinError(e instanceof ApiError && e.status === 409 ? 'used' : 'failed')
     } finally {
@@ -64,7 +68,21 @@ export function Join() {
         <p className="evidence text-sm text-gold">
           {info.family} · <T k="famKicker" />
         </p>
-        {!joined ? (
+        {info.relink ? (
+          <>
+            <Tx text={{ en: `Reconnect ${info.name}'s phone`, ar: `أعد ربط هاتف ${iso(info.name)}` }} as="h1" className="display mt-3 text-4xl text-paper sm:text-5xl" />
+            <Tx k="relinkBody" className="mt-6 max-w-[60ch] text-lg text-paper-2" />
+            {info.used || joinError === 'used' ? (
+              <Tx k="joinUsed" className="mt-6 text-base text-warn" />
+            ) : (
+              <button type="button" onClick={() => void join()} disabled={busy} className={`${btn.primary} mt-8 w-full sm:w-auto`}>
+                {busy ? <Spinner /> : <ShieldCheck className="size-4" aria-hidden="true" />}
+                <T k="relinkButton" />
+              </button>
+            )}
+            {joinError === 'failed' && <Tx k="famFailed" className="mt-4 text-sm text-warn" />}
+          </>
+        ) : (
           <>
             <Tx
               text={{ en: `${guardian} invited you to Family Shield`, ar: `دعاك ${iso(guardian)} للانضمام إلى درع العائلة` }}
@@ -100,23 +118,8 @@ export function Join() {
             )}
             {joinError === 'failed' && <Tx k="famFailed" className="mt-4 text-sm text-warn" split="stack" />}
           </>
-        ) : (
-          <>
-            <Tx k="joinedTitle" as="h1" className="display mt-3 text-4xl text-paper sm:text-5xl" arClassName="text-2xl text-paper-2 sm:text-3xl" split="stack" />
-            <div className="mt-8">{isAndroid() ? <AndroidSetup reg={reg} /> : <IphoneSetup reg={reg} />}</div>
-            <Link to="/family" className={`${btn.secondary} mt-8`}>
-              <T k="joinGoFamily" />
-              <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-            </Link>
-          </>
         )}
       </Reveal>
-      {joined && (
-        <div className="col-span-4 space-y-10 sm:col-span-8 lg:col-span-4 lg:col-start-9">
-          <TestProtection />
-          <Alerts deviceId={reg.device_id} />
-        </div>
-      )}
     </section>
   )
 }
