@@ -404,6 +404,16 @@
   animation: sweep 4s linear infinite;
 }
 
+/* Evidence sections are read closely, so their running text is set a step heavier. */
+.exhibit :where(.text-base, .text-lg) {
+  font-weight: 500;
+}
+
+.scan-orbit {
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 280deg, rgb(90 72 242 / 0.28) 360deg);
+  animation: sweep 1.6s linear infinite;
+}
+
 .radar-ring {
   transform-box: fill-box;
   transform-origin: center;

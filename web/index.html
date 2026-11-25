@@ -29,6 +29,21 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // If the app script fails to arrive (for example in the middle of a deploy) the page would stay empty: reload once.
+      setTimeout(function () {
+        var root = document.getElementById('root')
+        if (root && root.children.length) return
+        try {
+          var last = Number(sessionStorage.getItem('ti.recovered') || 0)
+          if (Date.now() - last < 60000) return
+          sessionStorage.setItem('ti.recovered', String(Date.now()))
+        } catch (e) {
+          return
+        }
+        location.reload()
+      }, 7000)
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
