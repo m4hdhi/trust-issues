@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { PageHeader, SOURCE_META, SourceTag } from './ui'
+import { PageHeader, Pager, SearchBox, SOURCE_META, SourceTag, usePaged } from './ui'
 import { ScanDrawer } from './ScanDrawer'
 import { BrandMark, brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
@@ -47,6 +47,8 @@ export function Radar() {
   const [failed, setFailed] = useState(false)
   const [, setNow] = useState(Date.now())
   const [open, setOpen] = useState<{ id: string; title: string } | null>(null)
+  const [query, setQuery] = useState('')
+  const [source, setSource] = useState<CaseSource | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -92,6 +94,12 @@ export function Radar() {
     return c
   }, [items])
 
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return items.filter((i) => (!source || i.source === source) && (!q || i.domain.toLowerCase().includes(q) || (brandName(i.brand)?.en ?? '').toLowerCase().includes(q) || (brandName(i.brand)?.ar ?? '').includes(q)))
+  }, [items, query, source])
+  const paged = usePaged(shown, `${query}|${source ?? ''}`)
+
   return (
     <div>
       <PageHeader
@@ -108,24 +116,39 @@ export function Radar() {
         }
       />
 
-      <dl className="mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-line sm:grid-cols-4 xl:grid-cols-7">
-        <div className="col-span-2 flex flex-col-reverse gap-1 bg-ink-850 p-6 sm:col-span-4 xl:col-span-1">
+      <dl className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
+        <div className="col-span-2 flex flex-col-reverse gap-1 rounded-2xl bg-ink-850 p-5 sm:col-span-4 xl:col-span-1">
           <dt className="text-sm text-paper-3">
             <T k="certsWatched" />
           </dt>
-          <dd className="evidence text-2xl text-paper">{certs != null ? <Counter value={certs} /> : 'n/a'}</dd>
+          <dd className="display num text-3xl text-paper">{certs != null ? <Counter value={certs} /> : 'n/a'}</dd>
         </div>
         {SOURCES.map((s) => (
-          <div key={s} className="flex flex-col-reverse gap-1 bg-ink-850 p-6">
+          <button
+            key={s}
+            type="button"
+            onClick={() => setSource(source === s ? null : s)}
+            aria-pressed={source === s}
+            className={`press flex flex-col-reverse gap-1 rounded-2xl p-5 text-start transition-colors ${source === s ? 'bg-ink-950 outline-2 outline-gold' : 'bg-ink-850 hover:bg-ink-950'}`}
+          >
             <dt>
               <SourceTag source={s} />
             </dt>
-            <dd className="evidence text-2xl" style={{ color: SOURCE_META[s].color }}>
+            <dd className="display num text-3xl" style={{ color: SOURCE_META[s].color }}>
               <Counter value={counts[s] ?? 0} duration={0.4} />
             </dd>
-          </div>
+          </button>
         ))}
       </dl>
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <SearchBox value={query} onChange={setQuery} />
+        {source && (
+          <button type="button" onClick={() => setSource(null)} className="press inline-flex h-10 items-center rounded-full bg-ink-800 px-4 text-sm text-paper hover:bg-ink-700">
+            <T k="allSources" />
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-16 text-paper-3">
@@ -135,10 +158,12 @@ export function Radar() {
         <ErrorState onRetry={() => window.location.reload()} />
       ) : !items.length ? (
         <EmptyState message="radarEmpty" />
+      ) : !shown.length ? (
+        <EmptyState message="noMatch" />
       ) : (
-        <ul className="border-t border-line">
+        <ul className="space-y-2">
           <AnimatePresence initial={false}>
-            {items.map((r) => {
+            {paged.rows.map((r) => {
               const key = itemKey(r)
               const det = detailText(r.detail)
               const brand = brandName(r.brand)
@@ -152,22 +177,22 @@ export function Radar() {
                   animate={{ opacity: 1, y: 0, backgroundColor: 'rgba(90,72,242,0)' }}
                   exit={{ opacity: 0 }}
                   transition={{ ...T_LAYOUT, backgroundColor: { duration: 2, ease: EASE_OUT } }}
-                  className="border-b border-line"
+                  className="rounded-2xl bg-ink-850"
                 >
                   <button
                     type="button"
                     disabled={!scanId}
                     onClick={() => scanId && setOpen({ id: scanId, title: r.domain })}
-                    className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-6 gap-y-2 py-4 text-start sm:grid-cols-[48px_160px_1fr_auto] ${scanId ? 'cursor-pointer hover:bg-ink-850' : 'cursor-default'}`}
+                    className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-6 gap-y-2 rounded-2xl px-5 py-4 text-start sm:grid-cols-[48px_160px_1fr_auto] ${scanId ? 'cursor-pointer hover:bg-ink-950' : 'cursor-default'}`}
                   >
-                    <span className="evidence num hidden text-xs text-paper-3 sm:block">{shortAgo(r.ts)}</span>
+                    <span className="num hidden text-sm text-paper-2 sm:block">{shortAgo(r.ts)}</span>
                     <span className="hidden sm:block">
                       <SourceTag source={r.source} />
                     </span>
                     <span className="flex min-w-0 items-center gap-4">
-                      <BrandMark brand={r.brand} className="size-8" />
+                      <BrandMark brand={r.brand} className="size-10" />
                       <span className="min-w-0">
-                        <span className={`evidence block truncate text-base ${risky ? 'text-paper' : 'text-paper-2'}`}>{risky ? defang(r.domain) : r.domain}</span>
+                        <span className={`evidence block truncate text-base font-bold ${risky ? 'text-paper' : 'text-paper-2'}`}>{risky ? defang(r.domain) : r.domain}</span>
                         <span className="block truncate text-sm text-paper-3">
                           {brand && <T text={brand} />}
                           {brand && det ? ' · ' : ''}
@@ -190,6 +215,7 @@ export function Radar() {
           </AnimatePresence>
         </ul>
       )}
+      {!loading && shown.length > 0 && <Pager p={paged} />}
       <ScanDrawer scanId={open?.id ?? null} title={open?.title} onClose={() => setOpen(null)} />
     </div>
   )

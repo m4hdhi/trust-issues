@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Check, PanelRightOpen, X } from 'lucide-react'
-import { PageHeader, Segmented, SourceTag } from './ui'
+import { PageHeader, Pager, SearchBox, Segmented, SourceTag, usePaged } from './ui'
 import { ScanDrawer } from './ScanDrawer'
 import { BrandMark, brandName } from '../components/BrandMark'
 import { VerdictChip } from '../components/VerdictChip'
@@ -25,6 +25,13 @@ export function Cases() {
   const [busy, setBusy] = useState<string | null>(null)
   const [open, setOpen] = useState<CaseItem | null>(null)
   const { data, loading, error, reload, setData } = useAsync(() => consoleApi.cases(filter), [filter])
+  const [query, setQuery] = useState('')
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const all = data ?? []
+    return q ? all.filter((c) => c.domain.toLowerCase().includes(q) || c.url.toLowerCase().includes(q) || (brandName(c.brand)?.en ?? '').toLowerCase().includes(q) || (brandName(c.brand)?.ar ?? '').includes(q)) : all
+  }, [data, query])
+  const paged = usePaged(shown, `${query}|${filter}`)
 
   const decide = async (c: CaseItem, action: 'confirm' | 'reject') => {
     setBusy(c.id)
@@ -65,12 +72,17 @@ export function Cases() {
       ) : !data?.length ? (
         <EmptyState message="casesEmpty" />
       ) : (
-        <div className="scrollbar-thin overflow-x-auto">
+        <>
+        <div className="mb-4">
+          <SearchBox value={query} onChange={setQuery} />
+        </div>
+        {!shown.length && <EmptyState message="noMatch" />}
+        <div className={`scrollbar-thin overflow-x-auto rounded-2xl bg-ink-850 px-5 ${shown.length ? '' : 'hidden'}`}>
           <table className="w-full min-w-[880px] text-sm">
-            <thead className="border-b border-line text-xs text-paper-3">
+            <thead className="border-b border-line text-xs text-paper-2">
               <tr>
                 {COLUMNS.map((k) => (
-                  <th key={k} className="px-4 py-3 text-start font-normal first:ps-0">
+                  <th key={k} className="px-4 py-4 text-start font-bold first:ps-0">
                     <T k={k} />
                   </th>
                 ))}
@@ -79,7 +91,7 @@ export function Cases() {
             </thead>
             <tbody>
               <AnimatePresence initial={false}>
-                {data.map((c, i) => {
+                {paged.rows.map((c, i) => {
                   const brand = brandName(c.brand)
                   const color = STATUS_COLOR[c.status]
                   const risky = c.verdict === 'scam' || c.verdict === 'suspicious'
@@ -91,10 +103,10 @@ export function Cases() {
                       animate={{ opacity: 1, y: 0, transition: { duration: 0.25, delay: Math.min(i, 12) * 0.02, ease: EASE_OUT } }}
                       exit={{ opacity: 0, x: 16, transition: { duration: 0.2 } }}
                       transition={T_LAYOUT}
-                      className="border-b border-line hover:bg-ink-850"
+                      className="border-b border-line last:border-b-0 hover:bg-ink-950"
                     >
                       <td className="max-w-[300px] py-4 pe-4">
-                        <p className="evidence truncate text-base text-paper">{risky ? defang(c.domain) : c.domain}</p>
+                        <p className="evidence truncate text-base font-bold text-paper">{risky ? defang(c.domain) : c.domain}</p>
                         <p className="evidence truncate text-xs text-paper-3">{c.url}</p>
                       </td>
                       <td className="px-4 py-4">
@@ -169,6 +181,8 @@ export function Cases() {
             </tbody>
           </table>
         </div>
+        <Pager p={paged} />
+        </>
       )}
       <ScanDrawer scanId={open?.scan_id ?? null} title={open?.domain} onClose={() => setOpen(null)} />
     </div>

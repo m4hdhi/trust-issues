@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import cytoscape, { type Core } from 'cytoscape'
 import { Maximize2, PanelRightOpen, Search, X } from 'lucide-react'
 import { PageHeader, Panel } from './ui'
@@ -8,10 +8,35 @@ import { VerdictChip } from '../components/VerdictChip'
 import { EmptyState, ErrorState, LoadingState } from '../components/States'
 import { T, useLang } from '../lib/lang'
 import { consoleApi } from '../lib/api'
-import { graphStyle, NODE_KINDS, nodeColor, toElements } from '../lib/graph'
+import { graphStyle, NODE_COLOR, NODE_KINDS, nodeColor, toElements } from '../lib/graph'
+import { Counter } from '../components/motion'
+import type { StringKey } from '../lib/i18n'
 import { sitesCount } from '../lib/format'
 import { useAsync } from '../lib/useAsync'
 import type { GraphNode, NodeKind } from '../lib/types'
+
+/** Horizontal bars: one row per item, longest first, drawn against the largest value. */
+function Bars({ title, rows }: { title: StringKey; rows: { label: ReactNode; n: number; color: string }[] }) {
+  const max = Math.max(1, ...rows.map((r) => r.n))
+  return (
+    <Panel className="rounded-2xl p-5">
+      <h2 className="display text-lg text-paper">
+        <T k={title} />
+      </h2>
+      <ul className="mt-4 space-y-3">
+        {rows.map((r, i) => (
+          <li key={i} className="grid grid-cols-[minmax(0,9rem)_1fr_2rem] items-center gap-3 text-sm">
+            <span className="truncate text-paper">{r.label}</span>
+            <span className="h-3 overflow-hidden rounded-full bg-ink-800">
+              <span className="block h-full rounded-full" style={{ width: `${(r.n / max) * 100}%`, background: r.color }} />
+            </span>
+            <span className="num text-end text-paper">{r.n}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  )
+}
 
 export function Network() {
   const { t } = useLang()
@@ -36,8 +61,10 @@ export function Network() {
         name: 'cose',
         animate: false,
         padding: 30,
-        nodeRepulsion: () => (big ? 6000 : 12000),
-        idealEdgeLength: () => (big ? 50 : 80),
+        nodeRepulsion: () => (big ? 9000 : 26000),
+        idealEdgeLength: () => (big ? 60 : 110),
+        componentSpacing: 110,
+        nodeOverlap: 24,
         numIter: big ? 600 : 1200,
       },
       minZoom: 0.15,
@@ -109,6 +136,23 @@ export function Network() {
   }, [selected, data, byId])
 
   const kinds = useMemo(() => NODE_KINDS.filter((k) => data?.nodes.some((n) => n.kind === k)), [data])
+  const summary = useMemo(() => {
+    const nodes = data?.nodes ?? []
+    const byKind = NODE_KINDS.filter((k) => k !== 'domain')
+      .map((k) => ({ kind: k, n: nodes.filter((x) => x.kind === k).length }))
+      .filter((x) => x.n > 0)
+      .sort((a, b) => b.n - a.n)
+    const brands = new Map<string, number>()
+    for (const c of data?.campaigns ?? []) for (const b of c.brands) brands.set(b, (brands.get(b) ?? 0) + c.size)
+    return {
+      sites: nodes.filter((n) => n.kind === 'domain').length,
+      shared: nodes.filter((n) => n.kind !== 'domain').length,
+      links: data?.edges.length ?? 0,
+      groups: data?.campaigns.length ?? 0,
+      byKind,
+      brands: [...brands.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6),
+    }
+  }, [data])
 
   return (
     <div>
@@ -120,7 +164,31 @@ export function Network() {
       ) : !data?.nodes.length ? (
         <EmptyState message="graphEmpty" />
       ) : (
-        <div className="grid gap-4 lg:h-[calc(100dvh-170px)] lg:min-h-[560px] lg:grid-cols-[280px_1fr]">
+        <>
+        <dl className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {(
+            [
+              ['netSites', summary.sites, 'text-scam'],
+              ['netShared', summary.shared, 'text-gold'],
+              ['netLinks', summary.links, 'text-paper'],
+              ['netGroups', summary.groups, 'text-paper'],
+            ] as const
+          ).map(([k, v, tone]) => (
+            <div key={k} className="flex flex-col-reverse gap-1 rounded-2xl bg-ink-850 p-5">
+              <dt className="text-sm text-paper-3">
+                <T k={k} />
+              </dt>
+              <dd className={`display num text-4xl ${tone}`}>
+                <Counter value={v} />
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mb-4 grid gap-3 lg:grid-cols-2">
+          <Bars title="netWhat" rows={summary.byKind.map((x) => ({ label: <T k={`nk_${x.kind}`} />, n: x.n, color: NODE_COLOR[x.kind] }))} />
+          <Bars title="netBrands" rows={summary.brands.map(([b, n]) => ({ label: b, n, color: '#e2434b' }))} />
+        </div>
+        <div className="grid gap-4 lg:h-[660px] lg:grid-cols-[280px_1fr]">
           <Panel className="flex min-h-0 flex-col p-3">
             <p className="px-2 pt-1 pb-2 text-sm font-semibold text-paper">
               <T k="campaigns" />
@@ -266,6 +334,7 @@ export function Network() {
             )}
           </Panel>
         </div>
+        </>
       )}
       <ScanDrawer scanId={scan?.id ?? null} title={scan?.title} onClose={() => setScan(null)} />
     </div>
