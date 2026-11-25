@@ -576,7 +576,7 @@ export interface FileCheck {
   sha256: string
   kind: { id: string; en: string; ar: string }
   score: number
-  verdict: 'scam' | 'suspicious' | 'clear'
+  verdict: 'scam' | 'suspicious' | 'partial' | 'clear'
   findings: CheckFinding[]
   virustotal: { flagged: number; engines: number } | null
   links: { url: string; scan_id: string }[]

@@ -161,6 +161,9 @@ npm run dev        # http://localhost:5173 (proxies /api to :8000)
 3. Use the **Standard** plan (2 GB RAM) or larger: the sandbox browser needs more than the 512 MB of the smaller plans.
 4. The public URL (`https://<name>.onrender.com`) is picked up automatically for phone profiles, push links and takedown emails.
 
+### Try it with ready-made test data
+[`demo-kit/`](demo-kit/) has scam and safe links, messages, QR codes, phone numbers and files, with the result each one should give.
+
 ### Batch-test a list of URLs (for the hidden test set)
 ```bash
 cd backend

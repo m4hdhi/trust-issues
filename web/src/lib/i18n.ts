@@ -132,6 +132,7 @@ export const S = {
   fileTooBig: { en: 'This file is larger than 10 MB.', ar: 'هذا الملف أكبر من 10 ميغابايت.' },
   fv_scam: { en: 'Dangerous file', ar: 'ملف خطير' },
   fv_suspicious: { en: 'Be careful with this file', ar: 'كن حذرًا مع هذا الملف' },
+  fv_partial: { en: 'No virus verdict yet', ar: 'لا يوجد حكم بشأن الفيروسات بعد' },
   fv_clear: { en: 'Nothing dangerous found', ar: 'لم نجد شيئًا خطيرًا' },
   fileLinks: { en: 'Links inside this file', ar: 'الروابط داخل هذا الملف' },
   fileSeeCheck: { en: 'See the check', ar: 'اعرض الفحص' },

@@ -309,9 +309,11 @@ async def file(name: str, data: bytes) -> dict[str, Any]:
         text = data[:400_000].decode("utf-8", "ignore")
 
     vt = None
+    virus_checked = False
     if get_settings().virustotal_key:
         try:
             stats = await intel._vt_stats(f"files/{sha}")
+            virus_checked = True
             if stats is not None:
                 bad = int(stats.get("malicious", 0)) + int(stats.get("suspicious", 0))
                 vt = {"flagged": bad, "engines": sum(int(v) for v in stats.values())}
@@ -333,4 +335,4 @@ async def file(name: str, data: bytes) -> dict[str, Any]:
         if u not in urls:
             urls.append(u)
     return {"name": name, "size": len(data), "sha256": sha, "kind": {"id": kind, "en": kind_en, "ar": kind_ar}, "score": min(100, score),
-            "findings": findings, "virustotal": vt, "text": text[:6000].strip(), "urls": urls[:5]}
+            "findings": findings, "virustotal": vt, "virus_checked": virus_checked, "text": text[:6000].strip(), "urls": urls[:5]}

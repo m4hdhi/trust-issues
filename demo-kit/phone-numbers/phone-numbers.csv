@@ -1,0 +1,13 @@
+number,expected,why
+8002626,Verified official number,Abu Dhabi Police Aman service
+8003333,Verified official number,Abu Dhabi Police call centre
+901,Verified official number,Dubai Police non-emergency
+999,Verified official number,UAE police emergency
+600540000,Verified official number,Emirates NBD call centre
+600502030,Verified official number,ADCB call centre
+600525500,Verified official number,FAB
+8009090,Verified official number,RTA Dubai
+80072545,Verified official number,Salik
+80022823,Verified official number,Central Bank of the UAE
++1 202 555 0143,Unknown number with a foreign-number warning,A fictional US number (the 555-01xx range is reserved for examples). Use this one to demo reporting.
+12345,Be careful,Not a valid phone number

@@ -163,7 +163,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
   )
 }
 
-const FILE_TONE = { scam: 'danger', suspicious: 'warn', clear: 'ok' } as const
+const FILE_TONE = { scam: 'danger', suspicious: 'warn', partial: 'info', clear: 'ok' } as const
 
 function size(n: number): string {
   return n >= 1_048_576 ? `${(n / 1_048_576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`

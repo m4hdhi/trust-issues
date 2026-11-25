@@ -365,7 +365,9 @@ async def check_file(file: UploadFile = File(...)) -> dict[str, Any]:
     out["links"] = [{"url": u, "scan_id": scans.start(u, mode="deep", source="web")} for u in out.pop("urls")]
     out["score"] = min(100, score)
     out["verdict"] = "scam" if score >= 60 else "suspicious" if score >= 25 else "clear"
-    if out["verdict"] == "clear":
+    if out["verdict"] == "clear" and not out["virus_checked"]:
+        out["verdict"] = "partial"
+    elif out["verdict"] == "clear":
         out["findings"].append({"level": "info", "en": "We found nothing dangerous in this file. That is not a guarantee: only open files you were expecting.",
                                 "ar": "لم نجد شيئًا خطيرًا في هذا الملف. هذا ليس ضمانًا: افتح فقط الملفات التي كنت تنتظرها."})
     return out
