@@ -83,9 +83,11 @@ def notify_block(device_id: str, domain: str, result: dict[str, Any] | None, hea
         return
     head = headline or (result or {}).get("headline") or {}
     ar = device.lang == "ar"
-    title = "🛡️ تم حظر رابط احتيالي" if ar else "🛡️ Scam link blocked"
+    # The browser can only show "site can't be reached" for a blocked address, so this banner is the explanation.
+    title = "🛑 موقع احتيالي: تم حظره" if ar else "🛑 Scam site blocked"
     body = (head.get("ar") if ar else head.get("en")) or domain
-    send(device, {"title": title, "body": f"{body}\n{domain}", "url": f"/scan/{result['id']}" if result else "/protect", "tag": domain})
+    advice = "هذا الموقع غير آمن. ارجع ولا تُدخل أي بيانات. اضغط لمعرفة السبب." if ar else "This site is not safe. Go back and do not enter anything. Tap to see why."
+    send(device, {"title": title, "body": f"{body}: {domain}\n{advice}", "url": f"/scan/{result['id']}" if result else "/protect", "tag": domain})
 
 
 def broadcast_wave(site: str, result: dict[str, Any]) -> None:
