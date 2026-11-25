@@ -499,6 +499,7 @@ export interface FamilyRequest {
   reason: Bilingual & { brand: string | null }
   status: 'pending' | 'allowed' | 'blocked'
   ts: string
+  check: { verdict: Verdict; score: number; scan_id: string; headline: Bilingual | null } | null
 }
 
 export interface FamilyEventItem {

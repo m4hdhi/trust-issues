@@ -97,6 +97,21 @@ async def _forward(wire: bytes, qname: str, qtype: int) -> bytes:
     return data
 
 
+_guardian_checks: dict[str, float] = {}
+
+
+def _check_for_guardian(registrable: str) -> None:
+    """A held site gets a full check, so the guardian sees a verdict and score before deciding. Once a day per site."""
+    now = time.time()
+    if now - _guardian_checks.get(registrable, 0) < 86400:
+        return
+    _guardian_checks[registrable] = now
+    try:
+        scans.start(f"https://{registrable}/", mode="deep", source="dns")
+    except ValueError:
+        pass
+
+
 async def resolve(wire: bytes, device_id: str | None) -> bytes:
     req = DNSRecord.parse(wire)
     q = req.q
@@ -123,6 +138,7 @@ async def resolve(wire: bytes, device_id: str | None) -> bytes:
         if rule != "allow" and mem["strict"]:
             reason = family.risky(qname)
             if reason:
+                _check_for_guardian(registrable)
                 loop.run_in_executor(None, family.hold, mem, qname, reason)
                 return _blocked_response(req)
     if q.qtype in (QTYPE.A, QTYPE.AAAA, QTYPE.HTTPS):

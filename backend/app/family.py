@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import Column, Text
-from sqlmodel import Field, SQLModel, select
+from sqlmodel import Field, SQLModel, or_, select
 
 from . import db
 from .config import get_settings
@@ -387,6 +387,19 @@ def sos(device_id: str) -> dict[str, Any]:
 
 # ---------------------------------------------------------------- read model for the app
 
+def _site_check(domain: str) -> dict[str, Any] | None:
+    """The latest full check of a held site: what the guardian sees before allowing or blocking."""
+    with db.session() as s:
+        # A held address can redirect elsewhere, so match the address that was submitted as well as where it ended up.
+        asked = [f"https://{domain}/", f"https://{domain}", f"http://{domain}/", domain]
+        row = s.exec(select(db.ScanRecord).where(or_(db.ScanRecord.domain == domain, db.ScanRecord.input.in_(asked), db.ScanRecord.url.in_(asked)))
+                     .order_by(db.ScanRecord.created_at.desc())).first()
+    if row is None:
+        return None
+    res = row.result()
+    return {"verdict": row.verdict, "score": row.score, "scan_id": row.id, "headline": res.get("headline")}
+
+
 def _warnings(limit: int = 3) -> list[dict[str, Any]]:
     since = db.utcnow() - timedelta(days=3)
     reg = get_registry()
@@ -448,7 +461,8 @@ def state(device_id: str) -> dict[str, Any]:
         "me": member_view(me),
         "members": [member_view(m) for m in members],
         "requests": [{"id": r.id, "device_id": r.device_id, "member": names.get(r.device_id, "?"), "host": r.host, "domain": r.domain,
-                      "reason": json.loads(r.reason_json or "{}"), "status": r.status, "ts": _aware(r.created_at).isoformat()}
+                      "reason": json.loads(r.reason_json or "{}"), "status": r.status, "ts": _aware(r.created_at).isoformat(),
+                      "check": _site_check(r.domain) if r.status == "pending" else None}
                      for r in requests],
         "events": [{"id": e.id, "kind": e.kind, "member": names.get(e.device_id or "", None), "domain": e.domain,
                     "detail": json.loads(e.detail_json or "{}"), "ts": _aware(e.ts).isoformat()} for e in events],

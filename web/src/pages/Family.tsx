@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { Modal } from '../components/Modal'
+import { VerdictChip } from '../components/VerdictChip'
 import { CopyButton } from '../components/CopyButton'
 import { BrandMark } from '../components/BrandMark'
 import { Counter, Reveal, Stagger, StaggerItem } from '../components/motion'
@@ -200,6 +201,26 @@ function RequestCard({ r, busy, onDecide }: { r: FamilyRequest; busy: boolean; o
           </p>
         </div>
       </div>
+      {r.check ? (
+        <div className={`mt-4 rounded-xl p-4 ${r.check.verdict === 'scam' ? 'bg-scam/10' : r.check.verdict === 'suspicious' ? 'bg-warn/10' : r.check.verdict === 'safe' ? 'bg-safe/10' : 'bg-ink-900'}`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-paper-2">
+              <T k="famOurCheck" />
+            </span>
+            <VerdictChip verdict={r.check.verdict} score={r.check.score} />
+          </div>
+          {r.check.headline && <Tx text={r.check.headline} className="mt-2 text-base font-semibold text-paper" />}
+          <Tx k={`famAdvice_${r.check.verdict}` as StringKey} className="mt-1 text-sm text-paper-2" />
+          <Link to={`/scan/${encodeURIComponent(r.check.scan_id)}`} className="mt-2 inline-flex items-center gap-1 text-sm text-gold hover:underline">
+            <T k="trOpen" />
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-4 flex items-center gap-3 rounded-xl bg-ink-900 p-4 text-sm text-paper-2">
+          <Spinner />
+          <T k="famChecking" />
+        </div>
+      )}
       <div className="mt-4 grid grid-cols-2 gap-3">
         <button type="button" disabled={busy} onClick={() => onDecide('block')} className={`${btn.primary} h-auto! min-h-12 py-2`}>
           <ShieldCheck className="size-4 shrink-0" aria-hidden="true" />

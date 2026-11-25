@@ -391,6 +391,15 @@
     filter: brightness(0) invert(1);
   }
 
+  .brand-logo-dark,
+  .zone-dark .brand-logo-light {
+    display: none;
+  }
+
+  .zone-dark .brand-logo-dark {
+    display: block;
+  }
+
   .text-grad {
     background: linear-gradient(100deg, #5a48f2 0%, #c64fd8 55%, #ff7a59 100%);
     -webkit-background-clip: text;
