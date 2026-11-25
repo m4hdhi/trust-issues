@@ -1,382 +1,305 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trust Issues | أزمة ثقة · ScamShield AI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trust Issues | أزمة ثقة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --ink:#100e33; --ink-2:#17144a; --ink-3:#1e1a5a; --line:rgba(255,255,255,.11); --line-2:rgba(255,255,255,.2);
-  --paper:#F5F4FF; --mist:#C9C7EC; --dim:#9794C4; --brand:#B3A6FF; --brand-2:#D0C6FF; --seal:#B3A6FF;
-  --scam:#FF7A80; --warn:#FFB648; --safe:#4AD9A4;
-  --ease:cubic-bezier(.23,1,.32,1);
-}
+:root{--bg:#f2f1fc;--ink:#15143c;--ink2:#474770;--ink3:#7775a0;--violet:#5a48f2;--magenta:#c64fd8;--coral:#ff7a59;--line:rgba(27,24,80,.1);--scam:#e2434b;--warn:#d27706;--safe:#0c9c6c;--ease:cubic-bezier(.23,1,.32,1)}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#0b0a26;color:var(--paper);overflow:hidden}
-body{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
-.ar{font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl}
-.ar-d{font-family:'Alexandria',sans-serif;direction:rtl}
-.mono{font-family:'JetBrains Mono',monospace;letter-spacing:-.01em}
-.num{font-variant-numeric:tabular-nums}
+html,body{height:100%;background:#e9e7fa;color:var(--ink);overflow:hidden}
+body{font-family:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 #stage{position:fixed;inset:0;display:grid;place-items:center}
 .deck{width:1920px;height:1080px;position:relative;transform-origin:center}
-.slide{position:absolute;inset:0;background:var(--ink);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+.slide{position:absolute;inset:0;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .5s var(--ease);direction:rtl;
+  background:radial-gradient(900px 620px at 100% 0%,rgba(122,104,255,.34),transparent 68%),radial-gradient(760px 560px at 0% 6%,rgba(255,138,180,.28),transparent 70%),radial-gradient(900px 600px at 18% 104%,rgba(255,190,140,.3),transparent 70%),var(--bg)}
 .slide.on{opacity:1;pointer-events:auto}
-.grain{position:absolute;inset:0;background:radial-gradient(1200px 760px at -6% -14%,rgba(106,86,255,.5),transparent 62%),radial-gradient(1000px 700px at 108% 112%,rgba(255,110,170,.3),transparent 60%);pointer-events:none}
-.pad{position:absolute;inset:96px 120px 88px}
-.kicker{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;color:var(--mist);text-transform:uppercase;letter-spacing:.14em}
-.kicker .ar{text-transform:none;letter-spacing:0;font-size:22px}
-.kicker b{color:var(--seal);font-weight:500}
-h1{font-size:76px;line-height:1.04;letter-spacing:-.022em;font-weight:600;margin-top:28px;max-width:1180px}
-h1 .ar-d{display:block;font-size:46px;line-height:1.3;letter-spacing:0;font-weight:600;color:var(--seal);margin-top:14px;text-align:left;direction:rtl;unicode-bidi:plaintext}
-.foot{position:absolute;left:120px;right:120px;bottom:40px;display:flex;justify-content:space-between;font-size:16px;color:var(--dim)}
-mark{background:linear-gradient(transparent 58%,rgba(150,130,255,.42) 58%,rgba(150,130,255,.42) 92%,transparent 92%);color:inherit;padding:0 .06em}
-mark.gold{background:linear-gradient(transparent 58%,rgba(150,130,255,.55) 58%,rgba(150,130,255,.55) 92%,transparent 92%)}
-mark.red{background:linear-gradient(transparent 58%,rgba(239,68,68,.40) 58%,rgba(239,68,68,.40) 92%,transparent 92%)}
-.chip{display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border-radius:8px;background:rgba(238,233,224,.06);font-size:20px;color:var(--paper)}
-.rule{height:1px;background:var(--line)}
-/* motion */
-[data-a]{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:calc(var(--i,0) * 90ms + 120ms)}
-.slide.on [data-a]{opacity:1;transform:none}
-.static [data-a]{transition:none!important}
 .static .slide{transition:none!important}
-/* progress */
-#bar{position:fixed;left:0;bottom:0;height:2px;background:var(--brand);transition:width .5s var(--ease);z-index:5}
-#count{position:fixed;right:24px;bottom:14px;font:500 13px 'JetBrains Mono',monospace;color:var(--dim);z-index:5}
-.static #bar,.static #count{display:none}
-
-/* 1 title */
-.s1 .word{font-size:142px;line-height:.95;letter-spacing:-.03em;font-weight:600;margin-top:64px}
-.s1 .q{color:var(--seal)}
-.s1 .word-ar{font-family:'Alexandria';font-size:104px;font-weight:600;color:var(--paper);direction:rtl;text-align:left;margin-top:18px;line-height:1.15}
-.s1 .tag{font-size:42px;line-height:1.25;margin-top:46px;letter-spacing:-.02em;max-width:900px}
-.s1 .tag-ar{font-size:34px;color:var(--mist);margin-top:12px;text-align:left}
-.s1 .team{position:absolute;left:0;bottom:0;max-width:780px;font-size:22px;color:var(--mist);line-height:1.6}
-.s1 .team b{color:var(--paper);font-weight:500}
-.phone{position:absolute;right:120px;top:76px;width:430px;height:928px;border-radius:64px;background:#0b0d0f;padding:14px;box-shadow:0 40px 120px rgba(0,0,0,.55),0 0 0 1px rgba(238,233,224,.08)}
-.phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:52px;display:block}
-.ticker{position:absolute;right:570px;top:0;bottom:0;width:330px;overflow:hidden;mask-image:linear-gradient(transparent,#000 18%,#000 82%,transparent)}
-.ticker .col{position:absolute;inset:0;display:flex;flex-direction:column;gap:22px;padding-top:40px;animation:tick 38s linear infinite}
-.static .ticker .col{animation:none}
-.ticker span{font:400 19px 'JetBrains Mono',monospace;color:rgba(149,163,189,.55);white-space:nowrap}
-.ticker span i{font-style:normal;color:var(--scam);opacity:.85;margin-right:12px}
-@keyframes tick{to{transform:translateY(-50%)}}
-
-/* 2 problem */
-.cols3{position:absolute;left:0;right:0;top:330px;display:grid;grid-template-columns:repeat(3,1fr);gap:64px}
-.cols3 .n{font-size:92px;font-weight:600;color:var(--seal);letter-spacing:-.04em;line-height:1}
-.cols3 h3{font-size:36px;font-weight:600;letter-spacing:-.02em;margin-top:26px;line-height:1.12}
-.cols3 p{font-size:24px;line-height:1.45;color:var(--mist);margin-top:16px}
-.cols3 .ar{font-size:22px;color:var(--paper);opacity:.85;margin-top:18px;line-height:1.6}
-.cols3>div{padding-top:28px;border-top:1px solid var(--line-2)}
-.reach{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding-top:30px;border-top:1px solid var(--line)}
-.reach .goal{font-size:34px;letter-spacing:-.02em;max-width:1000px;line-height:1.25}
-.logos{display:flex;gap:26px;align-items:center}
-.logos svg{width:44px;height:44px}
-
-/* 3 product */
-.grid2{position:absolute;left:0;top:300px;width:1010px;display:grid;grid-template-columns:1fr 1fr;column-gap:64px;row-gap:46px}
-.grid2>div{border-top:1px solid var(--line-2);padding-top:22px}
-.grid2 .n{font:500 20px 'JetBrains Mono',monospace;color:var(--brand-2)}
-.grid2 h3{font-size:38px;font-weight:600;letter-spacing:-.025em;margin-top:10px}
-.grid2 p{font-size:23px;line-height:1.45;color:var(--mist);margin-top:12px}
-.grid2 .ico{display:flex;gap:14px;margin-top:16px}
-.grid2 .ico svg{width:30px;height:30px}
-.wall{position:absolute;right:0;top:300px;width:480px}
-.wall .cap{display:flex;align-items:baseline;gap:16px}
-.wall .cap b{font-size:84px;font-weight:600;letter-spacing:-.05em;line-height:1;color:var(--paper)}
-.wall .cap span{font-size:24px;color:var(--mist);line-height:1.3}
-.wall .tiles{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:24px}
-.wall .tiles div{aspect-ratio:1;border-radius:14px;background:#F4F0E8;display:grid;place-items:center;overflow:hidden}
-.wall .tiles img{width:70%;height:70%;object-fit:contain}
-
-/* 4 detection */
-.track{position:absolute;left:0;right:0;top:330px;display:grid;grid-template-columns:repeat(7,1fr);gap:0}
-.track>div{position:relative;padding:34px 22px 0 0}
-.track>div:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--line-2)}
-.track>div:after{content:"";position:absolute;left:0;top:-7px;width:16px;height:16px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 2px var(--brand)}
-.track .t{font:500 18px 'JetBrains Mono',monospace;color:var(--brand-2)}
-.track h3{font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:10px;line-height:1.1}
-.track p{font:400 18px 'JetBrains Mono',monospace;color:var(--mist);margin-top:12px;line-height:1.5}
-.track .hot:after{background:var(--brand);box-shadow:0 0 0 6px rgba(150,130,255,.25)}
-.creed{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1.35fr 1fr;gap:80px;align-items:end;padding-top:36px;border-top:1px solid var(--line)}
-.creed .q{font-size:46px;line-height:1.22;letter-spacing:-.025em;font-weight:500}
-.creed .qa{font-size:30px;line-height:1.7;color:var(--mist)}
-
-/* 5 early */
-.hunt{position:absolute;left:0;top:300px;width:700px}
-.hunt>div{display:grid;grid-template-columns:64px 1fr;gap:20px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
-.hunt .g{width:52px;height:52px;border-radius:12px;background:rgba(238,233,224,.06);display:grid;place-items:center;font:600 18px 'JetBrains Mono',monospace;color:var(--brand-2)}
-.hunt .g svg{width:28px;height:28px}
-.hunt h3{font-size:30px;font-weight:600;letter-spacing:-.02em}
-.hunt p{font-size:21px;color:var(--mist);margin-top:4px}
-.catch{position:absolute;right:0;top:300px;width:900px}
-.catch .lbl{font:500 18px 'JetBrains Mono',monospace;color:var(--scam);letter-spacing:.08em;text-transform:uppercase}
-.diff{margin-top:22px;font:500 70px 'JetBrains Mono',monospace;letter-spacing:-.03em;line-height:1.25}
-.diff .ok{color:var(--paper)} .diff .ok u{text-decoration:none;color:var(--safe);background:rgba(16,185,129,.16);border-radius:8px;padding:0 4px}
-.diff .bad{color:var(--paper)} .diff .bad u{text-decoration:none;display:inline-block;width:.5em;border-bottom:6px solid var(--scam);margin:0 .02em}
-.diff small{display:block;font:400 18px 'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
-.facts{display:flex;gap:16px;flex-wrap:wrap;margin-top:26px}
-.counter{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:baseline;gap:28px;padding-top:30px;border-top:1px solid var(--line)}
-.counter b{font-size:110px;font-weight:600;letter-spacing:-.035em;line-height:.9;color:var(--brand-2)}
-.counter span{font-size:30px;color:var(--mist);max-width:760px;line-height:1.3}
-.counter .more{margin-left:auto;text-align:right;font:400 20px 'JetBrains Mono',monospace;color:var(--mist);line-height:1.7}
-.counter .more i{font-style:normal;color:var(--scam)}
-
-/* 6/7 screenshots */
-.sf h1{font-size:66px;max-width:860px}
-.sf .lede{font-size:28px;line-height:1.35;color:var(--mist);max-width:860px;margin-top:24px}
-.sf .lede b{color:var(--paper);font-weight:500}
-.fsteps{list-style:none;margin:40px 0 0;padding:0;max-width:820px}
-.fsteps li{display:flex;gap:28px;padding:26px 0;border-top:1px solid var(--line)}
-.fsteps .n{font-family:'JetBrains Mono',monospace;color:var(--brand);font-size:22px;width:28px;flex:none;padding-top:6px}
-.fsteps h3{font-size:34px;font-weight:600;letter-spacing:-.02em;margin:0}
-.fsteps p{font-size:24px;color:var(--mist);margin:8px 0 0;line-height:1.4}
-.phone.fp1{right:510px;top:206px;width:360px;height:780px;border-radius:54px;padding:12px}
-.phone.fp2{right:110px;top:166px;width:360px;height:780px;border-radius:54px;padding:12px}
-.phone.fp1 img,.phone.fp2 img{border-radius:44px}
-.shot{position:absolute;border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5),0 0 0 1px rgba(238,233,224,.08)}
+.pad{position:absolute;inset:64px 104px 86px;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:12px;height:50px;padding:0 24px;border-radius:99px;background:#15143c;color:#fff;font:700 23px 'Alexandria','Bricolage Grotesque',sans-serif}
+.chip b{font:700 21px 'Bricolage Grotesque';color:#b3a6ff}
+.top img{height:52px}
+h1{font:800 68px/1.28 'Bricolage Grotesque','Alexandria',sans-serif;letter-spacing:-.01em;margin-top:26px}
+h1 em{font-style:normal;background:linear-gradient(270deg,#5a48f2,#c64fd8 55%,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font:500 31px/1.6 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:12px;max-width:1500px}
+.en{font-family:'Bricolage Grotesque',sans-serif;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;align-items:baseline}
+.kv span{font:600 24px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:#c9c7ec}
+.kv b{font:600 26px 'JetBrains Mono',monospace;direction:ltr;text-align:right;color:#fff}
+.card{background:rgba(255,255,255,.74);border-radius:36px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85),0 26px 60px -34px rgba(54,40,160,.5);padding:34px 38px}
+.card.dark{background:radial-gradient(520px 380px at 100% 0%,rgba(106,86,255,.6),transparent 62%),radial-gradient(420px 320px at 0% 100%,rgba(255,110,170,.36),transparent 60%),#100e33;color:#f5f4ff;box-shadow:0 26px 60px -30px rgba(16,12,60,.7)}
+.card h3{font:800 34px/1.35 'Bricolage Grotesque','Alexandria',sans-serif}
+.card p,.card li{font:500 26px/1.62 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2)}
+.card.dark p,.card.dark li{color:#c9c7ec}
+ul{list-style:none}
+li{position:relative;padding-inline-start:30px;margin-top:10px}
+li::before{content:'';position:absolute;inset-inline-start:0;top:.62em;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#5a48f2,#c64fd8)}
+.card.dark li::before{background:#b3a6ff}
+.grid{display:grid;gap:26px;margin-top:30px;flex:1;min-height:0}
+.big{font:800 84px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;direction:ltr;unicode-bidi:isolate;display:block}
+.big small{font-size:44px;color:var(--ink3);font-weight:700}
+.v{color:var(--violet)}.r{color:var(--scam)}.g{color:var(--safe)}
+.lab{font:600 25px/1.5 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:10px}
+.bars{display:grid;gap:22px;margin-top:22px}
+.row{display:grid;grid-template-columns:1fr 104px;align-items:center;gap:18px}
+.row .t{font:600 25px/1.45 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink);grid-column:1/-1;margin-bottom:-8px}
+.track{height:26px;border-radius:99px;background:#e4e1f8;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:linear-gradient(270deg,#5a48f2,#c64fd8)}
+.track i.red{background:linear-gradient(270deg,#e2434b,#ff7a59)}.track i.green{background:linear-gradient(270deg,#0c9c6c,#4ad9a4)}
+.row b{font:800 34px 'Bricolage Grotesque';direction:ltr;text-align:left}
+.src{font:500 18px/1.6 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink3);margin-top:16px}
+.foot{position:absolute;left:104px;right:104px;bottom:32px;display:flex;justify-content:space-between;font:600 17px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:var(--ink3)}
+.phone{border-radius:54px;border:10px solid #15143c;overflow:hidden;box-shadow:0 40px 80px -30px rgba(54,40,160,.6);background:#fff}
+.phone img{display:block;width:100%}
+.shot{border-radius:26px;overflow:hidden;box-shadow:0 30px 70px -30px rgba(54,40,160,.55),0 0 0 1.5px rgba(255,255,255,.9)}
 .shot img{display:block;width:100%}
-.list{position:absolute;right:0;width:560px}
-.list>div{padding:18px 0;border-top:1px solid var(--line)}
-.list h3{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
-.list p{font-size:21px;color:var(--mist);margin-top:6px;line-height:1.45}
-
-/* 8 results */
-.stats{position:absolute;left:0;right:0;top:300px;display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:64px}
-.stats>div{border-top:1px solid var(--line-2);padding-top:26px}
-.stats b{display:block;font-size:150px;font-weight:600;letter-spacing:-.04em;line-height:.9}
-.stats .s1b{color:var(--safe)}
-.stats span{display:block;font-size:26px;color:var(--mist);margin-top:18px;line-height:1.35}
-.stats em{font-style:normal;color:var(--paper)}
-.bars{position:absolute;left:0;right:0;bottom:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:64px}
-.bars .row{display:grid;grid-template-columns:160px 1fr 90px;align-items:center;gap:18px;font-size:20px;color:var(--mist);margin-top:12px}
-.bars .track2{height:10px;border-radius:6px;background:rgba(238,233,224,.07);overflow:hidden}
-.bars .fill{height:100%;border-radius:6px;background:var(--brand);transform-origin:left;transform:scaleX(0);transition:transform 1.2s var(--ease);transition-delay:.5s}
-.slide.on .bars .fill{transform:scaleX(var(--v))}
-.static .bars .fill{transform:scaleX(var(--v))}
-.bars h4{font-size:22px;font-weight:500;color:var(--paper)}
-.bars .row b{color:var(--paper);font-weight:500;text-align:right;font-family:'JetBrains Mono'}
-.note{position:absolute;left:0;bottom:0;font-size:20px;color:var(--dim)}
-
-/* 9 pilot */
-.route{position:absolute;left:0;top:300px;width:960px}
-.route>div{display:grid;grid-template-columns:80px 1fr;align-items:baseline;padding:10px 0;border-top:1px solid var(--line)}
-.route .n{font-size:52px;font-weight:600;color:var(--seal);letter-spacing:-.04em;line-height:1}
-.route h3{font-size:28px;font-weight:600;letter-spacing:-.02em}
-.route p{font-size:20px;color:var(--mist);margin-top:4px}
-.limits{position:absolute;right:0;top:300px;width:620px}
-.limits h4{font:500 18px 'JetBrains Mono',monospace;color:var(--warn);letter-spacing:.1em;text-transform:uppercase}
-.limits p{font-size:23px;color:var(--mist);line-height:1.45;padding:16px 0;border-top:1px solid var(--line)}
-.limits p:first-of-type{margin-top:16px}
-.repo{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:36px;padding-top:28px;border-top:1px solid var(--line)}
-.repo .qr{width:132px;height:132px;flex:none;border-radius:14px;background:#fff;padding:9px}
-.repo .pair{display:flex;align-items:center;gap:22px}
-.repo .qr svg{width:100%;height:100%}
-.repo .u{font:500 29px 'JetBrains Mono',monospace;letter-spacing:-.02em}
-.repo .u small{display:block;font:400 20px 'Bricolage Grotesque';color:var(--mist);letter-spacing:0;margin-bottom:8px}
-.repo .thanks{margin-left:auto;text-align:right}
-.repo .thanks b{display:block;font-size:48px;font-weight:600;letter-spacing:-.04em}
-.repo .thanks .ar-d{font-size:34px;color:var(--seal);display:block;margin-top:6px}
+.n{display:grid;place-items:center;flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#5a48f2,#c64fd8);color:#fff;font:800 28px 'Bricolage Grotesque'}
+.step{display:flex;gap:22px;align-items:flex-start}
+.step h3{font:800 31px/1.4 'Bricolage Grotesque','Alexandria',sans-serif}
+.step p{font:500 25px/1.6 'Bricolage Grotesque','IBM Plex Sans Arabic',sans-serif;color:var(--ink2);margin-top:2px}
+.pill{display:inline-flex;align-items:center;height:46px;padding:0 20px;gap:8px;border-radius:99px;background:#e9e7fa;font:700 22px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:var(--ink);margin:0 0 10px 8px}
+.pill.w{background:rgba(255,255,255,.14);color:#fff}
+.mono{font-family:'JetBrains Mono',monospace;direction:ltr;unicode-bidi:isolate}
+.qr{width:150px;height:150px;border-radius:20px;background:#fff;padding:12px;flex:none}.qr svg{width:100%;height:100%}
+#bar{position:fixed;left:0;bottom:0;height:3px;background:var(--violet);transition:width .5s var(--ease);z-index:5}
+#count{position:fixed;right:24px;bottom:14px;font:600 13px 'JetBrains Mono',monospace;color:var(--ink3);z-index:5}
+.static #bar,.static #count{display:none}
 </style>
 </head>
 <body>
 <div id="stage"><div class="deck" id="deck">
-
-<section class="slide s1" data-notes="Open with the tagline. We catch UAE scam sites before the first victim and give police a takedown-ready case file. The phone shows a real detection: emiratesnb.com.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a style="--i:0;max-width:1100px"><span class="mono">ScamShield AI Hackathon · 42 Abu Dhabi × Abu Dhabi Police</span></div>
-    <div class="word" data-a style="--i:1"><span class="q">“</span>Trust<span class="q">”</span> Issues</div>
-    <div class="word-ar" data-a style="--i:2"><span class="q">«</span>أزمة ثقة<span class="q">»</span></div>
-    <div class="tag" data-a style="--i:3">We have <mark>trust issues</mark>, so you don't have to.</div>
-    <div class="tag-ar ar" data-a style="--i:4">نحن نشكّ… لتطمئن أنت</div>
-    <div class="team" data-a style="--i:5">Early detection of scam links and websites for the UAE. Web, Search, Maps, WhatsApp.<br><b>Faisal Baras · Saifudin Mamaev · Martin Mustonen · Mahdhi Muzammil</b></div>
-  </div>
-  <div class="ticker"><div class="col"><span><i>●</i>emiratesnb[.]com</span><span><i>●</i>etisallat[.]com</span><span><i>●</i>etisalaat[.]com</span><span><i>●</i>adcb-abudhabi[.]com</span><span><i>●</i>salilk[.]net</span><span><i>●</i>emiratsnbd[.]com</span><span><i>●</i>etisaalat[.]com</span><span><i>●</i>adcbgrp[.]sbs</span><span><i>●</i>emlratesnbd[.]com</span><span><i>●</i>etisalar[.]com</span><span><i>●</i>emiratesnd[.]com</span><span><i>●</i>dewazeus33a1[.]site</span><span><i>●</i>emiratesnnbd[.]com</span><span><i>●</i>adib[.]web[.]id</span><span><i>●</i>parkin[.]vip</span><span><i>●</i>emiratesnb[.]com</span><span><i>●</i>etisallat[.]com</span><span><i>●</i>etisalaat[.]com</span><span><i>●</i>adcb-abudhabi[.]com</span><span><i>●</i>salilk[.]net</span><span><i>●</i>emiratsnbd[.]com</span><span><i>●</i>etisaalat[.]com</span><span><i>●</i>adcbgrp[.]sbs</span><span><i>●</i>emlratesnbd[.]com</span><span><i>●</i>etisalar[.]com</span><span><i>●</i>emiratesnd[.]com</span><span><i>●</i>dewazeus33a1[.]site</span><span><i>●</i>emiratesnnbd[.]com</span><span><i>●</i>adib[.]web[.]id</span><span><i>●</i>parkin[.]vip</span></div></div>
-  <div class="phone" data-a style="--i:3"><img src="assets/screens/mobile_verdict.png" alt="Verdict on a phone"></div>
-</section>
-
-<section class="slide s2" data-notes="The pain: links come from people we trust and look official. Police learn about the site only after victims pay.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>01</b> · The problem</span><span class="ar">المشكلة</span></div>
-    <h1 data-a style="--i:1">Scams arrive through links people trust.<span class="ar-d">روابط موثوقة، احتيال حقيقي</span></h1>
-    <div class="cols3">
-      <div data-a style="--i:2"><div class="n">01</div><h3>From friends and "official" SMS</h3><p>Fake traffic fines, Salik and Darb top-ups, TAMM and UAE PASS logins, "account suspended" bank pages, parcel fees.</p><p class="ar">مخالفات وهمية ورسوم سالك ودرب وتسجيل دخول مزيف</p></div>
-      <div data-a style="--i:3"><div class="n">02</div><h3>Ranking in Search and Maps</h3><p>Paid ads and fake customer-care numbers catch people at the exact moment they look for help.</p><p class="ar">إعلانات مزيفة وأرقام خدمة عملاء وهمية على الخرائط</p></div>
-      <div data-a style="--i:4"><div class="n">03</div><h3>Found after the money is gone</h3><p>Sites are reported once victims have paid, and every takedown starts with evidence collected by hand.</p><p class="ar">يُبلّغ عنها بعد خسارة المال وتُجمع الأدلة يدويًا</p></div>
+<section class="slide" data-notes="Open with the tagline in Arabic. One sentence: we guard the family and help the police find scammers early.">
+<div class="pad" style="inset:70px 104px 86px">
+  <div style="display:grid;grid-template-columns:1fr 430px;gap:70px;align-items:center;flex:1">
+    <div>
+      <img src="../brand/logo-english.png" alt="Trust Issues" style="height:120px">
+      <h1 style="font-size:128px;line-height:1.15;margin-top:18px"><em>«أزمة ثقة»</em></h1>
+      <p style="font:800 54px/1.4 'Alexandria',sans-serif;margin-top:6px">نحن نشكّ… لتطمئن أنت.</p>
+      <p class="sub" style="font-size:34px;margin-top:22px">نحمي العائلة من روابط ورسائل وأرقام الاحتيال، ونساعد الشرطة على كشف المحتالين وتتبّعهم مبكرًا.</p>
+      <p style="margin-top:34px"><span class="pill">حماية العائلة <span class="en">Family Shield</span></span><span class="pill">منصة الشرطة <span class="en">Police Console</span></span><span class="pill">نموذج ذكاء اصطناعي درّبناه بأنفسنا</span></p>
+      <p class="src" style="font-size:22px;margin-top:22px">فيصل باراس · سيف الدين مامايف · مارتن موستونن · مهدي مزمل &nbsp;|&nbsp; <span class="en">ScamShield AI Hackathon · 42 Abu Dhabi × Abu Dhabi Police</span></p>
     </div>
-    <div class="reach" data-a style="--i:5"><div class="goal">Our goal: catch the site <mark class="gold">before the first victim</mark>, and hand police a ready case file.</div><div class="logos"><svg viewBox="0 0 24 24" role="img" aria-label="WhatsApp"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google Messages"><path fill="#1A73E8" d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM4.911 7.089h11.456a2.197 2.197 0 0 1 2.165 2.19v5.863a2.213 2.213 0 0 1-2.177 2.178H8.04c-1.174 0-2.04-.99-2.04-2.178v-4.639L4.503 7.905c-.31-.42-.05-.816.408-.816zm3.415 2.19c-.347 0-.68.21-.68.544 0 .334.333.544.68.544h7.905c.346 0 .68-.21.68-.544 0-.334-.334-.545-.68-.545zm0 2.177c-.347 0-.68.21-.68.544 0 .334.333.544.68.544h7.905c.346 0 .68-.21.68-.544 0-.334-.334-.544-.68-.544zm-.013 2.19c-.346 0-.68.21-.68.544 0 .334.334.544.68.544h5.728c.347 0 .68-.21.68-.544 0-.334-.333-.545-.68-.545z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Instagram"><path fill="#FF0069" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Telegram"><path fill="#26A5E4" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google"><path fill="#4285F4" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google Maps"><path fill="#4285F4" d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/></svg></div></div>
+    <div class="phone"><img src="../screens/mobile_verdict.png" alt=""></div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">02</span></div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">01 / 10</span></div>
 </section>
-
-<section class="slide sf" data-notes="This is what makes us different. 100 teams built a scanner, and scanners need the victim to be suspicious. The people scammers target most, our parents, kids and household helpers, rarely are. A guardian links their phones with one QR code. Scams are blocked in every app, risky new sites wait for the guardian's OK, and SOS reaches the family with the bank's real number.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>02</b> · The difference</span><span class="ar">الفرق</span></div>
-    <h1 data-a style="--i:1">Scanners need the victim to be suspicious.<span class="ar-d">أدوات الفحص تحتاج ضحية تشكّ.</span></h1>
-    <p class="lede" data-a style="--i:2">Parents, kids and household helpers rarely are. <b>Family Shield</b> puts a trusted person one tap away.</p>
-    <ol class="fsteps">
-      <li data-a style="--i:3"><span class="n">1</span><div><h3>One QR links their phone</h3><p>Scam sites are then blocked on it, in every app.</p></div></li>
-      <li data-a style="--i:4"><span class="n">2</span><div><h3>Risky new sites wait for your OK</h3><p>“Dad tried to open salik-pay.com. Keep blocked or allow?”</p></div></li>
-      <li data-a style="--i:5"><span class="n">3</span><div><h3>SOS reaches the family</h3><p>With 999, Aman 8002626 and the bank’s verified number.</p></div></li>
-    </ol>
-  </div>
-  <div class="phone fp1" data-a style="--i:3"><img src="assets/screens/family_guardian.png" alt="Guardian approves a held site"></div>
-  <div class="phone fp2" data-a style="--i:5"><img src="assets/screens/family_member.png" alt="Elder home with SOS"></div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">03</span></div>
-</section>
-
-<section class="slide s3" data-notes="Not just an app. One engine reaches phones system-wide through DNS, learns from community reports, gives police a console, and badges Search and Maps on desktop.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>03</b> · The product</span><span class="ar">المنتج</span></div>
-    <h1 data-a style="--i:1">One engine. Four shields.<span class="ar-d">محرك واحد. أربع دروع.</span></h1>
-    <div class="grid2">
-      <div data-a style="--i:2"><div class="n">A · Phone shield</div><h3>Blocks scams in every app</h3><p>Protective DNS stops confirmed scam domains in WhatsApp, SMS, Instagram and Safari. A push alert explains why.</p><div class="ico"><svg viewBox="0 0 24 24" role="img" aria-label="WhatsApp"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google Messages"><path fill="#1A73E8" d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM4.911 7.089h11.456a2.197 2.197 0 0 1 2.165 2.19v5.863a2.213 2.213 0 0 1-2.177 2.178H8.04c-1.174 0-2.04-.99-2.04-2.178v-4.639L4.503 7.905c-.31-.42-.05-.816.408-.816zm3.415 2.19c-.347 0-.68.21-.68.544 0 .334.333.544.68.544h7.905c.346 0 .68-.21.68-.544 0-.334-.334-.545-.68-.545zm0 2.177c-.347 0-.68.21-.68.544 0 .334.333.544.68.544h7.905c.346 0 .68-.21.68-.544 0-.334-.334-.544-.68-.544zm-.013 2.19c-.346 0-.68.21-.68.544 0 .334.334.544.68.544h5.728c.347 0 .68-.21.68-.544 0-.334-.333-.545-.68-.545z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Instagram"><path fill="#FF0069" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Telegram"><path fill="#26A5E4" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div></div>
-      <div data-a style="--i:3"><div class="n">B · Community shield</div><h3>One report protects everyone</h3><p>Every report is verified in a sandbox first. Confirmed scams trend and are blocked for all protected phones.</p></div>
-      <div data-a style="--i:4"><div class="n">C · Police console</div><h3>From radar to takedown</h3><p>Live radar, cases, scam networks, evidence packs, takedown drafts and blocklist feeds for telcos.</p></div>
-      <div data-a style="--i:5"><div class="n">D · Beyond links</div><h3>Phone numbers, files, QR codes</h3><p>Verified helplines against reported numbers. Risky files and attachments with an antivirus lookup. Badges on Google Search and Maps.</p><div class="ico"><svg viewBox="0 0 24 24" role="img" aria-label="Google"><path fill="#4285F4" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google Maps"><path fill="#4285F4" d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/></svg><svg viewBox="0 0 24 24" role="img" aria-label="Google Chrome"><path fill="#4285F4" d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728Z"/></svg></div></div>
+<section class="slide" data-notes="Real figures, with sources on the slide. GASA surveyed 1,000 UAE residents. Abu Dhabi Police announced 15,642 online fraud cases and AED 140 million recovered over two years, in October 2025.">
+<div class="pad"><div class="top"><span class="chip"><b>01</b>المشكلة بالأرقام</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>الاحتيال يطال <em>7 من كل 10</em> مقيمين في الإمارات</h1>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr">
+    <div class="card">
+      <h3>ماذا يقول المقيمون في الإمارات؟</h3>
+      <div class="bars">
+        <div class="row"><span class="t">تعرّضوا لمحاولة احتيال</span><div class="track"><i class="red" style="width:70%"></i></div><b class="r">70%</b></div>
+        <div class="row"><span class="t">خسروا أموالًا خلال سنة واحدة (1 من كل 3)</span><div class="track"><i class="red" style="width:33%"></i></div><b class="r">33%</b></div>
+        <div class="row"><span class="t">استردّوا أموالهم كاملة من بين من خسروا</span><div class="track"><i style="width:9%"></i></div><b class="v">9%</b></div>
+      </div>
+      <p class="lab" style="margin-top:22px">في المتوسط يتعرّض المقيم لمحاولة احتيال <b>كل 3 أيام</b>، ومتوسط خسارة الضحية <b class="en">2,194</b> دولارًا.</p>
     </div>
-    <div class="wall" data-a style="--i:4"><div class="cap"><b>49</b><span>UAE brands protected<br><span class="ar">علامة إماراتية تحت الحماية</span></span></div><div class="tiles"><div><img src="assets/brands/adcb.png" alt="adcb"></div><div><img src="assets/brands/adib.png" alt="adib"></div><div><img src="assets/brands/adjd.png" alt="adjd"></div><div><img src="assets/brands/adnoc_distribution.png" alt="adnoc_distribution"></div><div><img src="assets/brands/adpolice.png" alt="adpolice"></div><div><img src="assets/brands/alansari.png" alt="alansari"></div><div><img src="assets/brands/amazon_ae.png" alt="amazon_ae"></div><div><img src="assets/brands/aramex.png" alt="aramex"></div><div><img src="assets/brands/careem.png" alt="careem"></div><div><img src="assets/brands/cbuae.png" alt="cbuae"></div><div><img src="assets/brands/darb_itc.png" alt="darb_itc"></div><div><img src="assets/brands/dewa.png" alt="dewa"></div><div><img src="assets/brands/dha.png" alt="dha"></div><div><img src="assets/brands/dib.png" alt="dib"></div><div><img src="assets/brands/doh_abudhabi.png" alt="doh_abudhabi"></div><div><img src="assets/brands/du.png" alt="du"></div><div><img src="assets/brands/dubai_courts.png" alt="dubai_courts"></div><div><img src="assets/brands/dubai_customs.png" alt="dubai_customs"></div><div><img src="assets/brands/dubai_municipality.png" alt="dubai_municipality"></div><div><img src="assets/brands/dubaipolice.png" alt="dubaipolice"></div><div><img src="assets/brands/dubizzle.png" alt="dubizzle"></div><div><img src="assets/brands/emirates.png" alt="emirates"></div><div><img src="assets/brands/emiratesislamic.png" alt="emiratesislamic"></div><div><img src="assets/brands/emiratesnbd.png" alt="emiratesnbd"></div><div><img src="assets/brands/emiratespost.png" alt="emiratespost"></div><div><img src="assets/brands/enoc.png" alt="enoc"></div><div><img src="assets/brands/etihad.png" alt="etihad"></div><div><img src="assets/brands/etihadwe.png" alt="etihadwe"></div><div><img src="assets/brands/etisalat.png" alt="etisalat"></div><div><img src="assets/brands/fab.png" alt="fab"></div><div><img src="assets/brands/fta.png" alt="fta"></div><div><img src="assets/brands/gdrfa_dubai.png" alt="gdrfa_dubai"></div><div><img src="assets/brands/icp.png" alt="icp"></div><div><img src="assets/brands/lulu.png" alt="lulu"></div><div><img src="assets/brands/mashreq.png" alt="mashreq"></div><div><img src="assets/brands/mohap.png" alt="mohap"></div><div><img src="assets/brands/mohre.png" alt="mohre"></div><div><img src="assets/brands/moi.png" alt="moi"></div><div><img src="assets/brands/noon.png" alt="noon"></div><div><img src="assets/brands/parkin.png" alt="parkin"></div><div><img src="assets/brands/rakbank.png" alt="rakbank"></div><div><img src="assets/brands/rta.png" alt="rta"></div><div><img src="assets/brands/salik.png" alt="salik"></div><div><img src="assets/brands/seha.png" alt="seha"></div><div><img src="assets/brands/sewa.png" alt="sewa"></div><div><img src="assets/brands/talabat.png" alt="talabat"></div><div><img src="assets/brands/tamm.png" alt="tamm"></div><div><img src="assets/brands/taqa_distribution.png" alt="taqa_distribution"></div><div><img src="assets/brands/uaepass.png" alt="uaepass"></div></div></div>
-  </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">04</span></div>
-</section>
-
-<section class="slide s4" data-notes="Fast layers decide most links in milliseconds. Only uncertain links go to the sandbox and the AI judges. That is what makes it scale and keeps false positives low.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>04</b> · Detection</span><span class="ar">آلية الكشف</span></div>
-    <h1 data-a style="--i:1">Seven layers. Cheapest first.<span class="ar-d">سبع طبقات. الأسرع أولًا.</span></h1>
-    <div class="track">
-      <div data-a style="--i:2"><div class="t">T0</div><h3>Trust anchors</h3><p>399 official<br>UAE domains</p></div>
-      <div data-a style="--i:3"><div class="t">T1</div><h3>Threat intel</h3><p>Safe Browsing<br>VirusTotal · feeds</p></div>
-      <div data-a style="--i:4"><div class="t">T2</div><h3>URL model</h3><p>LightGBM<br>+ n-grams</p></div>
-      <div data-a style="--i:5"><div class="t">T3</div><h3>Domain intel</h3><p>age · hosting<br>TLS · CT logs</p></div>
-      <div data-a style="--i:6"><div class="t">T4</div><h3>Sandbox</h3><p>UAE iPhone<br>desktop · Googlebot</p></div>
-      <div data-a style="--i:7"><div class="t">T5</div><h3>Data trail</h3><p>Telegram bots<br>webhooks · phones</p></div>
-      <div data-a style="--i:8" class="hot"><div class="t">T6</div><h3>Vision + AI</h3><p>real logos<br>2 AI judges</p></div>
-    </div>
-    <div class="creed" data-a style="--i:9">
-      <div class="q">Looks like <mark>Emirates NBD</mark>. Asks for your <mark class="red">card and OTP</mark>. Not on <span class="mono">emiratesnbd.com</span>. That is a scam.</div>
-      <div class="qa ar">يشبه بنكًا معروفًا، ويطلب بطاقتك ورمز التحقق، وليس على نطاقه الرسمي. إذن هو احتيال.</div>
+    <div style="display:grid;gap:22px;grid-template-rows:1fr 1fr 1fr">
+      <div class="card" style="padding:24px 36px"><span class="big v">15,642</span><p class="lab">بلاغ احتيال إلكتروني تلقّتها شرطة أبوظبي خلال عامين</p></div>
+      <div class="card" style="padding:24px 36px"><span class="big g">140 <small>مليون درهم</small></span><p class="lab">استردّتها شرطة أبوظبي للضحايا في الفترة نفسها</p></div>
+      <div class="card" style="padding:24px 36px"><span class="big r">75%+</span><p class="lab">من الاختراقات تبدأ برسالة تصيّد <span class="en">(phishing)</span></p></div>
     </div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">05</span></div>
+  <p class="src">المصادر: <span class="en">GASA, State of Scams in the UAE</span> (استطلاع 1,000 مقيم) · <span class="en">GASA + BioCatch, Nov 2024</span> (نسبة الاسترداد ومتوسط الخسارة) · شرطة أبوظبي، أكتوبر 2025 (<span class="en">The National, Gulf News</span>) · مجلس الأمن السيبراني (<span class="en">WAM</span>)</p>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">02 / 10</span></div>
 </section>
-
-<section class="slide s5" data-notes="Scammers need an HTTPS certificate before they send the first SMS. We read every new certificate and flag look-alikes of 49 UAE brands, then sandbox and block them. The emiratesnb.com catch is real.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>05</b> · Early detection</span><span class="ar">الكشف المبكر</span></div>
-    <h1 data-a style="--i:1">Caught at birth. Before the first SMS.<span class="ar-d">نرصده قبل أول رسالة.</span></h1>
-    <div class="hunt">
-      <div data-a style="--i:2"><div class="g">CT</div><div><h3>Certificate Transparency</h3><p>Every new HTTPS certificate, read live</p></div></div>
-      <div data-a style="--i:3"><div class="g">NEW</div><div><h3>New domains and typosquats</h3><p>Daily registrations and look-alike permutations</p></div></div>
-      <div data-a style="--i:4"><div class="g"><svg viewBox="0 0 24 24" role="img" aria-label="Google"><path fill="#4285F4" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg></div><div><h3>Google Search</h3><p>Ads and results for UAE service queries</p></div></div>
-      <div data-a style="--i:5"><div class="g"><svg viewBox="0 0 24 24" role="img" aria-label="Google Maps"><path fill="#4285F4" d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/></svg></div><div><h3>Google Maps</h3><p>Listings with unverified helplines</p></div></div>
+<section class="slide" data-notes="The gap. A scanner only helps someone already suspicious, and the people targeted most are the least suspicious. For police, the report arrives after the money is gone.">
+<div class="pad"><div class="top"><span class="chip"><b>02</b>أين الفجوة؟</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>أدوات الفحص تحتاج ضحية <em>تشكّ</em>. والمستهدَفون لا يشكّون.</h1>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <h3>مشكلة العائلة</h3>
+      <ul>
+        <li>الأكثر استهدافًا هم الأقل شكًّا: <b>الوالدان وكبار السن، الأطفال، والعمالة المنزلية</b>.</li>
+        <li>لن يفتح أحدهم تطبيقًا ليفحص رابطًا وصله في <span class="en">WhatsApp</span> أو <span class="en">SMS</span>.</li>
+        <li>الرسالة تبدو رسمية: مخالفة مرورية، سالك، <span class="en">UAE PASS</span>، أو «تم إيقاف حسابك البنكي».</li>
+        <li>لا أحد من العائلة يعلم إلا بعد أن يُدفع المبلغ.</li>
+      </ul>
     </div>
-    <div class="catch" data-a style="--i:4">
-      <div class="lbl">● Real catch · typosquat hunter</div>
-      <div class="diff"><span class="ok"><small>Official</small>emiratesnb<u>d</u>.com</span><br><span class="bad"><small>Received</small>emiratesnb<u></u>.com</span></div>
-      <div class="facts"><span class="chip mono">5 redirects</span><span class="chip mono">fake page for UAE phones only</span><span class="chip mono">Googlebot sees another site</span></div>
-    </div>
-    <div class="counter" data-a style="--i:6"><b class="num" data-count="86900">86,900</b><span>certificates checked in our first live hour<br><span class="ar">شهادة تم فحصها خلال أول ساعة</span></span><div class="more">also caught<br><i>etisallat[.]com</i> · <i>etisalaat[.]com</i><br><i>emiratsnbd[.]com</i> · <i>adcbgrp[.]sbs</i></div></div>
-  </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">06</span></div>
-</section>
-
-<section class="slide s6" data-notes="Explainability and actionability. Every signal has a reason in both languages, and the evidence pack is ready for a case file.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>06</b> · Explainability</span><span class="ar">قابلية التفسير</span></div>
-    <h1 data-a style="--i:1">Every verdict explains itself.<span class="ar-d">كل حكم يشرح نفسه.</span></h1>
-    <div class="shot" data-a style="--i:2;left:0;top:300px;width:800px"><img src="assets/screens/verdict.png" alt=""></div>
-    <div class="shot" data-a style="--i:3;left:420px;top:500px;width:620px"><img src="assets/screens/verdict2.png" alt=""></div>
-    <div class="list" style="top:300px">
-      <div data-a style="--i:3"><h3>Score from 0 to 100</h3><p>Every reason weighted and written in English and Arabic.</p></div>
-      <div data-a style="--i:4"><h3>Spot the difference</h3><p>The official address next to the one received, the changed letter highlighted.</p></div>
-      <div data-a style="--i:5"><h3>Where your data goes</h3><p>Telegram bots, webhooks and phone numbers pulled from the page.</p></div>
-      <div data-a style="--i:6"><h3>Evidence pack</h3><p>WHOIS, hosting, abuse contacts, GST time and SHA-256 hashes in one PDF.</p></div>
-      <div data-a style="--i:7"><h3>Warning card</h3><p>A bilingual image to post back into the WhatsApp group.</p></div>
+    <div class="card dark">
+      <h3>مشكلة الشرطة</h3>
+      <ul>
+        <li>البلاغ يصل <b style="color:#fff">بعد</b> وقوع الضرر، والاسترداد صعب.</li>
+        <li>الموقع المزيّف يعيش ساعات ثم ينتقل إلى اسم جديد.</li>
+        <li>كل موقع جزء من <b style="color:#fff">شبكة</b>: الخادم نفسه، القالب نفسه، رقم الهاتف نفسه.</li>
+        <li>جمع الأدلة وطلب الإزالة لكل موقع يأخذ وقتًا ثمينًا.</li>
+      </ul>
     </div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">07</span></div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">03 / 10</span></div>
 </section>
-
-<section class="slide s7" data-notes="The console is live for the judges at /console with the passcode trust-issues. Shared CDN and website-builder IPs are excluded, so links mean real shared infrastructure.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>07</b> · Police console</span><span class="ar">منصة الشرطة</span></div>
-    <h1 data-a style="--i:1">One takedown reveals the network.<span class="ar-d">إزالة واحدة تكشف الشبكة.</span></h1>
-    <div class="shot" data-a style="--i:2;left:0;top:300px;width:980px"><img src="assets/screens/cases.png" alt=""></div>
-    <div class="list" style="top:300px">
-      <div data-a style="--i:3"><h3>Confirm once</h3><p>A confirmed case is blocked on every protected phone within seconds.</p></div>
-      <div data-a style="--i:4"><h3>Campaign graph</h3><p>Domains linked by dedicated IPs, name servers, kit fingerprints, phones and Telegram bots.</p></div>
-      <div data-a style="--i:5"><h3>National feeds</h3><p>RPZ zone and STIX 2.1 for e&amp;, du and TDRA DNS firewalls.</p></div>
-      <div data-a style="--i:6"><h3>Open to the judges</h3><p>trust-issues-xlzv.onrender.com/console, passcode <b style="color:var(--brand)">trust-issues</b>. Radar, Cases, Network, Hunt, Batch test, Feeds, Metrics.</p></div>
+<section class="slide" data-notes="The solution in one picture: one engine with two faces. What a family reports becomes a police case, and what police confirm is blocked on every protected phone.">
+<div class="pad"><div class="top"><span class="chip"><b>03</b>الحل</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>محرّك واحد: <em>يحمي العائلة</em> ويخدم <em>الشرطة</em> في الوقت نفسه</h1>
+  <div class="grid" style="grid-template-columns:1fr 360px 1fr;align-items:stretch">
+    <div class="card">
+      <h3>للعائلة · <span class="en">Family Shield</span></h3>
+      <ul>
+        <li>وليّ الأمر يربط هواتف والديه وأبنائه برمز <span class="en">QR</span> واحد.</li>
+        <li>تُحظر مواقع الاحتيال في <b>كل التطبيقات</b>.</li>
+        <li>الموقع المشبوه ينتظر موافقته، مع <b>تقييمنا ودرجة الخطورة</b>.</li>
+        <li>زر <span class="en">SOS</span> ينبّهه فورًا.</li>
+        <li>فحص أي رابط، رسالة، <span class="en">QR</span>، رقم هاتف أو ملف.</li>
+      </ul>
+    </div>
+    <div class="card dark" style="display:flex;flex-direction:column;justify-content:center;text-align:center;padding:30px 26px">
+      <img src="../brand/symbol-white.png" alt="" style="height:110px;margin:0 auto 18px">
+      <h3 style="font-size:30px">محرّك الكشف</h3>
+      <p style="font-size:23px;margin-top:10px">نموذجنا المدرَّب + متصفح معزول + حكَمان من <span class="en">AI</span></p>
+      <p style="font-size:23px;margin-top:18px;color:#fff">بلاغ العائلة يصبح قضية لدى الشرطة.</p>
+      <p style="font-size:23px;margin-top:8px;color:#fff">وتأكيد الشرطة يحظر الموقع على كل الهواتف.</p>
+    </div>
+    <div class="card">
+      <h3>للشرطة · <span class="en">Police Console</span></h3>
+      <ul>
+        <li><b>رادار مباشر</b>: مواقع الاحتيال لحظة ظهورها.</li>
+        <li><b>القضايا</b>: تأكيد واحد يحظر الموقع على الجميع.</li>
+        <li><b>الشبكة</b>: موقع واحد يكشف المجموعة التي خلفه.</li>
+        <li><b>حزمة أدلة</b> <span class="en">PDF</span> ومسودة طلب إزالة.</li>
+        <li>قوائم حظر <span class="en">RPZ / STIX</span> لشركات الاتصالات.</li>
+      </ul>
     </div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">08</span></div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">04 / 10</span></div>
 </section>
-
-<section class="slide s8" data-notes="We trained our own model on 589,687 real URLs: PhiUSIIL, OpenPhish, Phishing.Database, crawled legitimate sites and official UAE domains. Honest numbers. Phishing first seen after the training cutoff, no domain overlap between train and test. Live feeds and threat-intel APIs were switched off, so these numbers show what the engine catches on its own. Full metrics are in ml/metrics.json and the README.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>08</b> · Results</span><span class="ar">النتائج</span></div>
-    <h1 data-a style="--i:1">Measured on real, unseen URLs.<span class="ar-d">على روابط حقيقية جديدة.</span></h1>
-    <div class="stats">
-      <div data-a style="--i:2"><b class="s1b num">0<span style="display:inline;font-size:80px;color:var(--mist);margin:0 0 0 10px">/ 411</span></b><span>false positives on official <em>UAE bank and government</em> sites</span></div>
-      <div data-a style="--i:3"><b class="num">99.3<span style="display:inline;font-size:70px;margin:0">%</span></b><span>recall on live phishing, <em>100% precision</em></span></div>
-      <div data-a style="--i:4"><b class="num">590K</b><span>real URLs trained <em>our own model</em>, AUC 0.99 on a time-split test</span></div>
+<section class="slide" data-notes="Family Shield in four steps. The guardian sees our verdict and score before he decides. Point at the two phones: the approval card and the SOS button.">
+<div class="pad"><div class="top"><span class="chip"><b>04</b>درع العائلة</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>وليّ الأمر يرى <em>تقييمنا</em> قبل أن يوافق</h1>
+  <div style="display:grid;grid-template-columns:1fr 330px 330px;gap:44px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div class="card" style="display:grid;gap:26px">
+      <div class="step"><span class="n">1</span><div><h3>رمز <span class="en">QR</span> واحد يربط الهاتف</h3><p>وليّ الأمر ينشئ «درع العائلة» ويضيف والده أو ابنه. يمسح الطرف الآخر الرمز وينضم.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>حظر في كل التطبيقات</h3><p>مواقع الاحتيال لا تفتح في <span class="en">WhatsApp</span> و<span class="en">SMS</span> و<span class="en">Safari</span> و<span class="en">Instagram</span>.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>الموقع المشبوه ينتظر الموافقة</h3><p>«حاول الوالد فتح <span class="en">rtafines.com</span>: مشبوه 62». ثم «إبقاء الحظر» أو «سماح» بضغطة واحدة.</p></div></div>
+      <div class="step"><span class="n">4</span><div><h3>زر <span class="en">SOS</span></h3><p>ينبّه وليّ الأمر ويعرض <span class="en">999</span> وأمان <span class="en">8002626</span> وأرقام البنوك الموثّقة.</p></div></div>
     </div>
-    <div class="bars">
-      <div data-a style="--i:5"><h4>Live phishing vs official UAE sites</h4>
-        <div class="row">Precision<div class="track2"><div class="fill" style="--v:1"></div></div><b>100%</b></div>
-        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.993"></div></div><b>99.3%</b></div>
-        <div class="row">F1<div class="track2"><div class="fill" style="--v:.997"></div></div><b>99.7%</b></div></div>
-      <div data-a style="--i:6"><h4>500 held-out real URLs</h4>
-        <div class="row">Precision<div class="track2"><div class="fill" style="--v:.992"></div></div><b>99.2%</b></div>
-        <div class="row">Recall<div class="track2"><div class="fill" style="--v:.944"></div></div><b>94.4%</b></div>
-        <div class="row">F1<div class="track2"><div class="fill" style="--v:.967"></div></div><b>96.7%</b></div></div>
-      <div data-a style="--i:7"><h4>Speed</h4>
-        <div class="row">Instant check<div class="track2"><div class="fill" style="--v:.04"></div></div><b>0.2 ms</b></div>
-        <div class="row">Fast scan<div class="track2"><div class="fill" style="--v:.25"></div></div><b>~2 s</b></div>
-        <div class="row">Deep scan + AI<div class="track2"><div class="fill" style="--v:.8"></div></div><b>~25 s</b></div></div>
-    </div>
-    <div class="note" data-a style="--i:8">Our own LightGBM and character n-gram model, trained on 589,687 real URLs. Tested with the sandbox and both AI judges on, live feeds and threat-intel APIs off.</div>
+    <div class="phone"><img src="../screens/family_guardian.png" alt=""></div>
+    <div class="phone" style="margin-top:44px"><img src="../screens/family_member.png" alt=""></div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">09</span></div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">05 / 10</span></div>
 </section>
-
-<section class="slide s9" data-notes="Close with feasibility: one Docker image, privacy by design (domains only, never message content), and a concrete route to a pilot.">
-  <div class="grain"></div>
-  <div class="pad">
-    <div class="kicker" data-a><span class="mono"><b>09</b> · Pilot</span><span class="ar">التجربة</span></div>
-    <h1 data-a style="--i:1">Ready for a police pilot.<span class="ar-d">جاهز لتجربة مع الشرطة.</span></h1>
-    <div class="route">
-      <div data-a style="--i:2"><div class="n">1</div><div><h3>Cyber unit runs the console</h3><p>On reported links and radar hits, from day one.</p></div></div>
-      <div data-a style="--i:3"><div class="n">2</div><div><h3>RPZ feed to e&amp;, du and TDRA</h3><p>Every phone in the UAE protected, no app needed.</p></div></div>
-      <div data-a style="--i:4"><div class="n">3</div><div><h3>Bank fraud teams subscribe</h3><p>An alert for every new look-alike of their brand.</p></div></div>
-      <div data-a style="--i:5"><div class="n">4</div><div><h3>Citizens</h3><p>Web app, extension and Telegram bot, then a native Android app.</p></div></div>
+<section class="slide" data-notes="For the police: early detection sources and the console. The console is open to the judges with the passcode on the slide.">
+<div class="pad"><div class="top"><span class="chip"><b>05</b>منصة الشرطة</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>نرصد الموقع المزيّف <em>قبل أول رسالة</em>، ونكشف الشبكة التي خلفه</h1>
+  <div style="display:grid;grid-template-columns:1fr 880px;gap:36px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div class="card" style="display:grid;gap:20px">
+      <div class="step"><span class="n">1</span><div><h3>رصد مبكر</h3><p>شهادات <span class="en">HTTPS</span> الجديدة <span class="en">(CT logs)</span>، النطاقات المسجّلة حديثًا، الأسماء المشابهة لـ<b>49 علامة إماراتية</b>، وإعلانات <span class="en">Google Search</span> وأرقام <span class="en">Google Maps</span> المزيّفة.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>تأكيد واحد يحمي الجميع</h3><p>القضية المؤكدة تُحظر على كل الهواتف المحمية خلال ثوانٍ.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>تتبّع الشبكة</h3><p>ربط المواقع بالخادم، <span class="en">name servers</span>، قالب الصفحة، أرقام الهواتف و<span class="en">Telegram bots</span>.</p></div></div>
+      <div class="step"><span class="n">4</span><div><h3>أدلة جاهزة</h3><p>ملف <span class="en">PDF</span> بالعربية والإنجليزية: <span class="en">SHA-256</span>، <span class="en">WHOIS</span>، لقطة الشاشة، ومسودة طلب إزالة.</p></div></div>
     </div>
-    <div class="limits" data-a style="--i:4"><h4>Honest limits</h4>
-      <p>DNS sees domains, not paths. Scams on shared hosts are caught by link checks.</p>
-      <p>Android needs Intra or RethinkDNS until telcos use the feed.</p>
-      <p>Geofenced kits need a UAE egress proxy in production.</p>
-      <p>Search and Maps hunting depends on API quotas.</p></div>
-    <div class="repo" data-a style="--i:6"><div class="pair"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h3m2 0h1m2 0h5m1 0h7M0 1.5h1m5 0h1m1 0h2m3 0h1m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m6 0h4m2 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m2 0h5m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h4m1 0h2m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m2 0h1m2 0h3m1 0h2m1 0h2m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h2m1 0h1m3 0h3M0 8.5h1m1 0h2m1 0h3m1 0h2m1 0h2m1 0h4m3 0h1m2 0h1m1 0h2M0 9.5h1m2 0h2m8 0h1m5 0h1m2 0h3m3 0h1M0 10.5h1m1 0h1m1 0h5m1 0h1m2 0h1m4 0h1m2 0h1m2 0h1m1 0h2M2 11.5h1m6 0h3m3 0h2m5 0h1m5 0h1M0 12.5h1m1 0h2m1 0h4m1 0h3m1 0h5m1 0h2m1 0h1m1 0h2M0 13.5h3m2 0h1m2 0h2m1 0h2m1 0h3m2 0h1m2 0h1m3 0h3M0 14.5h4m2 0h4m1 0h3m3 0h5m1 0h1m2 0h3M1 15.5h1m1 0h1m4 0h2m1 0h1m2 0h3m1 0h1m1 0h1m2 0h2m2 0h1M1 16.5h1m2 0h1m1 0h1m3 0h2m2 0h1m3 0h1m1 0h2m2 0h2m1 0h1M3 17.5h1m3 0h1m1 0h2m1 0h1m1 0h2m1 0h1m2 0h1m2 0h1m1 0h3M0 18.5h1m1 0h3m1 0h1m1 0h3m2 0h3m1 0h1m2 0h3m3 0h1M2 19.5h1m1 0h1m2 0h2m1 0h1m2 0h2m1 0h3m2 0h1m1 0h1m2 0h1M1 20.5h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h2m1 0h11M8 21.5h1m7 0h5m3 0h5M0 22.5h7m1 0h2m4 0h1m3 0h3m1 0h1m1 0h2m1 0h1M0 23.5h1m5 0h1m1 0h2m1 0h1m1 0h3m4 0h1m3 0h2M0 24.5h1m1 0h3m1 0h1m2 0h2m1 0h1m4 0h1m2 0h5m1 0h1M0 25.5h1m1 0h3m1 0h1m1 0h4m3 0h5m1 0h1m2 0h2m2 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m3 0h2m3 0h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1M0 27.5h1m5 0h1m2 0h8m1 0h4m2 0h2m1 0h1M0 28.5h7m1 0h1m1 0h2m2 0h1m3 0h5m2 0h1m1 0h1"/></svg>
-</div><div class="u"><small>Try it live, on your phone too</small>trust-issues-xlzv.onrender.com</div></div><div class="pair"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h1m1 0h2m1 0h2m2 0h2m3 0h7M0 1.5h1m5 0h1m2 0h4m1 0h1m1 0h1m1 0h1m3 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h2m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m2 0h3m1 0h2m1 0h4m2 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h1m4 0h1m3 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h6m2 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 7.5h1m4 0h2m4 0h1M0 8.5h1m1 0h1m3 0h2m1 0h1m2 0h4m3 0h1m3 0h1m2 0h1m1 0h1M1 9.5h2m2 0h1m1 0h1m1 0h2m2 0h1m1 0h3m1 0h1m1 0h3m3 0h2M3 10.5h1m1 0h2m4 0h1m3 0h1m1 0h3m2 0h5m1 0h1M0 11.5h1m2 0h1m4 0h1m2 0h3m1 0h1m2 0h1m1 0h2m2 0h2M0 12.5h2m1 0h2m1 0h2m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h2m4 0h1M1 13.5h2m1 0h1m4 0h1m5 0h3m1 0h2m1 0h2m3 0h2M0 14.5h2m2 0h3m1 0h1m1 0h6m3 0h1m1 0h4m3 0h1M3 15.5h2m4 0h1m1 0h2m1 0h1m3 0h3m1 0h2M0 16.5h1m3 0h3m1 0h1m4 0h2m1 0h1m3 0h3m5 0h1M1 17.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m2 0h2m2 0h3M0 18.5h2m1 0h2m1 0h4m5 0h1m1 0h1m1 0h1m4 0h2m2 0h1M2 19.5h4m2 0h1m2 0h1m1 0h1m2 0h1m3 0h1m1 0h1m1 0h1M0 20.5h2m1 0h1m1 0h3m2 0h2m1 0h1m2 0h1m3 0h6m1 0h1M8 21.5h1m1 0h2m3 0h1m2 0h1m1 0h1m3 0h3m1 0h1M0 22.5h7m1 0h3m1 0h5m1 0h1m1 0h1m1 0h1m1 0h1m3 0h1M0 23.5h1m5 0h1m7 0h1m1 0h1m2 0h2m3 0h1m3 0h1M0 24.5h1m1 0h3m1 0h1m3 0h2m1 0h3m3 0h7m2 0h1M0 25.5h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h3m1 0h4m2 0h3m1 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h1m2 0h1m2 0h2M0 27.5h1m5 0h1m3 0h3m2 0h1m2 0h1m1 0h1m2 0h3M0 28.5h7m1 0h2m2 0h1m2 0h1m4 0h1m3 0h2m2 0h1"/></svg>
-</div><div class="u"><small>Code, data and how to run</small>github.com/m4hdhi/trust-issues</div></div><div class="thanks"><b>Thank you</b><span class="ar-d">شكرًا لكم</span></div></div>
+    <div>
+      <div class="shot"><img src="../screens/radar.png" alt=""></div>
+      <div class="card dark" style="margin-top:22px;padding:22px 30px"><div class="kv"><span>جرّبوها الآن</span><b>trust-issues-xlzv.onrender.com/console</b><span>رمز الدخول</span><b style="color:#b3a6ff">trust-issues</b></div></div>
+    </div>
   </div>
-  <div class="foot"><span>Trust Issues | أزمة ثقة</span><span class="mono">10</span></div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">06 / 10</span></div>
 </section>
-
+<section class="slide" data-notes="How one check works: cheap layers first, expensive ones only when needed. Every verdict explains itself in Arabic and English.">
+<div class="pad"><div class="top"><span class="chip"><b>06</b>كيف نفحص؟</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>ست طبقات، من الأسرع إلى الأعمق، و<em>كل حكم يشرح نفسه</em></h1>
+  <div style="display:grid;grid-template-columns:1fr 800px;gap:36px;margin-top:26px;flex:1;min-height:0;align-items:start">
+    <div class="card" style="display:grid;gap:16px">
+      <div class="step"><span class="n">1</span><div><h3>المواقع الرسمية</h3><p>49 بنكًا وجهة حكومية إماراتية: لا إنذار خاطئ عليها.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>قوائم الاحتيال المعروفة وبلاغات السكان</h3></div></div>
+      <div class="step"><span class="n">3</span><div><h3>نموذجنا المدرَّب <span class="en">(AI link model)</span></h3><p>يقرأ الرابط في ربع ميلي ثانية.</p></div></div>
+      <div class="step"><span class="n">4</span><div><h3>بيانات النطاق</h3><p>العمر، المالك، مكان الاستضافة.</p></div></div>
+      <div class="step"><span class="n">5</span><div><h3>متصفح معزول <span class="en">(sandbox)</span></h3><p>يفتح الصفحة بدلًا منك ويكشف التمويه ووجهة البيانات.</p></div></div>
+      <div class="step"><span class="n">6</span><div><h3>حكَمان من الذكاء الاصطناعي</h3><p><span class="en">Claude</span> و<span class="en">GPT</span> يراجعان الأدلة كرأي ثانٍ.</p></div></div>
+    </div>
+    <div>
+      <div class="shot"><img src="../screens/verdict.png" alt=""></div>
+      <p style="margin-top:22px"><span class="pill">رابط</span><span class="pill">رسالة كاملة</span><span class="pill">رمز <span class="en">QR</span></span><span class="pill">رقم هاتف</span><span class="pill">ملف <span class="en">PDF / Word</span></span></p>
+      <p class="lab">النتيجة من 0 إلى 100 مع الأسباب بالعربية والإنجليزية وملف أدلة.</p>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">07 / 10</span></div>
+</section>
+<section class="slide" data-notes="Our own model. Say the number: 589,687 real URLs. Explain the honest test: phishing first seen after the training cutoff, no domain shared between training and test.">
+<div class="pad"><div class="top"><span class="chip"><b>07</b>نموذجنا</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>درّبنا نموذجنا الخاص على <em class="en">589,687</em> رابطًا حقيقيًا</h1>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr">
+    <div class="card">
+      <h3>بيانات التدريب</h3>
+      <div style="display:flex;height:64px;border-radius:99px;overflow:hidden;margin-top:20px;direction:ltr;font:800 25px 'Bricolage Grotesque','IBM Plex Sans Arabic';color:#fff">
+        <div style="width:57.6%;background:linear-gradient(90deg,#e2434b,#ff7a59);display:grid;place-items:center">339,710 احتيال</div>
+        <div style="width:42.4%;background:linear-gradient(90deg,#0c9c6c,#4ad9a4);display:grid;place-items:center">249,977 سليم</div>
+      </div>
+      <div class="bars" style="gap:13px;margin-top:22px">
+        <div class="row"><span class="t en" style="text-align:right">Phishing.Database</span><div class="track"><i class="red" style="width:66.6%"></i></div><b style="font-size:24px">128,105</b></div>
+        <div class="row"><span class="t en" style="text-align:right">OpenPhish</span><div class="track"><i class="red" style="width:65.7%"></i></div><b style="font-size:24px">126,395</b></div>
+        <div class="row"><span class="t" ><span class="en">PhiUSIIL (UCI)</span>: احتيال وسليم</span><div class="track"><i style="width:100%"></i></div><b style="font-size:24px">192,453</b></div>
+        <div class="row"><span class="t">صفحات مواقع سليمة و<span class="en">Tranco</span></span><div class="track"><i class="green" style="width:74.1%"></i></div><b style="font-size:24px">142,610</b></div>
+      </div>
+      <p class="src" style="font-size:20px">يشمل ذلك 124 موقعًا رسميًا لبنوك وجهات حكومية إماراتية.</p>
+    </div>
+    <div class="card dark">
+      <h3>كيف درّبناه؟</h3>
+      <ul>
+        <li><span class="en">LightGBM</span> على <b style="color:#fff">73 خاصية</b> من الرابط، مع نموذج <span class="en">char n-gram</span> ومعايرة <span class="en">(calibration)</span>.</li>
+        <li><b style="color:#fff">اختبار نزيه</b> <span class="en">(time-split)</span>: روابط احتيال ظهرت بعد تاريخ التدريب، ولا نطاق مشترك بين التدريب والاختبار.</li>
+        <li>اختُبر على <span class="en"><b style="color:#fff">33,519</b></span> رابطًا إضافيًا.</li>
+        <li>يعمل على خادمنا: <span class="en"><b style="color:#fff">0.26 ms</b></span> للرابط، دون أي خدمة خارجية.</li>
+        <li>نموذج ثانٍ لاسم الموقع فقط <span class="en">(domain model)</span> لحماية الهاتف عبر <span class="en">DNS</span>.</li>
+      </ul>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">08 / 10</span></div>
+</section>
+<section class="slide" data-notes="Honest numbers. Tested with the sandbox and both AI judges on, and outside threat feeds switched off, so this is what our own engine catches.">
+<div class="pad"><div class="top"><span class="chip"><b>08</b>الدقة</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1><em>صفر</em> إنذار خاطئ على 411 موقعًا رسميًا إماراتيًا</h1>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);grid-template-rows:auto auto;flex:none;gap:22px;margin-top:22px">
+    <div class="card" style="padding:24px 30px"><span class="big g" style="font-size:72px">0 <small>/ 411</small></span><p class="lab">إنذار خاطئ على مواقع رسمية إماراتية</p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">99.3%</span><p class="lab">من 150 موقع احتيال نشط تم كشفها <span class="en">(recall)</span></p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">100%</span><p class="lab">دقة الحكم <span class="en">(precision)</span> في الاختبار نفسه</p></div>
+    <div class="card" style="padding:24px 30px"><span class="big v" style="font-size:72px">0.99</span><p class="lab"><span class="en">AUC</span> للنموذج وحده على اختبار <span class="en">time-split</span></p></div>
+    <div class="card" style="grid-column:span 2;padding:24px 34px">
+      <h3>500 رابط حقيقي جديد لم يرها النظام</h3>
+      <div class="bars" style="gap:10px;margin-top:10px">
+        <div class="row"><span class="t en" style="text-align:right">Precision</span><div class="track"><i style="width:99.2%"></i></div><b>99.2%</b></div>
+        <div class="row"><span class="t en" style="text-align:right">Recall</span><div class="track"><i style="width:94.4%"></i></div><b>94.4%</b></div>
+        <div class="row"><span class="t en" style="text-align:right">F1</span><div class="track"><i style="width:96.7%"></i></div><b>96.7%</b></div>
+      </div>
+    </div>
+    <div class="card" style="grid-column:span 2;padding:24px 34px">
+      <h3>السرعة</h3>
+      <div class="bars" style="gap:10px;margin-top:10px">
+        <div class="row"><span class="t">فحص فوري (النموذج وحده)</span><div class="track"><i class="green" style="width:3%"></i></div><b style="font-size:26px">0.2 ms</b></div>
+        <div class="row"><span class="t">فحص سريع</span><div class="track"><i class="green" style="width:14%"></i></div><b style="font-size:26px">~2 s</b></div>
+        <div class="row"><span class="t">فحص عميق مع <span class="en">sandbox</span> و<span class="en">AI</span></span><div class="track"><i style="width:70%"></i></div><b style="font-size:26px">~15 s</b></div>
+      </div>
+    </div>
+  </div>
+  <p class="src">الاختبار مع المتصفح المعزول وحكَمَي الذكاء الاصطناعي، ومع إيقاف قوائم التهديدات الخارجية، لنقيس ما يكشفه محرّكنا وحده. الأرقام كاملة في <span class="en">ml/metrics.json</span>.</p>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">09 / 10</span></div>
+</section>
+<section class="slide" data-notes="Close: the route to a pilot, the honest limits, and where to try it. The console passcode is on the slide.">
+<div class="pad"><div class="top"><span class="chip"><b>09</b>الخطوة التالية</span><img src="../brand/logo-english.png" alt="Trust Issues"></div>
+  <h1>جاهز لتجربة مع <em>شرطة أبوظبي</em></h1>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr">
+    <div class="card" style="display:grid;gap:18px">
+      <div class="step"><span class="n">1</span><div><h3>وحدة الجرائم الإلكترونية تستخدم المنصة</h3><p>على البلاغات ونتائج الرادار من اليوم الأول.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>قوائم <span class="en">RPZ</span> إلى <span class="en">e&</span> و<span class="en">du</span> و<span class="en">TDRA</span></h3><p>حماية كل هاتف في الدولة دون أي تطبيق.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>فرق مكافحة الاحتيال في البنوك</h3><p>تنبيه عند ظهور أي موقع يقلّد علامتها.</p></div></div>
+      <div class="step"><span class="n">4</span><div><h3>العائلات</h3><p>تطبيق ويب اليوم، ثم تطبيق <span class="en">Android</span> أصلي.</p></div></div>
+      <p class="src" style="font-size:20px;margin-top:0">حدود نصرّح بها: <span class="en">DNS</span> يرى اسم الموقع لا الصفحة · <span class="en">Android</span> يحتاج تطبيق <span class="en">DNS</span> مجانيًا · لا نحجب المكالمات، نفحص الرقم عند إدخاله.</p>
+    </div>
+    <div style="display:grid;gap:22px;grid-template-rows:auto auto 1fr">
+      <div class="card" style="display:flex;gap:26px;align-items:center;padding:26px 30px"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h3m2 0h1m2 0h5m1 0h7M0 1.5h1m5 0h1m1 0h2m3 0h1m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m6 0h4m2 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m2 0h5m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h4m1 0h2m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m2 0h1m2 0h3m1 0h2m1 0h2m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h2m1 0h1m3 0h3M0 8.5h1m1 0h2m1 0h3m1 0h2m1 0h2m1 0h4m3 0h1m2 0h1m1 0h2M0 9.5h1m2 0h2m8 0h1m5 0h1m2 0h3m3 0h1M0 10.5h1m1 0h1m1 0h5m1 0h1m2 0h1m4 0h1m2 0h1m2 0h1m1 0h2M2 11.5h1m6 0h3m3 0h2m5 0h1m5 0h1M0 12.5h1m1 0h2m1 0h4m1 0h3m1 0h5m1 0h2m1 0h1m1 0h2M0 13.5h3m2 0h1m2 0h2m1 0h2m1 0h3m2 0h1m2 0h1m3 0h3M0 14.5h4m2 0h4m1 0h3m3 0h5m1 0h1m2 0h3M1 15.5h1m1 0h1m4 0h2m1 0h1m2 0h3m1 0h1m1 0h1m2 0h2m2 0h1M1 16.5h1m2 0h1m1 0h1m3 0h2m2 0h1m3 0h1m1 0h2m2 0h2m1 0h1M3 17.5h1m3 0h1m1 0h2m1 0h1m1 0h2m1 0h1m2 0h1m2 0h1m1 0h3M0 18.5h1m1 0h3m1 0h1m1 0h3m2 0h3m1 0h1m2 0h3m3 0h1M2 19.5h1m1 0h1m2 0h2m1 0h1m2 0h2m1 0h3m2 0h1m1 0h1m2 0h1M1 20.5h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h2m1 0h11M8 21.5h1m7 0h5m3 0h5M0 22.5h7m1 0h2m4 0h1m3 0h3m1 0h1m1 0h2m1 0h1M0 23.5h1m5 0h1m1 0h2m1 0h1m1 0h3m4 0h1m3 0h2M0 24.5h1m1 0h3m1 0h1m2 0h2m1 0h1m4 0h1m2 0h5m1 0h1M0 25.5h1m1 0h3m1 0h1m1 0h4m3 0h5m1 0h1m2 0h2m2 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m3 0h2m3 0h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1M0 27.5h1m5 0h1m2 0h8m1 0h4m2 0h2m1 0h1M0 28.5h7m1 0h1m1 0h2m2 0h1m3 0h5m2 0h1m1 0h1"/></svg>
+</div><div><p class="lab" style="margin:0">جرّبوه الآن، وعلى الهاتف أيضًا</p><p class="mono" style="font:600 27px 'JetBrains Mono';margin-top:6px">trust-issues-xlzv.onrender.com</p></div></div>
+      <div class="card" style="display:flex;gap:26px;align-items:center;padding:26px 30px"><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h29v29H0z"/><path stroke="#0B1220" d="M0 0.5h7m1 0h1m1 0h2m1 0h2m2 0h2m3 0h7M0 1.5h1m5 0h1m2 0h4m1 0h1m1 0h1m1 0h1m3 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h2m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m2 0h3m1 0h2m1 0h4m2 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m3 0h1m2 0h1m4 0h1m3 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h6m2 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 7.5h1m4 0h2m4 0h1M0 8.5h1m1 0h1m3 0h2m1 0h1m2 0h4m3 0h1m3 0h1m2 0h1m1 0h1M1 9.5h2m2 0h1m1 0h1m1 0h2m2 0h1m1 0h3m1 0h1m1 0h3m3 0h2M3 10.5h1m1 0h2m4 0h1m3 0h1m1 0h3m2 0h5m1 0h1M0 11.5h1m2 0h1m4 0h1m2 0h3m1 0h1m2 0h1m1 0h2m2 0h2M0 12.5h2m1 0h2m1 0h2m2 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h2m4 0h1M1 13.5h2m1 0h1m4 0h1m5 0h3m1 0h2m1 0h2m3 0h2M0 14.5h2m2 0h3m1 0h1m1 0h6m3 0h1m1 0h4m3 0h1M3 15.5h2m4 0h1m1 0h2m1 0h1m3 0h3m1 0h2M0 16.5h1m3 0h3m1 0h1m4 0h2m1 0h1m3 0h3m5 0h1M1 17.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m2 0h2m2 0h3M0 18.5h2m1 0h2m1 0h4m5 0h1m1 0h1m1 0h1m4 0h2m2 0h1M2 19.5h4m2 0h1m2 0h1m1 0h1m2 0h1m3 0h1m1 0h1m1 0h1M0 20.5h2m1 0h1m1 0h3m2 0h2m1 0h1m2 0h1m3 0h6m1 0h1M8 21.5h1m1 0h2m3 0h1m2 0h1m1 0h1m3 0h3m1 0h1M0 22.5h7m1 0h3m1 0h5m1 0h1m1 0h1m1 0h1m1 0h1m3 0h1M0 23.5h1m5 0h1m7 0h1m1 0h1m2 0h2m3 0h1m3 0h1M0 24.5h1m1 0h3m1 0h1m3 0h2m1 0h3m3 0h7m2 0h1M0 25.5h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h3m1 0h4m2 0h3m1 0h1M0 26.5h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h1m2 0h1m2 0h2M0 27.5h1m5 0h1m3 0h3m2 0h1m2 0h1m1 0h1m2 0h3M0 28.5h7m1 0h2m2 0h1m2 0h1m4 0h1m3 0h2m2 0h1"/></svg>
+</div><div><p class="lab" style="margin:0">الكود والبيانات وطريقة التشغيل</p><p class="mono" style="font:600 27px 'JetBrains Mono';margin-top:6px">github.com/m4hdhi/trust-issues</p></div></div>
+      <div class="card dark" style="display:flex;flex-direction:column;justify-content:center"><div class="kv"><span>منصة الشرطة</span><b>/console</b><span>رمز الدخول</span><b style="color:#b3a6ff">trust-issues</b></div><p style="font:800 54px 'Alexandria';color:#fff;margin-top:16px">شكرًا لكم</p></div>
+    </div>
+  </div>
+</div><div class="foot"><span>Trust Issues | أزمة ثقة · ScamShield AI Hackathon</span><span class="en">10 / 10</span></div>
+</section>
 </div></div>
 <div id="bar"></div><div id="count"></div>
 <script>
