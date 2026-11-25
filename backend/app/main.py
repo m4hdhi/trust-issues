@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from sqlmodel import func, select
 from sse_starlette.sse import EventSourceResponse
 
-from . import accounts, batch, bot, bus, db, family, scans
+from . import accounts, batch, bot, bus, checks, db, family, scans
 from .community import reports
 from .config import ROOT_DIR, get_settings
 from .detectors import ai_anthropic, anchors, feeds, message_rules
@@ -314,6 +314,61 @@ async def live() -> dict[str, Any]:
         "brands_protected": len(reg.brands),
         "recent": recent,
     }
+
+
+class PhoneIn(BaseModel):
+    number: str
+    device_id: str | None = None
+    note: str | None = None
+
+
+async def _check(fn, *args: Any) -> Any:
+    try:
+        return await asyncio.to_thread(fn, *args)
+    except checks.CheckError as exc:
+        raise HTTPException(exc.status, str(exc)) from exc
+
+
+@app.post("/api/check/phone", dependencies=[Depends(rate_limit)])
+async def check_phone(body: PhoneIn) -> dict[str, Any]:
+    """Who is behind a phone number: verified helpline, reported scam, seen on a scam page, or unknown."""
+    return await _check(checks.phone, body.number)
+
+
+@app.post("/api/reports/phone", dependencies=[Depends(rate_limit)])
+async def report_phone(body: PhoneIn) -> dict[str, Any]:
+    return await _check(checks.report_phone, body.number, body.device_id, body.note)
+
+
+@app.post("/api/check/file", dependencies=[Depends(rate_limit)])
+async def check_file(file: UploadFile = File(...)) -> dict[str, Any]:
+    """Triage a file someone was sent: risky features, antivirus verdict by hash, scam wording, and the links inside."""
+    data = await file.read(checks.MAX_FILE + 1)
+    try:
+        out = await checks.file(file.filename or "file", data)
+    except checks.CheckError as exc:
+        raise HTTPException(exc.status, str(exc)) from exc
+    text = out.pop("text")
+    score = out["score"]
+    if len(text.split()) > 3:
+        m = None
+        if ai_anthropic.available():
+            try:
+                m = await asyncio.wait_for(ai_anthropic.analyze_message(text), 25)
+            except Exception as exc:
+                log.info("AI analysis of file text failed, using rules: %s", exc)
+        m = m or message_rules.analyze(text)
+        if m["is_scam"]:
+            score += 60
+            for en, ar in zip(m["reasons_en"][:3], m["reasons_ar"][:3]):
+                out["findings"].append({"level": "danger", "en": en, "ar": ar})
+    out["links"] = [{"url": u, "scan_id": scans.start(u, mode="deep", source="web")} for u in out.pop("urls")]
+    out["score"] = min(100, score)
+    out["verdict"] = "scam" if score >= 60 else "suspicious" if score >= 25 else "clear"
+    if out["verdict"] == "clear":
+        out["findings"].append({"level": "info", "en": "We found nothing dangerous in this file. That is not a guarantee: only open files you were expecting.",
+                                "ar": "لم نجد شيئًا خطيرًا في هذا الملف. هذا ليس ضمانًا: افتح فقط الملفات التي كنت تنتظرها."})
+    return out
 
 
 class FamilyCreateIn(BaseModel):

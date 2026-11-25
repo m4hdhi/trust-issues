@@ -89,6 +89,10 @@ flowchart LR
   - pre-written registrar and host takedown emails;
   - a shareable bilingual **warning card** to post back into the WhatsApp group.
 
+### Phone numbers and files
+- **Phone number check.** The number is parsed with Google's libphonenumber (country, carrier, line type), then matched against the verified helplines of the 49 UAE brands, numbers printed on scam pages we already caught, and reports from residents. Two reports from different phones mark a number as a scam; official numbers cannot be reported. Line type alone never marks a number as a scam, and "unknown" is shown as unknown, not as safe.
+- **File check.** A file up to 10 MB is read in memory and never stored. We look for what attackers rely on (a program named like a document, PDF scripts and auto-run actions, Office macros, sign-in pages sent as attachments, programs inside ZIPs), look up the file's SHA-256 on VirusTotal (only the hash leaves the server), run the scam-message analysis on its text and send up to five links found inside through the full link check.
+
 ## 4. Accuracy (measured on real, unseen data)
 
 The URL model was trained on data with a time cutoff. It was then tested on **phishing URLs first seen after the training cutoff** (OpenPhish / Phishing.Database) and on legitimate URLs from unseen domains. Domains never overlap between train and test. Full numbers are in [`ml/metrics.json`](ml/metrics.json).

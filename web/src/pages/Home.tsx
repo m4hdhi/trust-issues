@@ -1,8 +1,9 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { motion } from 'motion/react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, FileSearch, Link2, Phone } from 'lucide-react'
 import { Composer } from '../components/Composer'
+import { FileCheck, PhoneCheck } from '../components/ExtraChecks'
 import { LiveRadar, LiveStrip } from '../components/LiveRadar'
 import { ProtectIllustration } from '../components/ProtectIllustration'
 import { TrendingRow } from '../components/TrendingCard'
@@ -49,6 +50,12 @@ function Headline() {
     </h1>
   )
 }
+
+const MODES = [
+  { id: 'link', k: 'modeLink', icon: Link2 },
+  { id: 'phone', k: 'modePhone', icon: Phone },
+  { id: 'file', k: 'modeFile', icon: FileSearch },
+] as const
 
 const STEPS: { title: StringKey; body: StringKey }[] = [
   { title: 'how1t', body: 'how1d' },
@@ -184,6 +191,7 @@ function FamilyBand() {
 
 export function Home() {
   const [params] = useSearchParams()
+  const [mode, setMode] = useState<'link' | 'phone' | 'file'>('link')
   const feed = useLive(5000)
   const { data: brands } = useAsync(() => api.brands(), [])
   return (
@@ -192,7 +200,22 @@ export function Home() {
         <div className="col-span-4 sm:col-span-8 lg:col-span-7">
           <Headline />
           <div className="mt-8 lg:mt-10">
-            <Composer initial={params.get('u') ?? ''} openQr={params.get('qr') === '1'} />
+            <div role="tablist" aria-label="What to check" className="mb-4 inline-flex max-w-full flex-wrap gap-1 rounded-full bg-ink-800 p-1">
+              {MODES.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === m.id}
+                  onClick={() => setMode(m.id)}
+                  className={`press inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm transition-colors ${mode === m.id ? 'bg-paper text-ink-950' : 'text-paper-2 hover:text-paper'}`}
+                >
+                  <m.icon className="size-4" aria-hidden="true" />
+                  <T k={m.k} />
+                </button>
+              ))}
+            </div>
+            {mode === 'link' ? <Composer initial={params.get('u') ?? ''} openQr={params.get('qr') === '1'} /> : mode === 'phone' ? <PhoneCheck /> : <FileCheck />}
           </div>
           <Tx k="heroSub" className="mt-8 max-w-[60ch] text-base text-paper-2" split="stack" />
         </div>

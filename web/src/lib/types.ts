@@ -550,3 +550,34 @@ export interface Helpline {
   number: string
   label: string
 }
+
+export interface CheckFinding {
+  level: 'danger' | 'warn' | 'ok' | 'info'
+  en: string
+  ar: string
+}
+
+export interface PhoneCheck {
+  number: string
+  key: string
+  valid: boolean
+  verdict: 'official' | 'scam' | 'suspicious' | 'unknown'
+  country: string | null
+  carrier: string | null
+  line_type: Bilingual | null
+  brand: BrandRef | null
+  reports: number
+  findings: CheckFinding[]
+}
+
+export interface FileCheck {
+  name: string
+  size: number
+  sha256: string
+  kind: { id: string; en: string; ar: string }
+  score: number
+  verdict: 'scam' | 'suspicious' | 'clear'
+  findings: CheckFinding[]
+  virustotal: { flagged: number; engines: number } | null
+  links: { url: string; scan_id: string }[]
+}

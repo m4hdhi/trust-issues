@@ -1,4 +1,4 @@
-import type { BatchStatus, BlockItem, BrandRef, CaseItem, CaseStatus, CreateScanRequest, CreateScanResponse, DeviceRegistration, GraphResponse, LiveFeed, MapsHit, MetricsResponse, Platform, RadarItem, RadarRecent, ReportRequest, ReportResponse, ScanResult, ScanStage, SearchHit, Stats, Takedown, TrendingItem, FamilyState, FamilyInviteResult, FamilyRole, InviteInfo, Helpline } from './types'
+import type { BatchStatus, BlockItem, BrandRef, CaseItem, CaseStatus, CreateScanRequest, CreateScanResponse, DeviceRegistration, GraphResponse, LiveFeed, MapsHit, MetricsResponse, Platform, RadarItem, RadarRecent, ReportRequest, ReportResponse, ScanResult, ScanStage, SearchHit, Stats, Takedown, TrendingItem, FamilyState, FamilyInviteResult, FamilyRole, InviteInfo, Helpline, PhoneCheck, FileCheck } from './types'
 import { readItem, readJson, removeItem, writeItem, writeJson } from './storage'
 
 export class ApiError extends Error {
@@ -189,6 +189,20 @@ export const api = {
     writeJson(DEVICE_KEY, reg)
     linkManifest()
     return reg
+  },
+
+  checkPhone(number: string): Promise<PhoneCheck> {
+    return post<PhoneCheck>('/api/check/phone', { number })
+  },
+
+  reportPhone(number: string): Promise<PhoneCheck> {
+    return post<PhoneCheck>('/api/reports/phone', { number, device_id: getDevice()?.device_id ?? null })
+  },
+
+  checkFile(file: File): Promise<FileCheck> {
+    const form = new FormData()
+    form.append('file', file)
+    return request<FileCheck>('/api/check/file', { method: 'POST', body: form })
   },
 
   accountStatus(deviceId: string): Promise<{ login: string | null }> {

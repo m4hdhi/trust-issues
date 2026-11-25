@@ -43,6 +43,8 @@ dependencies = [
   "beautifulsoup4>=4.12",
   "lxml>=5.3",
   "segno>=1.6.6",
+  "phonenumbers>=9.0.44",
+  "pypdf>=7.1.1",
 ]
 
 [project.scripts]
